@@ -1,0 +1,142 @@
+\include{./def/yf-formatting}
+\include{./def/yf-def}
+
+\title{}
+\author{}
+\date{}
+
+
+\def\A{\mathcal{A}}
+
+\def\extraspacing{\vspace{3mm} \noindent}
+\def\vgap{\vspace{3mm}}
+\def\vslit{\vspace{0.5mm}}
+
+\begin{document}
+
+% \begin{center}
+%     {\bf \large Lecture Notes} \\
+%     {\bf \large Approximate Nearest Neighbor Search 1 : Proximity Graphs} \\[5mm]
+%     {\large Yufei Tao} \\[10mm]
+% \end{center}
+
+
+\boxminipg{\linewidth}{
+    \begin{center}
+        \vspace{3mm}
+    {\Large
+    (CE7456 Lecture Notes 2) Tree Sampling} \\[2mm]
+    {\large Yufei Tao}
+        \vspace{3mm}
+    \end{center}
+}
+
+Today, we discuss {\em tree sampling}, a fundamental technique useful in many sampling applications.
+
+\section{The Problem}
+
+Let $T$ be a tree where
+\myitems{
+    \item each node $u$ is associated with a positive integer weight $w(u)$;
+    \item for each internal node $u$, it holds that $\sum_{v \in \mit{child}(u)} w(v) \le w(u)$, where $\mit{child}(u)$ is the set of child nodes of $u$.
+}
+Define
+\myeqn{
+    L &=& \text{the set of leaves in $T$} \nn \\
+    W &=& \sum_{z \in L} w(z). \nn
+}
+The goal of tree sampling is to sample the leaves with probabilities proportional to their weights. Specifically, we want to randomly draw an element $Z$ from $L$ such that
+\myeqn{
+    \Pr[Z = z] &=& \fr{w(z)}{W} \label{eqn:tree-samp-pdf}
+}
+for each leaf $z \in Z$. It is worth pointing out that
+\myeqn{
+    W &\le& w(u_\mit{root})  \nn
+}
+where $u_\mit{root}$ is the root of $T$.
+
+\vgap
+
+Our access to $T$ is by way of the following oracle:
+\minipg{0.9\linewidth}{
+    {\bf Child-Sampling Oracle.} Given a node $u$ in $T$, the oracle draws a random element $X \in \mit{child}(u) \cup \set{\bot}$ according to the distribution:
+\myeqn{
+    \Pr[X = x] &=&
+    \left\{
+    \begin{tabular}{ll}
+        $w(x) / w(u)$ & for each child $x \in \mit{child}(u)$ \\
+        $1 - \fr{1}{w(u)} \sum_{v \in \mit{child}(u)} w(v)$ & for $x = \bot$
+    \end{tabular}
+    \right. \nn
+}
+}
+In the beginning, we are given only the root of $T$. The objective is to obtain the desired $Z$ satisfying \eqref{eqn:tree-samp-pdf} by calling the oracle as few times as possible.
+
+\section{The Algorithm}
+
+%\extraspacing {\bf Tree Sampling.}
+Consider the algorithm below:
+
+\mytab{
+    \> \ttt{tree-sample} $(T)$ \\
+    \> 1. \> $u \leftarrow$ root of $T$ \\
+    \> 2. \> {\bf while} $u$ is not a leaf {\bf do} \\
+    \> 3. \>\> $v \leftarrow$ the outcome of child sampling on $u$ \\
+    \> 4. \>\> {\bf if} $v = \bot$ {\bf then return} ``failed'' {\bf else} $u \leftarrow v$ \\
+    \> 5. {\bf return} $u$
+}
+
+We say that the algorithm {\em succeeds} if it manages to return a leaf (i.e., it does not return ``failed'').
+
+\begin{lemma}
+    The \ttt{tree-sample} algorithm succeeds with probability $W / w(u_{root})$. When the algorithm succeeds, its returns a leaf according to the distribution in \eqref{eqn:tree-samp-pdf}.
+\end{lemma}
+
+\begin{proof}
+    Fix an arbitrary leaf $z \in L$. Denote by $u_1, u_2, ..., u_\ell$ ($\ell \ge 1$) the sequence of nodes encountered as we descend from the root of $T$ to $z$ (note: $u_1$ is the root and $u_\ell$ is $z$). The \ttt{tree-sample} algorithm returns $z$ if and only if the following event occurs at each $i \in [1, \ell - 1]$
+    \begin{center}
+        the child sampling on $u_i$ returns $u_{i+1}$.
+    \end{center}
+    The event of value $i$ occurs with probability $w(u_{i+1}) / w(u_i)$. As the $\ell - 1$ events are independent, the probability for \ttt{tree-sample} to return $z$ equals
+    \myeqn{
+        \fr{w(u_2)}{w(u_1)} \cdot \fr{w(u_3)}{w(u_2)} \cdot ... \cdot \fr{w(u_{\ell})}{w(u_{\ell-1})}
+        =
+        \fr{w(z)}{w(u_\mit{root})}. \nn
+    }
+    It thus follows that \ttt{tree-sample} succeeds with probability
+    \myeqn{
+        \sum_{z \in L} \fr{w(z)}{w(u_\mit{root})} = \fr{W}{w(u_\mit{root})}. \label{eqn:tree-samp:succ}
+    }
+    Hence, for each $z \in L$, we get
+    \myeqn{
+        \Pr[\text{$z$ returned} \mid \text{success}] = \fr{w(z)}{W} \nn
+    }
+    as claimed.
+\end{proof}
+
+The algorithm may fail returning a sample, in which case we simply repeat it until getting a success. By \eqref{eqn:tree-samp:succ}, the number of repeats needed to induce one success is $\fr{w(u_\mit{root})}{W}$ in expectation. The following is a more precise characterization of how many repeats are needed probabilistically.
+
+\begin{corollary}
+    For any integer $t \ge 1$, the probability for repeating the $\ttt{tree-sample}$ algorithm $t  \cdot \fr{w(u_\mit{root})}{W}$ times without a success is at most $1/e^t$.
+\end{corollary}
+
+\begin{proof}
+    As one run of the algorithm fails with probability $1 - \fr{w(u_\mit{root})}{W}$, the probability of failing $t \cdot \fr{w(u_\mit{root})}{W}$ times consecutively is
+    \myeqn{
+        \Big(
+            1 - \fr{w(u_\mit{root})}{W}
+        \Big)^{t \cdot \fr{w(u_\mit{root})}{W}}
+        &\le&
+        e^{
+            -t
+        } \nn
+    }
+    where the derivation used the fact $1 + x \le e^x$ for all $x \in \real$.
+\end{proof}
+
+
+
+% \bibliographystyle{plain}
+% \bibliography{ref}
+
+\end{document}
