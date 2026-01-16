@@ -71,7 +71,7 @@ Next, we will discuss the {\em alias method} \cite{w74}, which improves the abov
 \extraspacing {\bf Structure.} The method produces a set $U$ of $n$ {\em urns}, each containing one or two elements from $S$. An element may appear in multiple urns. For an urn $\Lambda \in U$, each element $e$ in $\Lambda$ is assigned a positive value $v(\Lambda, e)$ --- referred to as {\em the value of $e$ in urn $\Lambda$}. These values satisfy two conditions:
 \myenums{
     \item For each urn $\Lambda \in U$,
-    if it has only one element $e$, then $v(\Lambda, e) = 1/n$; otherwise, it has two elements $e_1$ and $e_2$, in which case $v(\Lambda, e_1) + v(\Lambda, e_2) = 1/n$.
+    if it has only one element $e$, then $v(\Lambda, e) = W/n$; otherwise, it has two elements $e_1$ and $e_2$, in which case $v(\Lambda, e_1) + v(\Lambda, e_2) = W/n$.
 
     \vgap
 
@@ -91,37 +91,37 @@ As each urn requires only constant space, the total space consumption is $O(n)$.
         \item If $\Lambda$ has only a single element $e$, then $X = e$.
         \item If $\Lambda$ has two elements $e_1$ and $e_2$, then generate $X \in \set{e_1, e_2}$ such that
         \myeqn{
-            \Pr[X = e_i] &=& \fr{v(\Lambda, e_i)}{1/n} \nn
+            \Pr[X = e_i] &=& \fr{v(\Lambda, e_i)}{W/n} \nn
         }
         for $i = 1$ and 2.
     }
-    We insert a remark here that will be useful later. If $e$ is an element in $\Lambda$, in both cases we have $\Pr[X = e] = v(\Lambda, e) \cdot n$.
+    We insert a remark here that will be useful later. If $e$ is an element in $\Lambda$, in both cases we have $\Pr[X = e] = v(\Lambda, e) \cdot (n/W)$.
 }
 It is clear that the above steps can be implemented in constant time.
 
 \vgap
 
-To prove correctness, denote by $Y$ the output of the algorithm; we must show that $\Pr[Y = e] = w(e)$ for each element $e \in S$ (recall that we have assumed $W = 1$). Fix an arbitrary element $e \in S$. Let $U_e$ be the set of urns in $U$ containing $e$. The event $Y = e$ can be decomposed into $|U_e|$ disjoint events $E_1, E_2, ..., E_{|U_e|}$, where $E_i$ ($1 \le i \le |U_e|$) represents the event that $e$ is sampled from the $i$-th urn of $U_e$. Specifically, $E_i$ ($1 \le i \le |U_e|$) is the conjunction (i.e., AND) of the following two events:
+To prove correctness, denote by $Y$ the output of the algorithm; we must show that $\Pr[Y = e] = w(e)/W$ for each element $e \in S$. Fix an arbitrary element $e \in S$. Let $U_e$ be the set of urns in $U$ containing $e$. The event $Y = e$ can be decomposed into $|U_e|$ disjoint events $E_1, E_2, ..., E_{|U_e|}$, where $E_i$ ($1 \le i \le |U_e|$) represents the event that $e$ is sampled from the $i$-th urn of $U_e$. Specifically, $E_i$ ($1 \le i \le |U_e|$) is the conjunction (i.e., AND) of the following two events:
 \myitems{
     \item The urn $\Lambda$ picked in the first step is the $i$-th urn in $U_e$, which occurs with probability $1/n$.
-    \item The element $X$ returned in the second step is $e$, which occurs with probability $v(\Lambda, e) \cdot n$ (as remarked earlier).
+    \item The element $X$ returned in the second step is $e$, which occurs with probability $v(\Lambda, e) \cdot (n/W)$ (as remarked earlier).
 }
-As the above two events are independent, we know $\Pr[E_i] = v(\Lambda, e)$. Therefore:
+As the above two events are independent, we know $\Pr[E_i] = v(\Lambda, e)/W$. Therefore:
 \myeqn{
-    \Pr[Y = e] = \sum_{i=1}^{|U_e|} \Pr[E_i] = \sum_{\Lambda \in U_e} v(\Lambda, e) = w(e) \nn
+    \Pr[Y = e] = \sum_{i=1}^{|U_e|} \Pr[E_i] = \sum_{\Lambda \in U_e} \fr{v(\Lambda, e)}{W} = \fr{w(e)}{W} \nn
 }
 where the last equality used \eqref{eqn:alias}.
 
 \extraspacing {\bf Construction.} We can build the urns in $n$ iterations. Each iteration produces a new urn, removes an element from $S$, and possibly adjusts the weight of another element remaining in $S$. The algorithm maintains an invariant.
 \minipg{0.9\linewidth}{
-    {\bf Invariant:} when step $i \in [1, n]$ starts, the weights of all the $n - i + 1$ elements still in $S$ sum up to $\fr{n-i+1}{n}$.
+    {\bf Invariant:} when step $i \in [1, n]$ starts, the weights of all the $n - i + 1$ elements still in $S$ sum up to $W \cdot \fr{n-i+1}{n}$.
 }
 
-Specifically, in the $i$-th iteration ($i \ge 1$), we first check whether there is an element $e \in S$ whose {\em current} weight is $1/n$. If so, the iteration creates an urn $\Lambda$ containing just $e$, assigns $v(\Lambda, e) = w(e)$, and then removes $e$ from $S$.
+Specifically, in the $i$-th iteration ($i \ge 1$), we first check whether there is an element $e \in S$ whose {\em current} weight is $W/n$. If so, the iteration creates an urn $\Lambda$ containing just $e$, assigns $v(\Lambda, e) = w(e)$ --- here $w(e)$ is the current weight of $e$ --- and then removes $e$ from $S$.
 
 \vgap
 
-We now consider the case where no element in $S$ has a current weight $1/n$. In this case, there must be an element $e_1 \in S$ whose current weight $w(e_1)$ is {\em strictly} smaller than $1/n$, and another element $e_2 \in S$ whose current weight $w(e_1)$ is {\em strictly} larger than $1/n$ --- think: why? Pick any two such elements. Create an urn $\Lambda$ containing $e_1$ and $e_2$, assigning $v(\Lambda,e_1) = w(e_1)$ and $v(\Lambda,e_2) = \fr{1}{n} - w(e_1)$. After that, the iteration removes $e_1$ from $S$ and decreases $w(e_2)$ by $\fr{1}{n} - w(e_1)$. It is easy to verify that the invariant holds for the next iteration.
+We now consider the case where no element in $S$ has a current weight $W/n$. In this case, there must be an element $e_1 \in S$ whose current weight $w(e_1)$ is {\em strictly} smaller than $W/n$, and another element $e_2 \in S$ whose current weight $w(e_1)$ is {\em strictly} larger than $W/n$ --- think: why? Pick any two such elements. Create an urn $\Lambda$ containing $e_1$ and $e_2$, assigning $v(\Lambda,e_1) = w(e_1)$ and $v(\Lambda,e_2) = \fr{W}{n} - w(e_1)$. After that, the iteration removes $e_1$ from $S$ and decreases $w(e_2)$ by $\fr{W}{n} - w(e_1)$. It is easy to verify that the invariant holds for the next iteration.
 
 \vgap
 
