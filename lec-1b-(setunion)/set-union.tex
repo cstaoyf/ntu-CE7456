@@ -1,0 +1,139 @@
+\include{./def/yf-formatting}
+\include{./def/yf-def}
+
+\title{}
+\author{}
+\date{}
+
+
+\def\T{\mathcal{T}}
+
+\def\extraspacing{\vspace{3mm} \noindent}
+\def\vgap{\vspace{3mm}}
+\def\vslit{\vspace{0.5mm}}
+
+\begin{document}
+
+% \begin{center}
+%     {\bf \large Lecture Notes} \\
+%     {\bf \large Approximate Nearest Neighbor Search 1 : Proximity Graphs} \\[5mm]
+%     {\large Yufei Tao} \\[10mm]
+% \end{center}
+
+\boxminipg{\linewidth}{
+    \begin{center}
+        \vspace{3mm}
+    {\Large
+    (CE7456 Lecture Notes 1) Weighted Sampling} \\[2mm]
+    {\large Yufei Tao}
+        \vspace{3mm}
+    \end{center}
+}
+
+%\title{(Theory of DB Problems) Lecture Notes \\ Sampling 3: The Alias Method}
+
+% \author{Yufei Tao}
+% \date{\today}
+
+%=================
+
+%\maketitle
+
+%Today, we will introduce the {\em alias method} \cite{w74}, which solves the {\em weighted sampling} problem defined as follows.
+
+Today, we will discuss the {\em weighted sampling} problem defined as follows.
+
+\minipg{0.9\linewidth}{
+    {\bf Weighted Sampling.} The input is a set $S$ of $n$ elements where each element $e \in S$ carries a positive integer {\em weight} $w(e)$. Define $W = \sum_{e \in S} w(e)$. A sampling operation draws a random element $X$ from $S$ such that $\Pr[X = e] = w(e)/W$ for each $e \in S$. The goal is to preprocess $S$ into a data structure that can support sampling operations efficiently. The output of each sampling operation must be independent of those of all previous operations.
+}
+
+\section{Computation Model and Mathematical Conventions}
+
+We will assume the standard RAM (random access machine) model, augmented with a constant-time operation \ttt{RAND}. Given an integer $x \ge 1$, \ttt{RAND}$(x)$ returns a number chosen from $[x]$ uniformly at random, where $[x]$ represents the set $\set{1, 2, ..., x}$. All the logarithms have base 2 by default.
+
+%\vgap
+
+
+% \noindent We will assume an oracle that can generate a uniformly random value between 0 and 1 in constant time. The alias method builds a structure of $O(n)$ space that supports a sampling operation in constant time. Our discussion focuses on {\em static} $S$ (i.e., no insertions or deletions are performed on $S$). For this reason, we assume $W = 1$ w.l.o.g.
+
+\section{A Simple but Slow Method}
+
+Let $e_1, e_2, ..., e_n$ be the elements of $S$ (the ordering does not matter). In preprocessing, break the interval $[1, W]$ into $n$ disjoint intervals $I_1, I_2, ..., I_n$ such that $I_i$ ($i \in [n]$) contains exactly $w(e_i)$ integers. Store the set of intervals in an array $A$, which constitutes our data structure. It is rudimentary to finish the preprocessing in $O(n)$ time.
+
+\vgap
+
+To sample from $S$, first draw an integer $X$ from $[n]$ uniformly at random. Then, use binary search to identify the unique interval $I_i$ --- among $I_1, I_2, ..., I_n$ --- covering $X$. Finally, return the element $e_i$ (i.e., the element $I_i$ corresponds to). The correctness is straightforward, and the sample time is $O(\log n)$.
+
+\section{The Alias Method}
+
+Next, we will discuss the {\em alias method} \cite{w74}, which improves the above solution by reducing the sampling time to constant.
+
+\extraspacing {\bf Structure.} The method produces a set $U$ of $n$ {\em urns}, each containing one or two elements from $S$. An element may appear in multiple urns. For an urn $\Lambda \in U$, each element $e$ in $\Lambda$ is assigned a positive value $v(\Lambda, e)$ --- referred to as {\em the value of $e$ in urn $\Lambda$}. These values satisfy two conditions:
+\myenums{
+    \item For each urn $\Lambda \in U$,
+    if it has only one element $e$, then $v(\Lambda, e) = 1/n$; otherwise, it has two elements $e_1$ and $e_2$, in which case $v(\Lambda, e_1) + v(\Lambda, e_2) = 1/n$.
+
+    \vgap
+
+    \item For every element $e \in S$, it holds that
+    \myeqn{
+        w(e) &=& \sum_{\Lambda \in U: e \in \Lambda} v(\Lambda, e) \label{eqn:alias}
+    }
+    namely, its weight equals the sum of its values in all the urns where it appears.
+}
+As each urn requires only constant space, the total space consumption is $O(n)$.
+
+\extraspacing {\bf Sampling.} To perform a weighted sampling operation, we carry out the steps below.
+\myitems{
+    \item First, pick an urn $\Lambda$ from $U$ uniformly at random.
+    \item Second, return an element $X$ from $U$ as follows.
+    \myitems{
+        \item If $\Lambda$ has only a single element $e$, then $X = e$.
+        \item If $\Lambda$ has two elements $e_1$ and $e_2$, then generate $X \in \set{e_1, e_2}$ such that
+        \myeqn{
+            \Pr[X = e_i] &=& \fr{v(\Lambda, e_i)}{1/n} \nn
+        }
+        for $i = 1$ and 2.
+    }
+    We insert a remark here that will be useful later. If $e$ is an element in $\Lambda$, in both cases we have $\Pr[X = e] = v(\Lambda, e) \cdot n$.
+}
+It is clear that the above steps can be implemented in constant time.
+
+\vgap
+
+To prove correctness, denote by $Y$ the output of the algorithm; we must show that $\Pr[Y = e] = w(e)$ for each element $e \in S$ (recall that we have assumed $W = 1$). Fix an arbitrary element $e \in S$. Let $U_e$ be the set of urns in $U$ containing $e$. The event $Y = e$ can be decomposed into $|U_e|$ disjoint events $E_1, E_2, ..., E_{|U_e|}$, where $E_i$ ($1 \le i \le |U_e|$) represents the event that $e$ is sampled from the $i$-th urn of $U_e$. Specifically, $E_i$ ($1 \le i \le |U_e|$) is the conjunction (i.e., AND) of the following two events:
+\myitems{
+    \item The urn $\Lambda$ picked in the first step is the $i$-th urn in $U_e$, which occurs with probability $1/n$.
+    \item The element $X$ returned in the second step is $e$, which occurs with probability $v(\Lambda, e) \cdot n$ (as remarked earlier).
+}
+As the above two events are independent, we know $\Pr[E_i] = v(\Lambda, e)$. Therefore:
+\myeqn{
+    \Pr[Y = e] = \sum_{i=1}^{|U_e|} \Pr[E_i] = \sum_{\Lambda \in U_e} v(\Lambda, e) = w(e) \nn
+}
+where the last equality used \eqref{eqn:alias}.
+
+\extraspacing {\bf Construction.} We can build the urns in $n$ iterations. Each iteration produces a new urn, removes an element from $S$, and possibly adjusts the weight of another element remaining in $S$. The algorithm maintains an invariant.
+\minipg{0.9\linewidth}{
+    {\bf Invariant:} when step $i \in [1, n]$ starts, the weights of all the $n - i + 1$ elements still in $S$ sum up to $\fr{n-i+1}{n}$.
+}
+
+Specifically, in the $i$-th iteration ($i \ge 1$), we first check whether there is an element $e \in S$ whose {\em current} weight is $1/n$. If so, the iteration creates an urn $\Lambda$ containing just $e$, assigns $v(\Lambda, e) = w(e)$, and then removes $e$ from $S$.
+
+\vgap
+
+We now consider the case where no element in $S$ has a current weight $1/n$. In this case, there must be an element $e_1 \in S$ whose current weight $w(e_1)$ is {\em strictly} smaller than $1/n$, and another element $e_2 \in S$ whose current weight $w(e_1)$ is {\em strictly} larger than $1/n$ --- think: why? Pick any two such elements. Create an urn $\Lambda$ containing $e_1$ and $e_2$, assigning $v(\Lambda,e_1) = w(e_1)$ and $v(\Lambda,e_2) = \fr{1}{n} - w(e_1)$. After that, the iteration removes $e_1$ from $S$ and decreases $w(e_2)$ by $\fr{1}{n} - w(e_1)$. It is easy to verify that the invariant holds for the next iteration.
+
+\vgap
+
+The above algorithm can be implemented in $O(n)$ time. The details make an interesting exercise for you (hint: maintain three linked lists).
+
+\section{Remark}
+
+It is possible to update the alias structure in constant time \cite{hmm93} when inserting a new element in $S$ or deleting an existing element from $S$.
+
+
+
+\bibliographystyle{plain}
+\bibliography{ref}
+
+\end{document}
