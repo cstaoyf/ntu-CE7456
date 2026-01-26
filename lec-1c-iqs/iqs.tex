@@ -82,27 +82,29 @@ Let $\T$ be a binary search tree (BST) $\T$ on $S$ with the following properties
     \item $\T$ has $n$ leaves each storing a distinct value in $S$ as the {\em key}.
     \item Every internal node $u$ in $\T$ has two children. The leaf keys in the left subtree of $u$ are less than those in the right subtree. The {\em key} of $u$  equals the smallest leaf key in the right subtree.
 }
-
-
-For any $q$, one can deploy $\T$ to report the entire $S_q$ in $O(\log n + |S_q|)$ time. Next, we explain how to adapt $\T$ for IQS by resorting to tree sampling. For each node $u$ in $\T$, define $w(u)$ as the total weight of the leaf keys in the subtree of $u$. As a well-known fact, for any $q$, we can identify a set $\C$ of $O(\log n)$ {\em canonical nodes} in $\T$ such that
+For any $q$, one can deploy $\T$ to report the entire $S_q$ in $O(\log n + |S_q|)$ time.
 
 \vgap
 
+Next, we explain how to adapt $\T$ for IQS by resorting to tree sampling. For each node $u$ in $\T$, define $w(u)$ as the total weight of the leaf keys in the subtree of $u$. As a well-known fact, given any $q$, we can identify a set $\C$ of $O(\log n)$ {\em canonical nodes} in $\T$ such that
 \myitems{
     \item the nodes in $\C$ have disjoint subtrees;
 
-    \vgap
+%    \vgap
 
     \item the leaf keys in the subtrees of the nodes in $\C$ constitute $S_q$.
 }
+See Figure~\ref{fig:bst} for an illustration. To draw a weighted sample of $S_q$, we first sample a node $X$ from $\C$ such that $\Pr[X = u] = w(u) / \sum_{u' \in \C} w(u')$ for each $u \in \C$. Then, we perform tree sampling to obtain a leaf $z$ from the subtree of $X$, and the key of $z$ serves as a weighted sample from $S_q$. The above algorithm takes $O(\log n)$ time to draw a sample. Hence, $s$ samples can be obtained in $O(s \log n)$ time. It is clear that all queries have independent outputs.
 
-\vgap
-
-\noindent See Figure~\ref{fig:bst} for an illustration. To draw a weighted sample of $S_q$, we first sample a node $X$ from $\C$ such that $\Pr[X = u] = w(u) / \sum_{u' \in \C} w(u')$ for each $u \in \C$. Then, we perform tree sampling to obtain a leaf $z$ from the subtree of $X$, and the key of $z$ serves as a weighted sample from $S_q$. The above algorithm takes $O(\log n)$ time to draw a sample. Hence, $s$ samples can be obtained in $O(s \log n)$ time. It is clear that all queries have independent outputs.
-
-\myfigstar{
+\begin{figure}
+    \centering
     \includegraphics[height=45mm]{./artwork/bst}
-}{The tree is a BST. The black nodes are the canonical nodes of the query interval $q := [x, y]$. The shaded triangles indicate the subtrees of the canonical nodes. \label{fig:bst}}
+    \figcapup
+    \caption{The tree is a BST. The black nodes are the canonical nodes of the query interval $q = [x, y]$. The shaded triangles indicate the subtrees of the canonical nodes. }
+    \label{fig:bst}
+\end{figure}
+
+
 
 \section{Technique 1: Alias Augmentation} \label{sec:wrs}
 
