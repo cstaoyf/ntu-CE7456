@@ -1,0 +1,192 @@
+\include{./def/yf-formatting}
+\include{./def/yf-def}
+
+\title{}
+\author{}
+\date{}
+
+
+\def\T{\mathcal{T}}
+\def\InvS{\textrm{InvS}}
+\def\deg{\textrm{deg}}
+
+\def\extraspacing{\vspace{3mm} \noindent}
+\def\vgap{\vspace{3mm}}
+\def\vslit{\vspace{0.5mm}}
+
+\begin{document}
+
+% \begin{center}
+%     {\bf \large Lecture Notes} \\
+%     {\bf \large Approximate Nearest Neighbor Search 1 : Proximity Graphs} \\[5mm]
+%     {\large Yufei Tao} \\[10mm]
+% \end{center}
+
+\boxminipg{\linewidth}{
+    \begin{center}
+        \vspace{3mm}
+    {\Large
+    (CE7456 Lecture Notes 3) Set Union Sampling} \\[2mm]
+    {\large Yufei Tao}
+        \vspace{3mm}
+    \end{center}
+}
+
+Let us start with a rudimentary lemma (recall that if $x \ge 1$ is an integer, $[x]$ represents the set $\set{1, 2, ..., x}$):
+
+\begin{lemma} [Probability through Expectation] \label{lmm:pr-by-expt}
+    Fix any integer $m \ge 1$. Let $X$ be a random variable taking values from $[m]$, and $Y$ be a uniformly random variable over $[m]$. If $X$ and $Y$ are independent, then $\Pr[Y \le X] = \fr{1}{m} \expt[X]$.
+\end{lemma}
+
+\begin{proof}
+    \myeqn{
+        \Pr [Y \le X]
+        &=&
+        \sum_{x=1}^m \sum_{y=1}^x \Pr[Y = y] \cdot \Pr[X = x] \nn \\
+        &=&
+        \sum_{x=1}^m \sum_{y=1}^x \fr{1}{m} \cdot \Pr[X = x] \nn \\
+        &=&
+        \fr{1}{m} \sum_{x=1}^m x \cdot \Pr[X = x] \nn \\
+        &=&
+        \fr{1}{m} \expt[X]. \nn
+    }
+\end{proof}
+
+We will witness the lemma's power by using it to solve the {\em set union sampling} problem:
+
+\minipg{0.95\linewidth}{
+    {\bf Set Union Sampling:} Let $S_1, S_2, ..., S_m$ be $m \ge 2$ sets of elements drawn from a certain domain. Each $S_i$ ($i \in [m]$) supports three operations in constant time:
+    \myenums{
+        \item {({\em size})} return $|S_i|$;
+        \item {({\em membership})} check whether a given element is in $S_i$;
+        \item {({\em sampling})} return an element of $S_i$ chosen uniformly at random.
+    }
+    The goal is to sample an element from $\bigcup_{i=1}^m S_i$ uniformly at random using only these operations. The sample obtained each time must be independent of all previous samples.
+}
+
+\section{A Slow Algorithm} \label{sec:first}
+
+Define
+\myeqn{
+    n &=& |\bigcup_{i=1}^m S_i| \nn \\
+    N &=& \sum_{i=1}^m |S_i|. \nn
+}
+For each element $y \in \bigcup_{i=1}^m S_i$, define its {\em inverted set} as $\InvS(y) = \set{i \in [m] \mid y \in S_i}$, i.e., the ``ids'' of the sets containing $y$. The {\em degree} of $y$ is
+\myeqn{
+    \deg(y) = |\InvS(y)|. \nn
+}
+
+\extraspacing {\bf Algorithm.} Draw a random value $X \in [m]$ such that $\Pr[X = i] = |S_i|/N$ for each $i \in [m]$. Then, use the sampling operation to draw an element $Y$ from $S_X$. Finally, carry out an {\em acceptance step}:
+\minipg{0.9\linewidth}{
+    {\bf Acceptance Step:} Accept $Y$ with probability $1/\deg(Y)$.
+}
+If accepted, $Y$ is returned; otherwise, the algorithm repeats from scratch.
+
+\vgap
+
+The algorithm correctly returns a uniform sample of $\bigcup_{i=1}^m S_i$. To see why, fix an arbitrary element $y \in \bigcup_{i=1}^m S_i$. This element is returned if and only if three conditions are satisfied:
+\myitems{
+    \item $X \in \InvS(y)$, which occurs with probability $|S_X|/N$ for each $X \in \InvS(y)$;
+    \item $Y = y$, which occurs with probability $1/|S_X|$ conditioned on $X$;
+    \item $y$ is accepted, which occurs with probability $1/\deg(y)$ conditioned on $y$.
+}
+Hence, the algorithm  outputs $y$ with probability
+\myeqn{
+    \sum_{X \in \InvS(y)} \fr{|S_X|}{N} \cdot \fr{1}{|S_X|} \cdot \fr{1}{\deg(y)} = \fr{1}{N} \label{eqn:prob2:set-union:succ-pr}
+}
+which is identical for all $y \in \bigcup_{i=1}^m S_i$. As a corollary, in each repeat, the algorithm {\em succeeds} in returning a sample with probability $n/N$. Thus, $N/n$ repeats are needed in expectation.
+
+\extraspacing {\bf Running Time.} The random value $X$ can be easily obtained in $O(m)$ time. One way to do so is to build an alias structure on $|S_1|, |S_2|, ..., |S_m|$ --- namely, the $m$ set sizes --- on the fly in $O(m)$ time (using the size operation), after which $X$ can be extracted from the structure in $O(1)$ time. The time to obtain $Y$ is $O(1)$ (using the sampling operation). The troublemaker, however, is the acceptance step. A simple approach is to query the membership of $Y$ in each $S_i$ ($i \in [m]$), which costs $O(m)$ time. This renders the overall sample time $O(m N / n)$ in expectation.
+
+\vgap
+
+We will refer to the above algorithm as the {\em baseline} method.
+
+\section{An Optimal Algorithm} \label{sec:opt}
+
+Our objective is to implement the acceptance step in $O(m n / N)$ expected time --- note that this is faster than $O(m)$ by a factor of $N / n$, which eventually allows us to bring the expected sample time from $O(m N / n)$ down to $O(m)$.
+
+\extraspacing {\bf New Idea: Probability through Expectation.} By Lemma~\ref{lmm:pr-by-expt}, implementing the acceptance step boils down to:
+
+\minipg{0.9\linewidth}{
+    Given $x \in [m]$ and $y \in S_x$, generate a random variable $\Gamma \in [m]$ with $\expt[\Gamma] = m/\deg(y)$.
+}
+Later, we will explain how to achieve the above purpose in $O(m/\deg(y))$ expected time. Once done, we can perform the acceptance step as follows (recall that, prior to this, the baseline method in Section~\ref{sec:first} has obtained the values of two random variables $X$ and $Y$):
+\myitems{
+    \item (i) generate a uniformly random variable $U$ over $[m]$ in constant time;
+    \item (ii) generate the aforementioned random variable $\Gamma$ (setting $x$ and $y$ to the values of $X$ and $Y$, respectively) in $O(m/\deg(Y))$ expected time;
+    \item (iii) accept if $U \le \Gamma$.
+}
+The acceptance probability is $\fr{1}{m} \expt[\Gamma] = 1/\deg(Y)$, as desired.
+
+\vgap
+
+For a particular $x \in [m]$ and a particular $y  \in S_x$, we have
+$
+    \Pr[X=x, Y=y] = \fr{|S_x|}{N}\fr{1}{|S_x|} = 1/N. \nn
+$
+Thus, the expected cost of the acceptance step will be at the order of
+\myeqn{
+    \sum_{x\in[m]} \sum_{y\in S_x}
+    \Pr[X=x,Y=y] \fr{m}{\deg(y)}
+    &=&
+    \sum_{x\in[m]} \sum_{y\in S_x} \fr{1}{N} \fr{m}{\deg(y)}
+    \nn \\
+    &=&
+    \fr{m}{N} \sum_{y\in\cup_{i=1}^m S_i} \sum_{x\in\InvS(y)} \fr{1}{\deg(y)} \nn \\
+    &=&
+    \fr{mn}{N}
+    \label{eqn:prob2:set-union:1}
+}
+where the last step used $\deg(y) = |\InvS(y)|$ and $n = |\bigcup_{i=1}^m S_i|$.
+
+\extraspacing {\bf Generation of $\bm{\Gamma}$.} Next, we will concentrate on the $\Gamma$-generating task defined earlier. Recall that the generation is based on a given set ``id'' $x \in [m]$ and an element $y \in S_x$. Consider the procedure below:
+\mytab{
+    \> {\bf find-2nd} $(x, y)$ \\
+    \> 1. \> $F \leftarrow 0$ and $I \leftarrow [m] \setminus \set{x}$ \\
+    \> 2. \> {\bf while} $I \ne \emptyset$ {\bf do}\\
+    \> 3. \>\> sample without replacement (WoR) an integer $i \in I$\\
+    \>\>\> /* note: the WoR-sampling operation removes $i$ from $I$ chosen uniformly at random */ \\
+    \> 4. \>\> {\bf if} $y \in S_i$ {\bf then return} $F$ {\bf else}  increase $F$ by 1 \\
+    \> 5. \> {\bf return} $F$ \hspace{5mm} /* note: $F$ must be $m-1$ here */
+}
+\noindent In plain words, if $\deg(y) \ge 2$, the value $F$ returned is a random variable giving the number of {\em failed} WoR-sampling operations before finding {\em another} set $S_i \ne S_x$ containing $y$; otherwise, $F = m-1$.
+
+\begin{proposition} \label{prop:prob2:set-union:F}
+    $\expt[F] = \fr{m}{\deg(y)} - 1$.
+\end{proposition}
+
+\begin{proof}
+    If $\deg(y) = 1$, then $F$ is deterministically $m-1$, in which case the lemma clearly holds.
+
+    \vgap
+
+    The rest of the proof considers $\deg(y) \ge 2$. In that scenario, $F$ can be rephrased in the following conventional WoR-sampling setup. Suppose that we have $m-1$ balls, among which $\deg(y)-1$ ones are red and the rest are white. Uniformly sample a ball WoR until seeing a red ball, and $F$ gives the number of white balls sampled in this process. It is well known (e.g., see \cite{jkk05}) that $F$ follows the Negative Hypergeometric distribution with $ \expt[F] = \fr{m}{\deg(y)} - 1.$
+\end{proof}
+
+
+Combining the above with the obvious fact that $F \in [0, m-1]$, we can now define
+\myeqn{
+    \Gamma = F + 1 \nn
+}
+as the desired random variable satisfying $\Gamma \in [m]$ and $\expt[\Gamma] = m/\deg(y)$.
+The WoR-sampling operation at Line 3 can be implemented in $O(1)$ time (think: how?). Thus, the cost of {\bf find-2nd} is proportional to the value $F$ returned. It follows from Proposition~\ref{prop:prob2:set-union:F} that the expected cost of {\bf find-2nd} is $O(\expt[F]) = O(m / \deg(y))$.
+
+\extraspacing {\bf Total Time of Set-Union Sampling.} Recall that, in the first algorithm (Section~\ref{sec:first}), each repeat takes $O(m)$ time; as the number of repeats is $N/n$ expected, the total cost of taking one sample from $\bigcup_{i=1}^m S_i$ is $O(m N /n)$. By applying our remedy, one repeat of the baseline algorithm is now carried out in $O(mn / N)$ expected time (see the analysis in \eqref{eqn:prob2:set-union:1}). The remedy does not affect the expected number of repeats (i.e., $N/n$), which suggests that the overall expected sample time should be $O(\fr{mn}{N} \cdot \fr{N}{n}) = O(m)$. Indeed, if $\expt[T_\mit{total}]$ represents the expected time for our algorithm to acquire a sample from $\bigcup_{i=1}^m S_i$, we can write
+\myeqn{
+    \expt[T_\mit{total}] = O(mn/N) + (1 - n/N) \expt[T_\mit{total}] \nn
+}
+which solves to $\expt[T_\mit{total}] = O(m)$.
+
+\vgap
+
+We thus have proved that we can sample from $\bigcup_{i=1}^m S_i$ in $O(m)$ expected time. This is optimal (in the expected sense) because clearly at least one operation needs to be performed on each $S_i$ ($i \in [m])$. (Think: why?)
+
+\section{Remark}
+
+The algorithm in Section~\ref{sec:opt} was developed in \cite{htw26}.
+
+\bibliographystyle{plain}
+\bibliography{ref}
+
+\end{document}

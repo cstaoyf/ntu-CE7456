@@ -1,0 +1,14 @@
+\begin{thebibliography}{1}
+
+\bibitem{hmm93}
+Torben Hagerup, Kurt Mehlhorn, and J.~Ian Munro.
+\newblock Maintaining discrete probability distributions optimally.
+\newblock In {\em {ICALP}}, pages 253--264, 1993.
+
+\bibitem{w74}
+Alastair~J. Walker.
+\newblock New fast method for generating discrete random numbers with arbitrary
+  frequency distributions.
+\newblock {\em Electronics Letters}, 10(8):127--128, 1974.
+
+\end{thebibliography}
