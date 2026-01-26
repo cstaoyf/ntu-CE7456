@@ -6,9 +6,23 @@
 \date{}
 
 
-\def\T{\mathcal{T}}
 \def\InvS{\textrm{InvS}}
 \def\deg{\textrm{deg}}
+
+% \def\A{\mathcal{A}}
+\def\B{\mathcal{B}}
+\def\C{\mathcal{C}}
+\def\Cb{\mathbb{C}}
+\def\E{\mathcal{E}}
+\def\F{\mathcal{F}}
+\def\G{\mathcal{G}}
+\def\I{\mathcal{I}}
+\def\L{\mathcal{L}}
+\def\R{\mathcal{R}}
+\def\T{\mathcal{T}}
+%\def\U{\mathcal{U}}
+%\def\X{\mathcal{X}}
+
 
 \def\extraspacing{\vspace{3mm} \noindent}
 \def\vgap{\vspace{3mm}}
@@ -26,165 +40,164 @@
     \begin{center}
         \vspace{3mm}
     {\Large
-    (CE7456 Lecture Notes 3) Set Union Sampling} \\[2mm]
+    (CE7456 Lecture Notes 4) Independent Query Sampling} \\[2mm]
     {\large Yufei Tao}
         \vspace{3mm}
     \end{center}
 }
 
-Let us start with a rudimentary lemma (recall that if $x \ge 1$ is an integer, $[x]$ represents the set $\set{1, 2, ..., x}$):
 
-\begin{lemma} [Probability through Expectation] \label{lmm:pr-by-expt}
-    Fix any integer $m \ge 1$. Let $X$ be a random variable taking values from $[m]$, and $Y$ be a uniformly random variable over $[m]$. If $X$ and $Y$ are independent, then $\Pr[Y \le X] = \fr{1}{m} \expt[X]$.
-\end{lemma}
-
-\begin{proof}
-    \myeqn{
-        \Pr [Y \le X]
-        &=&
-        \sum_{x=1}^m \sum_{y=1}^x \Pr[Y = y] \cdot \Pr[X = x] \nn \\
-        &=&
-        \sum_{x=1}^m \sum_{y=1}^x \fr{1}{m} \cdot \Pr[X = x] \nn \\
-        &=&
-        \fr{1}{m} \sum_{x=1}^m x \cdot \Pr[X = x] \nn \\
-        &=&
-        \fr{1}{m} \expt[X]. \nn
-    }
-\end{proof}
-
-We will witness the lemma's power by using it to solve the {\em set union sampling} problem:
-
-\minipg{0.95\linewidth}{
-    {\bf Set Union Sampling:} Let $S_1, S_2, ..., S_m$ be $m \ge 2$ sets of elements drawn from a certain domain. Each $S_i$ ($i \in [m]$) supports three operations in constant time:
-    \myenums{
-        \item {({\em size})} return $|S_i|$;
-        \item {({\em membership})} check whether a given element is in $S_i$;
-        \item {({\em sampling})} return an element of $S_i$ chosen uniformly at random.
-    }
-    The goal is to sample an element from $\bigcup_{i=1}^m S_i$ uniformly at random using only these operations. The sample obtained each time must be independent of all previous samples.
-}
-
-\section{A Slow Algorithm} \label{sec:first}
-
-Define
-\myeqn{
-    n &=& |\bigcup_{i=1}^m S_i| \nn \\
-    N &=& \sum_{i=1}^m |S_i|. \nn
-}
-For each element $y \in \bigcup_{i=1}^m S_i$, define its {\em inverted set} as $\InvS(y) = \set{i \in [m] \mid y \in S_i}$, i.e., the ``ids'' of the sets containing $y$. The {\em degree} of $y$ is
-\myeqn{
-    \deg(y) = |\InvS(y)|. \nn
-}
-
-\extraspacing {\bf Algorithm.} Draw a random value $X \in [m]$ such that $\Pr[X = i] = |S_i|/N$ for each $i \in [m]$. Then, use the sampling operation to draw an element $Y$ from $S_X$. Finally, carry out an {\em acceptance step}:
-\minipg{0.9\linewidth}{
-    {\bf Acceptance Step:} Accept $Y$ with probability $1/\deg(Y)$.
-}
-If accepted, $Y$ is returned; otherwise, the algorithm repeats from scratch.
+Conventionally, a data-structure problem aims to preprocess an input set of elements into a structure such that, given a query predicate, all elements satisfying the predicate can be reported efficiently.  This framework works well in practice when the query output is small. In the era of big data, however, the explosion in data volume has been accompanied by a dramatic increase in query output size. For example, while a query with selectivity 1\% returns only 10000 elements on a dataset of size a million, the number surges to $10^{10}$ when the data cardinality reaches a trillion. In the latter scenario, even just reporting the query answer would take intolerably long.
 
 \vgap
 
-The algorithm correctly returns a uniform sample of $\bigcup_{i=1}^m S_i$. To see why, fix an arbitrary element $y \in \bigcup_{i=1}^m S_i$. This element is returned if and only if three conditions are satisfied:
+The phenomenon has motivated {\em independent query sampling} (IQS) \cite{hqt14}, which aims to return only a sample of the query result, with the requirement that the samples of various queries must be mutually independent. Next, we formalize the notion over range reporting.
+
+\vgap
+
+Let $S$ be a set of $n$ integers where each integer $e \in S$ is associated with an integer {\em weight} $w(e) > 0$. A {\em weighted sample} of $S$ is a random variable $X$ satisfying
+\myeqn{
+    \Pr[X = e] = \fr{w(e)}{\sum_{e' \in S} w(e')} \nn
+}
+for each $e \in S$.
+
+\vgap
+
+Given an interval $q = [x, y]$, a (traditional) {\em range query} reports $S_q = q \cap S$. The IQS version, however, takes two parameters:
 \myitems{
-    \item $X \in \InvS(y)$, which occurs with probability $|S_X|/N$ for each $X \in \InvS(y)$;
-    \item $Y = y$, which occurs with probability $1/|S_X|$ conditioned on $X$;
-    \item $y$ is accepted, which occurs with probability $1/\deg(y)$ conditioned on $y$.
+    \item $q = [x, y]$ and
+    \item an integer $s \ge 1$ (referred to as the {\em sample size}).
 }
-Hence, the algorithm  outputs $y$ with probability
-\myeqn{
-    \sum_{X \in \InvS(y)} \fr{|S_X|}{N} \cdot \fr{1}{|S_X|} \cdot \fr{1}{\deg(y)} = \fr{1}{N} \label{eqn:prob2:set-union:succ-pr}
-}
-which is identical for all $y \in \bigcup_{i=1}^m S_i$. As a corollary, in each repeat, the algorithm {\em succeeds} in returning a sample with probability $n/N$. Thus, $N/n$ repeats are needed in expectation.
-
-\extraspacing {\bf Running Time.} The random value $X$ can be easily obtained in $O(m)$ time. One way to do so is to build an alias structure on $|S_1|, |S_2|, ..., |S_m|$ --- namely, the $m$ set sizes --- on the fly in $O(m)$ time (using the size operation), after which $X$ can be extracted from the structure in $O(1)$ time. The time to obtain $Y$ is $O(1)$ (using the sampling operation). The troublemaker, however, is the acceptance step. A simple approach is to query the membership of $Y$ in each $S_i$ ($i \in [m]$), which costs $O(m)$ time. This renders the overall sample time $O(m N / n)$ in expectation.
+The IQS query outputs a set $Q$ of $s$ independent weighted samples of $S_q$. Furthermore, the set $Q$ must be independent of the outputs of all previous IQS queries.
 
 \vgap
 
-We will refer to the above algorithm as the {\em baseline} method.
+Note that even if two IQS queries have the same $q$, their sample results must still be independent. In fact, one can repeatedly issue the same query to obtain increasingly more samples of $S_q$, all of which must be mutually independent. A naive solution to IQS is to first retrieve the full query result $S_q$ and then sample from it. However, this defeats the main purpose of IQS, i.e.,  reducing computation time. Instead, our objective should be to settle a query in time {\em significantly less} than $|S_q|$ in the typical situation where $s \ll |S_q|$. Achieving the goal demands organizing the input $S$ in ways drastically different from the existing data structures designed to report $S_q$ in its entirety.
 
-\section{An Optimal Algorithm} \label{sec:opt}
+\section{The First Structure: Tree Sampling} \label{sec:basic:tree}
 
-Our objective is to implement the acceptance step in $O(m n / N)$ expected time --- note that this is faster than $O(m)$ by a factor of $N / n$, which eventually allows us to bring the expected sample time from $O(m N / n)$ down to $O(m)$.
-
-\extraspacing {\bf New Idea: Probability through Expectation.} By Lemma~\ref{lmm:pr-by-expt}, implementing the acceptance step boils down to:
-
-\minipg{0.9\linewidth}{
-    Given $x \in [m]$ and $y \in S_x$, generate a random variable $\Gamma \in [m]$ with $\expt[\Gamma] = m/\deg(y)$.
-}
-Later, we will explain how to achieve the above purpose in $O(m/\deg(y))$ expected time. Once done, we can perform the acceptance step as follows (recall that, prior to this, the baseline method in Section~\ref{sec:first} has obtained the values of two random variables $X$ and $Y$):
+Let $\T$ be a binary search tree (BST) $\T$ on $S$ with the following properties:
 \myitems{
-    \item (i) generate a uniformly random variable $U$ over $[m]$ in constant time;
-    \item (ii) generate the aforementioned random variable $\Gamma$ (setting $x$ and $y$ to the values of $X$ and $Y$, respectively) in $O(m/\deg(Y))$ expected time;
-    \item (iii) accept if $U \le \Gamma$.
+    \item $\T$ has height $O(\log n)$.
+    \item $\T$ has $n$ leaves each storing a distinct value in $S$ as the {\em key}.
+    \item Every internal node $u$ in $\T$ has two children. The leaf keys in the left subtree of $u$ are less than those in the right subtree. The {\em key} of $u$  equals the smallest leaf key in the right subtree.
 }
-The acceptance probability is $\fr{1}{m} \expt[\Gamma] = 1/\deg(Y)$, as desired.
+
+
+For any $q$, one can deploy $\T$ to report the entire $S_q$ in $O(\log n + |S_q|)$ time. Next, we explain how to adapt $\T$ for IQS by resorting to tree sampling. For each node $u$ in $\T$, define $w(u)$ as the total weight of the leaf keys in the subtree of $u$. As a well-known fact, for any $q$, we can identify a set $\C$ of $O(\log n)$ {\em canonical nodes} in $\T$ such that
 
 \vgap
 
-For a particular $x \in [m]$ and a particular $y  \in S_x$, we have
-$
-    \Pr[X=x, Y=y] = \fr{|S_x|}{N}\fr{1}{|S_x|} = 1/N. \nn
-$
-Thus, the expected cost of the acceptance step will be at the order of
-\myeqn{
-    \sum_{x\in[m]} \sum_{y\in S_x}
-    \Pr[X=x,Y=y] \fr{m}{\deg(y)}
-    &=&
-    \sum_{x\in[m]} \sum_{y\in S_x} \fr{1}{N} \fr{m}{\deg(y)}
-    \nn \\
-    &=&
-    \fr{m}{N} \sum_{y\in\cup_{i=1}^m S_i} \sum_{x\in\InvS(y)} \fr{1}{\deg(y)} \nn \\
-    &=&
-    \fr{mn}{N}
-    \label{eqn:prob2:set-union:1}
-}
-where the last step used $\deg(y) = |\InvS(y)|$ and $n = |\bigcup_{i=1}^m S_i|$.
-
-\extraspacing {\bf Generation of $\bm{\Gamma}$.} Next, we will concentrate on the $\Gamma$-generating task defined earlier. Recall that the generation is based on a given set ``id'' $x \in [m]$ and an element $y \in S_x$. Consider the procedure below:
-\mytab{
-    \> {\bf find-2nd} $(x, y)$ \\
-    \> 1. \> $F \leftarrow 0$ and $I \leftarrow [m] \setminus \set{x}$ \\
-    \> 2. \> {\bf while} $I \ne \emptyset$ {\bf do}\\
-    \> 3. \>\> sample without replacement (WoR) an integer $i \in I$\\
-    \>\>\> /* note: the WoR-sampling operation removes $i$ from $I$ chosen uniformly at random */ \\
-    \> 4. \>\> {\bf if} $y \in S_i$ {\bf then return} $F$ {\bf else}  increase $F$ by 1 \\
-    \> 5. \> {\bf return} $F$ \hspace{5mm} /* note: $F$ must be $m-1$ here */
-}
-\noindent In plain words, if $\deg(y) \ge 2$, the value $F$ returned is a random variable giving the number of {\em failed} WoR-sampling operations before finding {\em another} set $S_i \ne S_x$ containing $y$; otherwise, $F = m-1$.
-
-\begin{proposition} \label{prop:prob2:set-union:F}
-    $\expt[F] = \fr{m}{\deg(y)} - 1$.
-\end{proposition}
-
-\begin{proof}
-    If $\deg(y) = 1$, then $F$ is deterministically $m-1$, in which case the lemma clearly holds.
+\myitems{
+    \item the nodes in $\C$ have disjoint subtrees;
 
     \vgap
 
-    The rest of the proof considers $\deg(y) \ge 2$. In that scenario, $F$ can be rephrased in the following conventional WoR-sampling setup. Suppose that we have $m-1$ balls, among which $\deg(y)-1$ ones are red and the rest are white. Uniformly sample a ball WoR until seeing a red ball, and $F$ gives the number of white balls sampled in this process. It is well known (e.g., see \cite{jkk05}) that $F$ follows the Negative Hypergeometric distribution with $ \expt[F] = \fr{m}{\deg(y)} - 1.$
-\end{proof}
-
-
-Combining the above with the obvious fact that $F \in [0, m-1]$, we can now define
-\myeqn{
-    \Gamma = F + 1 \nn
+    \item the leaf keys in the subtrees of the nodes in $\C$ constitute $S_q$.
 }
-as the desired random variable satisfying $\Gamma \in [m]$ and $\expt[\Gamma] = m/\deg(y)$.
-The WoR-sampling operation at Line 3 can be implemented in $O(1)$ time (think: how?). Thus, the cost of {\bf find-2nd} is proportional to the value $F$ returned. It follows from Proposition~\ref{prop:prob2:set-union:F} that the expected cost of {\bf find-2nd} is $O(\expt[F]) = O(m / \deg(y))$.
-
-\extraspacing {\bf Total Time of Set-Union Sampling.} Recall that, in the first algorithm (Section~\ref{sec:first}), each repeat takes $O(m)$ time; as the number of repeats is $N/n$ expected, the total cost of taking one sample from $\bigcup_{i=1}^m S_i$ is $O(m N /n)$. By applying our remedy, one repeat of the baseline algorithm is now carried out in $O(mn / N)$ expected time (see the analysis in \eqref{eqn:prob2:set-union:1}). The remedy does not affect the expected number of repeats (i.e., $N/n$), which suggests that the overall expected sample time should be $O(\fr{mn}{N} \cdot \fr{N}{n}) = O(m)$. Indeed, if $\expt[T_\mit{total}]$ represents the expected time for our algorithm to acquire a sample from $\bigcup_{i=1}^m S_i$, we can write
-\myeqn{
-    \expt[T_\mit{total}] = O(mn/N) + (1 - n/N) \expt[T_\mit{total}] \nn
-}
-which solves to $\expt[T_\mit{total}] = O(m)$.
 
 \vgap
 
-We thus have proved that we can sample from $\bigcup_{i=1}^m S_i$ in $O(m)$ expected time. This is optimal (in the expected sense) because clearly at least one operation needs to be performed on each $S_i$ ($i \in [m])$. (Think: why?)
+\noindent See Figure~\ref{fig:bst} for an illustration. To draw a weighted sample of $S_q$, we first sample a node $X$ from $\C$ such that $\Pr[X = u] = w(u) / \sum_{u' \in \C} w(u')$ for each $u \in \C$. Then, we perform tree sampling to obtain a leaf $z$ from the subtree of $X$, and the key of $z$ serves as a weighted sample from $S_q$. The above algorithm takes $O(\log n)$ time to draw a sample. Hence, $s$ samples can be obtained in $O(s \log n)$ time. It is clear that all queries have independent outputs.
 
-\section{Remark}
+\myfigstar{
+    \includegraphics[height=45mm]{./artwork/bst}
+}{The tree is a BST. The black nodes are the canonical nodes of the query interval $q := [x, y]$. The shaded triangles indicate the subtrees of the canonical nodes. \label{fig:bst}}
 
-The algorithm in Section~\ref{sec:opt} was developed in \cite{htw26}.
+\section{Technique 1: Alias Augmentation} \label{sec:wrs}
+
+Section~\ref{sec:basic:tree} has given a structure for the weighted range sampling problem  that uses $O(n)$ space and answers a query in $O(s \log n)$ time. In this section, we will improve the query time to $O(\log n + s)$. The new structure illustrates a technique we call {\em alias augmentation}.
+
+\subsection{A Structure of $O(n \log n)$ Space} \label{sec:wrs:nlgn-space}
+
+Build a BST $\T$ on $S$, obeying the conventions listed in Section~\ref{sec:basic:tree}. For each node $u$ in $\T$, we use $S(u) \subseteq S$ to denote the set of elements from $S$ that are stored at the leaves in the subtree of $u$. At each $u$, we store $w(u) := \sum_{e \in S(u)} w(e)$ and create an alias structure $A_u$ (Theorem~\ref{thm:alias}) on $S(u)$. Because $A_u$ occupies $O(|S(u)|)$ space, the alias structures of all the nodes at the same level of $\T$ together use $O(n)$ space. The total space of the structure is therefore $O(n \log n)$.
+
+\vgap
+
+Next, we explain how to answer a query with interval $q$ and sample size $s$. As in Section~\ref{sec:basic:tree}, we start by identifying a set $\C$ of canonical nodes for $q$ (see Figure~\ref{fig:bst}) in $O(\log n)$ time. Let the nodes in $\C$ be $u_1, u_2, ..., u_t$ for some $t = O(\log n)$. Remember that the sets $S(u_1), S(u_2), ..., S(u_t)$ constitute a partition of $S_q := q \cap S$, namely, they are mutually disjoint and their union is exactly $S_q$.
+
+\vgap
+
+The next step is to determine how many samples to take from each $S(u_i)$, $i \in [1, t]$. Notice that this is an instance of weighted set sampling (Section~\ref{sec:basic:alias}). Specifically, a weighted sample of $S_q$ should come from $S(u_i)$ with probability $w(u_i) / \sum_{j=1}^t w(u_j)$ for each $i \in [1, t]$. Let $s_i$ be the number of weighted samples to originate from $S(u_i)$, i.e., $s_1, ..., s_t$ are random variables with sum $s$. We can generate these random variables in $O(t + s) = O(\log n + s)$ time using Theorem~\ref{thm:alias}. First, construct an alias structure on $\C$ in $O(t)$ time, by treating $w(u)$ as the weight for each $u \in \C$. Then, we draw $s$ weighted samples from $\C$ in $O(s)$ time, after which $s_i$ ($1 \le i \le t$) can be set to the number of occurrences of $u_i$ in those samples.
+
+\vgap
+
+For each $i \in [1, t]$, we take $s_i$ weighted samples from $S(u_i)$ using the alias structure $A_{u_i}$ in $O(s_i)$ time. The time of doing so for all $i$ is $O(\sum_{i=1}^t s_i) = O(s)$. The overall query time is therefore $O(\log n + s)$.
+
+\vgap
+
+From the above, we can now claim:
+
+\begin{lemma} \label{lmm:wrs:nlogn}
+    For the weighted range sampling problem, there is a structure of $O(n \log n)$ space  answering a query in $O(\log n + s)$ time.
+\end{lemma}
+
+\subsection{Reducing the Space to $O(n)$} \label{sec:wrs:n-space}
+
+We can improve the space of our structure with a chunking idea. Divide $\real$ into interior-disjoint intervals $I_1, I_2, ..., I_g$ for some $g = \Theta(n / \log n)$ satisfying the following conditions:
+\vgap
+
+\myitems{
+    \item If we define $\I_i := I_i \cap S$ for each $i \in [1, g]$, then $\I_1, \I_2, ..., \I_g$ are mutually disjoint and their union is $S$.
+
+    \vgap
+
+    \item $|\I_i| = \Theta(\log n)$ for each $i \in [1, g]$.
+}
+
+\vgap
+
+\noindent It is easy to obtain such intervals with sorting. We will refer to each $\I_i$ as a {\em chunk} and define $w(\I_i) := \sum_{e \in \I_i} w(e)$.
+
+\vgap
+
+We create a structure $\T_\mit{chunk}$ to support weighted range sampling at the chunk level. Specifically, the input dataset is $\I := \set{\I_1, \I_2, ..., \I_g}$ where each $\I_i$ ($1 \le i \le g$) carries weight $w(\I_i)$. Given $q_\mit{chunk} := [a, b]$ --- where $a$ and $b$ are integers in $[1, g]$ --- and an integer $s \ge 1$, a query on $\T_\mit{chunk}$ returns $s$ independent weighted samples of $\I_{q_\mit{chunk}} := \set{\I_i \mid i \in q_\mit{chunk}}$. It should be noted that each sample here is a chunk (rather than an element in $S$). We can implement $T_\mit{chunk}$ as a structure of Lemma~\ref{lmm:wrs:nlogn}. The space of $T_\mit{chunk}$ is $O(|\I| \log |\I|) = O(\fr{n}{\log n} \log n) = O(n)$.
+
+\vgap
+
+We also build a {\em range sum} structure which allows us to calculate $\sum_{i=a}^b w(\I_i)$ in $O(\log n)$ time for any $a$ and $b$ satisfying $1 \le a \le b \le g$; such a structure can be a slightly augmented BST (see Chapter 14 of \cite{clrs09}), which uses $O(g) = o(n)$ space. In addition, for each $i \in [1, g]$, we build an alias structure to support weighted range sampling from chunk $\I_i$. The alias structures of all the chunks use $O(\sum_{i=1}^g |\I_i|) = O(n)$ space in total. The overall space consumption is therefore $O(n)$.
+
+\vgap
+
+Consider now a query with interval $q := [x, y]$ and sample size $s$. Let us first assume that the query is {\em chunk aligned}, namely, $q = I_a \cup I_{a+1} \cup ... \cup I_b$, for some $a$ and $b$ such that $1 \le a \le b \le g$. The values of $a$ and $b$ can be determined in $O(\log n)$ time with binary search. Conceptually, a weighted sample from $S_q$ can be extracted in a two-step manner. We first take a weighted sample $\I$ from the set of chunks $\set{\I_a, \I_{a+1}, ..., \I_b}$ and then acquire a weighted sample $e$ from $\I$. The element $e$, which is sampled with probability $$\fr{w(\I)}{\sum_{j=1}^g w(\I_j)} \cdot \fr{w(e)}{w(\I)} = \fr{w(e)}{\sum_{e' \in S_q} w(e')},$$ is thus a weighted sample of $S_q$. Motivated by this, we answer the query with the following two-level sampling strategy. First, extract $s$ weighted samples from $\set{\I_a, \I_{a+1}, ..., \I_b}$, which can be done in $O(\log n + s)$ time using $\T_\mit{chunk}$. For each $i \in [a, b]$, let $s_i$ be the number of occurrences of $\I_i$ in those $s$ samples. Then, we extract $s_i$ weighted samples from $\I_i$ using the alias structure on $\I_i$ in $O(s_i)$ time. The total query cost is therefore $O(\log n + \sum_{i=a}^b s_i) = O(\log n + s)$.
+
+\vgap
+
+It remains to discuss the scenario where $q := [x, y]$ can be an arbitrary interval in $\real$. Suppose that $x$ and $y$ fall in $I_a$ and $I_b$, respectively, where $1 \le a \le b \le g$. We can break $q$ into three intervals $q_1, q_2$ and $q_3$ as follows:
+
+\vgap
+
+\myitems{
+    \item $q_1$ is the portion of $q$ in the interior of $I_a$,
+
+    \vgap
+
+    \item $q_2 := I_{a+1} \cup I_{a+2} \cup ... \cup I_{b-1}$, and
+
+    \vgap
+
+    \item $q_3$ is the remaining portion of $q$ after trimming $q_1$ and $q_2$ (it must hold that $q_3 \subseteq I_b$).
+}
+
+\vgap
+
+\noindent See Figure~\ref{fig:chunk} for an illustration. Define $S_1 := S \cap q_1$, $S_2 := S \cap q_2$, and $S_3 := S \cap q_3$. For each $j \in [1, 3]$, define $w(S_j) := \sum_{e \in S_j} w(e)$. We can obtain $S_1$ and $S_3$ in their entirety in $O(\log n)$ time by reading the chunks $\I_a$ and $\I_b$ directly. For $S_2$, we cannot afford to enumerate its elements but can obtain $w(S_2)$ in $O(\log n)$ time from the range sum structure. To extract $s$ weighted samples from $S_q$, we first determine the number $s_j$ of samples that will come from $S_j$ for each $j = 1, 2$, and 3 (this can be easily done in $O(s)$ time). By resorting to Theorem~\ref{thm:alias}, the $s_1$ and $s_3$ samples from $S_1$ and $S_3$ can be fetched in $O(\log n + s_1 + s_3)$ time. Acquiring $s_2$ samples from $S_2$ requires only a chunk-aligned query, which we already know how to solve in $O(\log n + s_2)$ time. We thus conclude that the overall query time is $O(\log n + s_1 + s_2 + s_3) = O(\log n + s)$.
+
+
+
+
+\vgap
+
+We have arrived at:
+
+\begin{theorem} \label{thm:wrs}
+    For the weighted range sampling problem, there is a structure of $O(n)$ space  answering a query in $O(\log n + s)$ time.
+\end{theorem}
+
+
+\subsection{Remarks}
+
+The above solution is close to a structure of Hu et al.\ \cite{hqt14}, although their discussion focused on the WR sampling scheme (a special case of weighted sampling where all elements have the same weight). Hu et al.\ \cite{hqt14} also showed that their structure (for WR sampling) supports an insertion and deletion in $O(\log n)$ time. In contrast, the structure in Section~\ref{sec:wrs:n-space} cannot be easily modified to support updates (because it is not easy to dynamize the alias structure). Afshani and Wei \cite{aw17} considered weighted range sampling in the scenario where all the elements of $S$ come from the integer domain $[1, U]$. They obtained a static structure of $O(n)$ space whose query time is $O(\log\log U + s)$. Their result can actually be stated in a more general way, which we will clarify when proving Lemma~\ref{lmm:tree-sampling2} in the next section.
 
 \bibliographystyle{plain}
 \bibliography{ref}
