@@ -86,16 +86,6 @@ For any $q$, one can deploy $\T$ to report the entire $S_q$ in $O(\log n + |S_q|
 
 \vgap
 
-Next, we explain how to adapt $\T$ for IQS by resorting to tree sampling. For each node $u$ in $\T$, define $w(u)$ as the total weight of the leaf keys in the subtree of $u$. As a well-known fact, given any $q$, we can identify a set $\C$ of $O(\log n)$ {\em canonical nodes} in $\T$ such that
-\myitems{
-    \item the nodes in $\C$ have disjoint subtrees;
-
-%    \vgap
-
-    \item the leaf keys in the subtrees of the nodes in $\C$ constitute $S_q$.
-}
-See Figure~\ref{fig:bst} for an illustration. To draw a weighted sample of $S_q$, we first sample a node $X$ from $\C$ such that $\Pr[X = u] = w(u) / \sum_{u' \in \C} w(u')$ for each $u \in \C$. Then, we perform tree sampling to obtain a leaf $z$ from the subtree of $X$, and the key of $z$ serves as a weighted sample from $S_q$. The above algorithm takes $O(\log n)$ time to draw a sample. Hence, $s$ samples can be obtained in $O(s \log n)$ time. It is clear that all queries have independent outputs.
-
 \begin{figure}
     \centering
     \includegraphics[height=45mm]{./artwork/bst}
@@ -105,22 +95,41 @@ See Figure~\ref{fig:bst} for an illustration. To draw a weighted sample of $S_q$
 \end{figure}
 
 
+Next, we explain how to adapt $\T$ for IQS by resorting to tree sampling. For each node $u$ in $\T$, define $w(u)$ as the total weight of the leaf keys in the subtree of $u$. As a well-known fact, given any $q$, we can identify a set $\C$ of $O(\log n)$ {\em canonical nodes} in $\T$ such that
+\myitems{
+    \item the nodes in $\C$ have disjoint subtrees;
 
-\section{Technique 1: Alias Augmentation} \label{sec:wrs}
+%    \vgap
 
-Section~\ref{sec:basic:tree} has given a structure for the weighted range sampling problem  that uses $O(n)$ space and answers a query in $O(s \log n)$ time. In this section, we will improve the query time to $O(\log n + s)$. The new structure illustrates a technique we call {\em alias augmentation}.
-
-\subsection{A Structure of $O(n \log n)$ Space} \label{sec:wrs:nlgn-space}
-
-Build a BST $\T$ on $S$, obeying the conventions listed in Section~\ref{sec:basic:tree}. For each node $u$ in $\T$, we use $S(u) \subseteq S$ to denote the set of elements from $S$ that are stored at the leaves in the subtree of $u$. At each $u$, we store $w(u) := \sum_{e \in S(u)} w(e)$ and create an alias structure $A_u$ (Theorem~\ref{thm:alias}) on $S(u)$. Because $A_u$ occupies $O(|S(u)|)$ space, the alias structures of all the nodes at the same level of $\T$ together use $O(n)$ space. The total space of the structure is therefore $O(n \log n)$.
-
-\vgap
-
-Next, we explain how to answer a query with interval $q$ and sample size $s$. As in Section~\ref{sec:basic:tree}, we start by identifying a set $\C$ of canonical nodes for $q$ (see Figure~\ref{fig:bst}) in $O(\log n)$ time. Let the nodes in $\C$ be $u_1, u_2, ..., u_t$ for some $t = O(\log n)$. Remember that the sets $S(u_1), S(u_2), ..., S(u_t)$ constitute a partition of $S_q := q \cap S$, namely, they are mutually disjoint and their union is exactly $S_q$.
+    \item the leaf keys in the subtrees of the nodes in $\C$ constitute $S_q$.
+}
+See Figure~\ref{fig:bst} for an illustration.
 
 \vgap
 
-The next step is to determine how many samples to take from each $S(u_i)$, $i \in [1, t]$. Notice that this is an instance of weighted set sampling (Section~\ref{sec:basic:alias}). Specifically, a weighted sample of $S_q$ should come from $S(u_i)$ with probability $w(u_i) / \sum_{j=1}^t w(u_j)$ for each $i \in [1, t]$. Let $s_i$ be the number of weighted samples to originate from $S(u_i)$, i.e., $s_1, ..., s_t$ are random variables with sum $s$. We can generate these random variables in $O(t + s) = O(\log n + s)$ time using Theorem~\ref{thm:alias}. First, construct an alias structure on $\C$ in $O(t)$ time, by treating $w(u)$ as the weight for each $u \in \C$. Then, we draw $s$ weighted samples from $\C$ in $O(s)$ time, after which $s_i$ ($1 \le i \le t$) can be set to the number of occurrences of $u_i$ in those samples.
+To draw a weighted sample of $S_q$, we first sample a node $X$ from $\C$ such that $\Pr[X = u] = w(u) / \sum_{u' \in \C} w(u')$ for each $u \in \C$. Then, we perform tree sampling to obtain a leaf $z$ from the subtree of $X$, and the key of $z$ serves as a weighted sample from $S_q$. The above algorithm takes $O(\log n)$ time to draw a sample. Hence, $s$ samples can be obtained in $O(s \log n)$ time. It is clear that all queries have independent outputs.
+
+%
+%
+% \section{Technique 1: Alias Augmentation} \label{sec:wrs}
+%
+% Section~\ref{sec:basic:tree} has given a structure for the weighted range sampling problem  that uses $O(n)$ space and answers a query in $O(s \log n)$ time. In this section, we will improve the query time to $O(\log n + s)$. The new structure illustrates a technique we call {\em alias augmentation}.
+
+\section{A Structure of $O(n \log n)$ Space} \label{sec:wrs:nlgn-space}
+
+In this section, we will improve the time of an IQS query to $O(\log n + s)$ using a data structure with space $O(n \log n)$.
+
+\vgap
+
+Build a BST $\T$ on $S$ with the properties listed in Section~\ref{sec:basic:tree}. For each node $u$ in $\T$, we use $S(u) \subseteq S$ to denote the set of elements from $S$ that are stored at the leaves in the subtree of $u$. At each $u$, we store $w(u) = \sum_{e \in S(u)} w(e)$ and create an alias structure $A_u$ on $S(u)$. Because $A_u$ occupies $O(|S(u)|)$ space, the alias structures of all the nodes at the same level of $\T$ together use $O(n)$ space. The total space of the structure is therefore $O(n \log n)$.
+
+\vgap
+
+Next, we explain how to answer an IQS query parameterized by interval $q$ and sample size $s$. As in Section~\ref{sec:basic:tree}, we start by identifying a set $\C$ of canonical nodes for $q$ (see Figure~\ref{fig:bst}) in $O(\log n)$ time. Let the nodes in $\C$ be $u_1, u_2, ..., u_t$ for some $t = O(\log n)$. Remember that the sets $S(u_1), S(u_2), ..., S(u_t)$ constitute a partition of $S_q = q \cap S$, namely, they are mutually disjoint and their union is exactly $S_q$.
+
+\vgap
+
+The next step is to determine how many samples to take from each $S(u_i)$, $i \in [1, t]$. This is an instance of weighted sampling. Specifically, a weighted sample of $S_q$ should come from $S(u_i)$ with probability $w(u_i) / \sum_{j=1}^t w(u_j)$ for each $i \in [1, t]$. Let $s_i$ be the number of weighted samples to originate from $S(u_i)$, i.e., $s_1, ..., s_t$ are random variables with sum $s$. We can generate these random variables in $O(t + s) = O(\log n + s)$ time as follows. First, construct an alias structure on $\C$ in $O(t)$ time, by treating $w(u)$ as the weight for each $u \in \C$. Then, we draw $s$ weighted samples from $\C$ in $O(s)$ time, after which $s_i$ ($1 \le i \le t$) can be set to the number of occurrences of $u_i$ in those samples.
 
 \vgap
 
@@ -131,25 +140,18 @@ For each $i \in [1, t]$, we take $s_i$ weighted samples from $S(u_i)$ using the 
 From the above, we can now claim:
 
 \begin{lemma} \label{lmm:wrs:nlogn}
-    For the weighted range sampling problem, there is a structure of $O(n \log n)$ space  answering a query in $O(\log n + s)$ time.
+    There is a structure of $O(n \log n)$ space that answers an IQS query in $O(\log n + s)$ time.
 \end{lemma}
 
-\subsection{Reducing the Space to $O(n)$} \label{sec:wrs:n-space}
+\section{Reducing the Space to $O(n)$} \label{sec:wrs:n-space}
 
-We can improve the space of our structure with a chunking idea. Divide $\real$ into interior-disjoint intervals $I_1, I_2, ..., I_g$ for some $g = \Theta(n / \log n)$ satisfying the following conditions:
-\vgap
-
+Next, we improve the space consumption to $O(n)$ using a chunking idea. Divide $\real$ into interior-disjoint intervals $I_1, I_2, ..., I_g$ for some $g = \Theta(n / \log n)$ satisfying the following conditions:
 \myitems{
     \item If we define $\I_i := I_i \cap S$ for each $i \in [1, g]$, then $\I_1, \I_2, ..., \I_g$ are mutually disjoint and their union is $S$.
 
-    \vgap
-
     \item $|\I_i| = \Theta(\log n)$ for each $i \in [1, g]$.
 }
-
-\vgap
-
-\noindent It is easy to obtain such intervals with sorting. We will refer to each $\I_i$ as a {\em chunk} and define $w(\I_i) := \sum_{e \in \I_i} w(e)$.
+It is easy to obtain such intervals with sorting. We will refer to each $\I_i$ as a {\em chunk} and define $w(\I_i) := \sum_{e \in \I_i} w(e)$.
 
 \vgap
 
@@ -196,10 +198,6 @@ We have arrived at:
     For the weighted range sampling problem, there is a structure of $O(n)$ space  answering a query in $O(\log n + s)$ time.
 \end{theorem}
 
-
-\subsection{Remarks}
-
-The above solution is close to a structure of Hu et al.\ \cite{hqt14}, although their discussion focused on the WR sampling scheme (a special case of weighted sampling where all elements have the same weight). Hu et al.\ \cite{hqt14} also showed that their structure (for WR sampling) supports an insertion and deletion in $O(\log n)$ time. In contrast, the structure in Section~\ref{sec:wrs:n-space} cannot be easily modified to support updates (because it is not easy to dynamize the alias structure). Afshani and Wei \cite{aw17} considered weighted range sampling in the scenario where all the elements of $S$ come from the integer domain $[1, U]$. They obtained a static structure of $O(n)$ space whose query time is $O(\log\log U + s)$. Their result can actually be stated in a more general way, which we will clarify when proving Lemma~\ref{lmm:tree-sampling2} in the next section.
 
 \bibliographystyle{plain}
 \bibliography{ref}
