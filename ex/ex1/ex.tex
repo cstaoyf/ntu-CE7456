@@ -51,11 +51,11 @@ Let $U$ be a set of elements, where each element $e \in U$ has a real-valued wei
     Describe an algorithm to perform weighted sampling from $U$ in $O(m)$ expected time --- that is, draw an element $X \in U$ such that $\Pr[X = e] = w(e) / W$ holds for each $e \in U$.
 
 \extraspacing {\bf Problem 4.} (Sampling from Keyword Search) \\
-Let $P$ be a set of points in $[U]^2$, where $U$ is an integer that fits in a word. Each point $p \in P$ carries a set $C(p)$ of {\em colors} (a.k.a.\ keywords), where each color is an integer. Given $m$ colors $c_1, c_2, ..., c_m$, a query returns a point drawn uniformly at random from those points $p \in P$ that carry at least one chosen color, namely, $C(p) \cap \set{c_1, ..., c_m} \ne \emptyset$. Different queries may differ in their $m$ values.
+Let $P$ be a set of points in $[U]^2$, where $U$ is an integer that fits in a word. Each point $p \in P$ carries a set $C(p)$ of {\em colors} (a.k.a.\ keywords), where each color is an integer. Given $m$ colors $c_1, c_2, ..., c_m$, a query returns a point drawn uniformly at random from those points $p \in P$ that carry at least one chosen color, namely, $C(p) \cap \set{c_1, ..., c_m} \ne \emptyset$. Different queries may differ in their $m$ values (and, of course, also in the color choices).
 
 \vgap
 
-Let $N = \sum_{p \in P} |C(p)|$. Describe a structure of $O(N)$ space that answers each query in $O(m \polylog n)$ time. You may assume the ``counting structure'' in Problem 1.
+Let $N = \sum_{p \in P} |C(p)|$. Describe a structure of $O(N)$ space that answers each query in $O(m \polylog n)$ expected time. You may assume the ``counting structure'' in Problem 1.
 
 
 \end{document}
