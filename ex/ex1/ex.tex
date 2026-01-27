@@ -21,159 +21,35 @@
 
 \begin{document}
 
-\section*{SC3020-CE4031-CZ4031: Tutorial 1}
+\section*{CE7456: Exercise List 1}
 Prepared by Yufei Tao \\
 
 % \begin{center}
 %     \uline{Classroom Discussion}
 % \end{center}
 
-
-\extraspacing {\bf Problem 1.} (Question from Last Year's Tutorial) \\ Consider a disk with 51 tracks, numbered 1, 2, ..., 51 inside out. A request comes in to read a block on track 11. While the seek to track 11 is in progress, new requests come in for tracks 1, 36, 16, 34, 9, and 12, in that order. Starting from the current head position, what is the total distance (in tracks) that the disk arm moves to satisfy all the requests, for each of the following disk scheduling algorithms?
-\myitems{
-    \item (a) {\bf First come first serve:} Serve the requests in the order of their arrival times.
-    \item (b) {\bf Shortest seek time first:} Always serve the existing request closest to the current position of the head.
-    \item (c) {\bf Elevator algorithm:} Keep moving in the same direction until there are no more outstanding requests pending in that direction. Then, the algorithm switches the direction and repeat the process. Here, assume that the head is currently moving ``up'' (i.e., toward tracks with larger numbers).
-
+\boxminipg{0.95\linewidth}{
+    These exercises are designed to help you practice the techniques taught. Attempt them ``at your own risk'' because they can be rather challenging.
+    Solutions will not be provided in written form. However, I will be very happy to discuss approaches, key steps, and your attempted solutions with you.
 }
 
-\begin{sol}
-\extraspacing {\bf Solution.} \\
-(a) (11 - 1) + (36 - 1) + (36 - 16) + (34 - 16) + (34 - 9) + (12 - 9) = 111 tracks.
-
-\vgap
-
-\noindent (b) After serving track 11, the existing tracks are (in ascending order of track numbers): 1, 9, 12, 16, 34, 36. The algorithm visits the tracks in this order: 12, 9, 16, 1, 34, 36. The total travel distance is: (12 - 11) + (12 - 9) + (16 - 9) + (16 - 1) + (34 - 1) + (36 - 34) = 61 tracks.
-
-\vgap
-
-\noindent (c) After serving track 11, the existing tracks are (in ascending order of track numbers): 1, 9, 12, 16, 34, 36. The head moves from 11 to 36, during which it serves the requests for tracks 9, 12, 16, 34, and 36. Then, the head moves from 36 to 1 to serve the request for track 1. The total travel distance is (36 - 11) + (36 - 1) = 60 tracks.
-\end{sol}
-
-\extraspacing {\bf Problem 2.} Consider a hard disk that spins at 7200 rounds per minute. Every track on the disk contains 512 sectors, each of size 512 bytes.
+\extraspacing {\bf Problem 1.} Let $P$ be a set of $n$ points in $[U]^2$, where $U$ is an integer that fits in a word (note: $[x]$ represents the set $\set{1, 2, ..., x}$). Given an axis-parallel rectangle $q = [x_1, x_2] \times [y_1, y_2]$, a {\em counting query} returns $|P \cap q|$. It is known that we can preprocess $P$ into a data structure of $O(n)$ space that can answer any counting query in $O(\log n)$ time.
 \myitems{
-    \item (a) Calculate the average wait time as 50\% of the time it takes for the disk to complete one full rotation.
-    \item (b) Suppose that a block has size 4096 bytes. Calculate the amount of time for the head to read a block of data (excluding the seek and wait time).
-    \item (c) We have a file of $2^{20}$ blocks (i.e., the file has $4096 \times 2^{20}$ bytes) that is stored {\em sequentially}: all of its blocks occupy consecutive sectors within each track, and the tracks containing those sectors are adjacent and ordered contiguously on the disk. How much time (in seconds) does it take to read the file? Ignore seek time, but include the average wait time whenever head moves to a new track.
+    \item Describe how to construct a data structure of $O(n)$ space that, given any axis-parallel rectangle $q$, can report $|P \cap q|$ in $O((k + 1) \log n)$ time, where $k = |P \cap q|$. Note: the query time does not depend on $U$.
+
+    \item Describe how to construct a data structure of $O(n)$ space that, given any axis-parallel rectangle $q$, can extract a point from $|P \cap q|$ uniformly at random in $O(\log^2 n)$ time.
 }
 
-\begin{sol}
-\extraspacing {\bf Solution.} The disk completes one full rotation in $\frac{60}{7200} = 1/120$
-seconds.
+\extraspacing {\bf Problem 2.}  Fix any real value $m > 0$. Let $X$ be a real-valued random variable whose support is $[0, m]$, and $Y$ be a uniformly random variable over $[0, m]$ (note: this is an interval of real values). Prove: if $X$ and $Y$ are independent, then $\Pr[Y \le X] = \fr{1}{m} \expt[X]$.
 
-\vgap
-
-\noindent (a) The disk completes one full rotation in $1/120$ seconds. Hence, the average wait time is $\fr{1}{2} \cdot \fr{1}{120} \approx 4.2$ ms (milliseconds).
-
-\vgap
-
-\noindent (b) Each track contains 512 sectors, and one full rotation takes $1/120$ seconds. Hence, the time to read one sector is
-\[
-\frac{1/120}{512}
-\]
-seconds. A block of 4096 bytes corresponds to $
-\frac{4096}{512} = 8$ sectors. The time to read one block (excluding seek and wait time) is therefore
-\[
-8 \times \frac{1/120}{512}
-\approx 0.013
-\]
-ms.
-
-\vgap
-
-\noindent (c) Each track contains 512 sectors, i.e., $512/8 = 64$ blocks per track.
-Thus, a file of $2^{20}$ blocks occupies
-$
-2^{20} / 2^6 = 2^{14}$ tracks in total.
-The total time to read all blocks (excluding seek time and wait time) is
-\[
-2^{20} \times \frac{8/120}{512}
-\approx 136.5
-\]
-seconds.
-
-\vgap
-
-Each time the head moves to a new track, we incur an average wait time of \( \frac{1}{240} \) seconds. Since the file spans $2^{14}$ tracks, the total wait time is
-\[
-2^{14} \times \frac{1}{240}
-\approx 68.3
-\]
-seconds on average.
-
-\vgap
-
-
-Therefore, the total time to read the file is approximately
-\[
-136.5 + 68.3 = 204.8
-\]
-seconds, excluding seek time.
-\end{sol}
-
-\extraspacing {\bf Problem 3.} Consider the following sequence of I/O requests (each letter `r' means read, each `w' means write, and each number means a block address):
-\begin{center}
-    $r83, w83, r56, r60, w56, r2, r90$
-\end{center}
-Assuming that the buffer pool has 3 frames, all of which are empty in the beginning. If LRU is the cache replacement policy, what is the number of I/Os {\em actually} performed at the end of the sequence?
-
-\begin{sol}
-\extraspacing {\bf Solution.}
-%We simulate the sequence of requests using a buffer pool with 3 frames and the LRU replacement policy. Initially, the buffer pool is empty.
-
-\vgap
-
-\begin{tabular}{l l l l}
-Request & Buffer pool contents & \# I/Os & Explanation \\ \hline
-$r83$ & 83 & 1 & Block 83 not in buffer, read from disk \\
-$w83$ & 83 & 0 & Block 83 already in buffer, mark dirty \\
-$r56$ & 83, 56 & 1 & Block 56 not in buffer, read from disk \\
-$r60$ & 83, 56, 60 & 1 & Block 60 not in buffer, read from disk \\
-$w56$ & 83, 60, 56 & 0 & Block 56 already in buffer, mark dirty \\
-$r2$ & 2, 60, 56 & 2 & Evict LRU block 83 (dirty), write back 83 and read 2 \\
-$r90$ & 2, 90, 56 & 1 & Evict LRU block 60 (clean), read 90 \\
-\end{tabular}
-
-\vgap
-
-\noindent Hence, the total number of I/Os performed is 6.
-\end{sol}
-
-\extraspacing {\bf Problem 4.} Assume that our buffer pool has 3 frames, which are empty in the beginning. Construct a sequence of 10 read requests for which LRU incurs fewer buffer misses than FIFO.
-
-\begin{sol}
-
-\extraspacing {\bf Solution.} Consider the sequence below:
-\begin{center}
-    $r1, r2, r3, r1, r1, r1, r1, r1, r4, r1$.
-\end{center}
-FIFO incurs 5 misses but LRU incurs 4.
-\end{sol}
-
-\extraspacing {\bf Problem 5*.} Assume that our buffer pool has 3 frames, which are empty in the beginning. Construct a sequence of 10 read requests for which LRU incurs fewer buffer misses than Clock. You can assume that, for Clock, the ``hand'' points to the first frame initially.
-
-\begin{sol}
-
-\extraspacing {\bf Solution.} Consider the sequence below:
-\begin{center}
-    $r1, r2, r3, r2, r4, r5, r2, r2, r2, r2$.
-\end{center}
-LRU incurs 5 buffer misses but Clock incurs 6.
-\end{sol}
-
-\extraspacing {\bf Problem 6**.} Construct a sequence of read requests for which FIFO, starting from an empty buffer pool, incurs more buffer misses when it has 4 frames compared to when it has 3.
-
-\begin{sol}
-\extraspacing {\bf Solution.} Consider the sequence below:
-\begin{center}
-    $r1, r2, r3, r4, r1, r2, r5, r1, r2, r3, r4, r5$.
-\end{center}
-FIFO incurs 9 misses with 3 frames but 10 misses with 4 frames.
-
-\vgap
-
-Note: This solution was taken from Wikipedia.
-\end{sol}
+\extraspacing {\bf Problem 3.} (Weighted Set-Union Sampling)
+Let $U$ be a set of elements, where each element $e \in U$ has a real-valued weight $w(e) > 0$. Define $W = \sum_{e \in U} w(e)$. Let $S_1, S_2, ..., S_m$ be $m \ge 2$ subsets of $U$ such that $\bigcup_{i=1}^m S_i = U$. Each $S_i$ ($i \in [m]$) supports three operations in constant time:
+    \myenums{
+        \item {({\em weight-sum})} return $\sum_{e \in S_i} w(e)$;
+        \item {({\em membership})} check whether a given element is in $S_i$;
+        \item {({\em weighted sampling})} return an element $X$ of $S_i$ such that $\Pr[X = e] = w(e) / \sum_{e' \in S_i} w(e')$ holds for each $e \in S_i$.
+    }
+    Describe an algorithm to perform weighted sampling from $U$ in $O(m)$ expected time --- that is, draw an element $X \in U$ such that $\Pr[X = e] = w(e) / W$ holds for each $e \in U$.
 
 
 
