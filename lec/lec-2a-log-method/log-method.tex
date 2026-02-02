@@ -1,0 +1,203 @@
+\include{./def/yf-formatting}
+\include{./def/yf-def}
+
+\title{}
+\author{}
+\date{}
+
+
+\def\InvS{\textrm{InvS}}
+\def\deg{\textrm{deg}}
+
+% \def\A{\mathcal{A}}
+\def\B{\mathcal{B}}
+\def\C{\mathcal{C}}
+\def\Cb{\mathbb{C}}
+\def\E{\mathcal{E}}
+\def\F{\mathcal{F}}
+\def\G{\mathcal{G}}
+\def\I{\mathcal{I}}
+\def\L{\mathcal{L}}
+\def\R{\mathcal{R}}
+\def\T{\mathcal{T}}
+%\def\U{\mathcal{U}}
+%\def\X{\mathcal{X}}
+
+
+\def\extraspacing{\vspace{3mm} \noindent}
+\def\vgap{\vspace{3mm}}
+\def\vslit{\vspace{0.5mm}}
+
+\begin{document}
+
+% \begin{center}
+%     {\bf \large Lecture Notes} \\
+%     {\bf \large Approximate Nearest Neighbor Search 1 : Proximity Graphs} \\[5mm]
+%     {\large Yufei Tao} \\[10mm]
+% \end{center}
+
+\boxminipg{\linewidth}{
+    \begin{center}
+        \vspace{3mm}
+    {\Large
+    (CE7456 Lecture Notes 4) Independent Query Sampling} \\[2mm]
+    {\large Yufei Tao}
+        \vspace{3mm}
+    \end{center}
+}
+
+
+Conventionally, a data-structure problem aims to preprocess an input set of elements into a structure such that, given a query predicate, all elements satisfying the predicate can be reported efficiently.  This framework works well in practice when the query output is small. In the era of big data, however, the explosion in data volume has been accompanied by a dramatic increase in query output size. For example, while a query with selectivity 1\% returns only 10000 elements on a dataset of size a million, the number surges to $10^{10}$ when the data cardinality reaches a trillion. In the latter scenario, even just reporting the query answer would take intolerably long.
+
+\vgap
+
+The phenomenon has motivated {\em independent query sampling} (IQS) \cite{hqt14}, which aims to return only a sample set of the query result, with the requirement that the sample sets of all queries must be mutually independent. Next, we formalize the notion over range reporting.
+
+\vgap
+
+Let $S$ be a set of $n$ integers where each integer $e \in S$ is associated with an integer {\em weight} $w(e) > 0$. A {\em weighted sample} of $S$ is a random variable $X$ satisfying
+\myeqn{
+    \Pr[X = e] = \fr{w(e)}{\sum_{e' \in S} w(e')} \nn
+}
+for each $e \in S$.
+
+\vgap
+
+Given an interval $q = [x, y]$, a (traditional) {\em range query} reports $S_q = q \cap S$. The IQS version, however, takes two parameters:
+\myitems{
+    \item $q = [x, y]$ and
+    \item an integer $s \ge 1$ (referred to as the {\em sample size}).
+}
+The IQS query outputs a set $Q$ of $s$ independent weighted samples of $S_q$. Furthermore, the set $Q$ must be independent of the outputs of all previous IQS queries.
+
+\vgap
+
+Note that even if two IQS queries have the same $q$, their sample results must still be independent. In fact, one can repeatedly issue the same query to obtain increasingly more samples of $S_q$, all of which must be mutually independent. A naive solution to IQS is to first retrieve the full query result $S_q$ and then sample from it. However, this defeats the main purpose of IQS, i.e.,  reducing computation time. Instead, our objective should be to settle a query in time {\em significantly less} than $|S_q|$ in the typical situation where $s \ll |S_q|$. Achieving the goal demands organizing the input $S$ in ways drastically different from the existing data structures designed to report $S_q$ in its entirety.
+
+\section{The First Structure: Tree Sampling} \label{sec:basic:tree}
+
+Let $\T$ be a binary search tree (BST) on $S$ with the following properties:
+\myitems{
+    \item $\T$ has height $O(\log n)$.
+    \item $\T$ has $n$ leaves each storing a distinct value in $S$ as the {\em key}.
+    \item Every internal node $u$ in $\T$ has two children. The {\em key} of $u$ equals the smallest leaf key in the right subtree. The leaf keys in the left subtree of $u$ are less than the key of $u$.
+}
+For any $q$, one can deploy $\T$ to report the entire $S_q$ in $O(\log n + |S_q|)$ time.
+
+\vgap
+
+\begin{figure}
+    \centering
+    \includegraphics[height=45mm]{./artwork/bst}
+    \figcapup
+    \caption{The black nodes are the canonical nodes of the query interval $q = [x, y]$. The shaded triangles indicate the subtrees of the canonical nodes. }
+    \label{fig:bst}
+\end{figure}
+
+
+Next, we explain how to adapt $\T$ for IQS by resorting to tree sampling. For each node $u$ in $\T$, define $w(u)$ as the total weight of the leaf keys in the subtree of $u$. As a well-known fact, given any $q$, we can identify a set $\C$ of $O(\log n)$ {\em canonical nodes} in $\T$ such that
+\myitems{
+    \item the nodes in $\C$ have disjoint subtrees;
+
+%    \vgap
+
+    \item the leaf keys in the subtrees of the nodes in $\C$ constitute $S_q$.
+}
+See Figure~\ref{fig:bst} for an illustration.
+
+\vgap
+
+To draw a weighted sample of $S_q$, we first sample a node $X$ from $\C$ such that $\Pr[X = u] = w(u) / \sum_{u' \in \C} w(u')$ for each $u \in \C$. Then, we perform tree sampling to obtain a leaf $z$ from the subtree of $X$, and the key of $z$ serves as a weighted sample from $S_q$. The above algorithm takes $O(\log n)$ time to draw a sample. Hence, $s$ samples can be obtained in $O(s \log n)$ time. It is clear that all queries have independent outputs.
+
+%
+%
+% \section{Technique 1: Alias Augmentation} \label{sec:wrs}
+%
+% Section~\ref{sec:basic:tree} has given a structure for the weighted range sampling problem  that uses $O(n)$ space and answers a query in $O(s \log n)$ time. In this section, we will improve the query time to $O(\log n + s)$. The new structure illustrates a technique we call {\em alias augmentation}.
+
+\section{A Structure of $O(n \log n)$ Space} \label{sec:wrs:nlgn-space}
+
+This section will reduce the time of an IQS query to $O(\log n + s)$ using a data structure of space $O(n \log n)$.
+
+\vgap
+
+Build a BST $\T$ on $S$ with the properties listed in Section~\ref{sec:basic:tree}. For each node $u$ in $\T$, we use $S(u) \subseteq S$ to denote the set of elements from $S$ that are stored at the leaves in the subtree of $u$. At each $u$, we store $w(u) = \sum_{e \in S(u)} w(e)$ and create an alias structure $A_u$ on $S(u)$. Because $A_u$ occupies $O(|S(u)|)$ space, the alias structures of all the nodes at the same level of $\T$ together use $O(n)$ space. The total space of the structure is therefore $O(n \log n)$.
+
+\vgap
+
+Next, we explain how to answer an IQS query parameterized by interval $q$ and sample size $s$. As in Section~\ref{sec:basic:tree}, we start by identifying a set $\C$ of canonical nodes for $q$ (see Figure~\ref{fig:bst}) in $O(\log n)$ time. Let the nodes in $\C$ be $u_1, u_2, ..., u_t$ for some $t = O(\log n)$. Remember that the sets $S(u_1), S(u_2), ..., S(u_t)$ constitute a partition of $S_q = q \cap S$, namely, they are mutually disjoint and their union is exactly $S_q$.
+
+\vgap
+
+The next step is to determine how many samples to take from each $S(u_i)$, $i \in [1, t]$. This is an instance of weighted sampling. Specifically, a weighted sample of $S_q$ should come from $S(u_i)$ with probability $w(u_i) / \sum_{j=1}^t w(u_j)$ for each $i \in [1, t]$. Let $s_i$ be the number of weighted samples to originate from $S(u_i)$, i.e., $s_1, ..., s_t$ are random variables with sum $s$. We can generate these random variables in $O(t + s) = O(\log n + s)$ time as follows. First, construct an alias structure on $\C$ in $O(t)$ time, by treating $w(u)$ as the weight for each $u \in \C$. Then, we draw $s$ weighted samples from $\C$ in $O(s)$ time, after which $s_i$ ($1 \le i \le t$) can be set to the number of occurrences of $u_i$ in those samples.
+
+\vgap
+
+For each $i \in [1, t]$, we take $s_i$ weighted samples from $S(u_i)$ using the alias structure $A_{u_i}$ in $O(s_i)$ time. The time of doing so for all $i$ is $O(\sum_{i=1}^t s_i) = O(s)$. The overall query time is therefore $O(\log n + s)$.
+
+\vgap
+
+From the above, we can now claim:
+
+\begin{lemma} \label{lmm:wrs:nlogn}
+    There is a structure of $O(n \log n)$ space that answers an IQS query in $O(\log n + s)$ time.
+\end{lemma}
+
+\section{Reducing the Space to $O(n)$} \label{sec:wrs:n-space}
+
+Next, we improve the space consumption to $O(n)$ using a chunking idea. Divide $\real$ into interior-disjoint intervals $I_1, I_2, ..., I_g$ for some $g = \Theta(n / \log n)$ satisfying the following conditions:
+\myitems{
+    \item If we define $\I_i = I_i \cap S$ for each $i \in [1, g]$, then $\I_1, \I_2, ..., \I_g$ are mutually disjoint and their union is $S$.
+
+    \item $|\I_i| = \Theta(\log n)$ for each $i \in [1, g]$.
+}
+It is easy to obtain such intervals with sorting. We will refer to each $\I_i$ as a {\em chunk} and define $w(\I_i) = \sum_{e \in \I_i} w(e)$.
+
+\vgap
+
+We create a structure $\T_\mit{chunk}$ to support weighted range sampling at the chunk level. Specifically, the input dataset is $\I = \set{\I_1, \I_2, ..., \I_g}$ where each $\I_i$ ($1 \le i \le g$) carries weight $w(\I_i)$. Given $q_\mit{chunk} = [a, b]$ --- where $a$ and $b$ are integers in $[1, g]$ --- and an integer $s \ge 1$, a query on $\T_\mit{chunk}$ returns $s$ independent weighted samples of $\I_{q_\mit{chunk}} = \set{\I_i \mid i \in q_\mit{chunk}}$. It should be noted that each sample here is a chunk (rather than an element in $S$). We can implement $T_\mit{chunk}$ as a structure of Lemma~\ref{lmm:wrs:nlogn}. The space of $T_\mit{chunk}$ is $O(|\I| \log |\I|) = O(\fr{n}{\log n} \log n) = O(n)$.
+
+
+\vgap
+
+We also build a {\em range sum} structure which allows us to calculate $\sum_{i=a}^b w(\I_i)$ in $O(\log n)$ time for any $a$ and $b$ satisfying $1 \le a \le b \le g$; such a structure can be a slightly augmented BST (see Chapter 14 of \cite{clrs09}), which uses $O(g) = o(n)$ space. In addition, for each $i \in [1, g]$, we build an alias structure to support weighted range sampling from chunk $\I_i$. The alias structures of all the chunks use $O(\sum_{i=1}^g |\I_i|) = O(n)$ space in total. The overall space consumption is therefore $O(n)$.
+
+\vgap
+
+Consider now a query with interval $q = [x, y]$ and sample size $s$. Let us first assume that the query is {\em chunk aligned}, namely, $q = I_a \cup I_{a+1} \cup ... \cup I_b$, for some $a$ and $b$ such that $1 \le a \le b \le g$. The values of $a$ and $b$ can be determined in $O(\log n)$ time with binary search. Conceptually, a weighted sample from $S_q$ can be extracted in a two-step manner. We first take a weighted sample $\I$ from the set of chunks $\set{\I_a, \I_{a+1}, ..., \I_b}$ and then acquire a weighted sample $e$ from $\I$. The element $e$, which is sampled with probability $$\fr{w(\I)}{\sum_{j=1}^g w(\I_j)} \cdot \fr{w(e)}{w(\I)} = \fr{w(e)}{\sum_{e' \in S_q} w(e')},$$ is thus a weighted sample of $S_q$. Motivated by this, we answer the query with the following two-level sampling strategy. First, extract $s$ weighted samples from $\set{\I_a, \I_{a+1}, ..., \I_b}$, which can be done in $O(\log n + s)$ time using $\T_\mit{chunk}$. For each $i \in [a, b]$, let $s_i$ be the number of occurrences of $\I_i$ in those $s$ samples. Then, we extract $s_i$ weighted samples from $\I_i$ using the alias structure on $\I_i$ in $O(s_i)$ time. The total query cost is therefore $O(\log n + \sum_{i=a}^b s_i) = O(\log n + s)$.
+
+\vgap
+
+It remains to discuss the scenario where $q = [x, y]$ can be an arbitrary interval in $\real$. Suppose that $x$ and $y$ fall in $I_a$ and $I_b$, respectively, where $1 \le a \le b \le g$. We can break $q$ into three intervals $q_1, q_2$ and $q_3$ as follows:
+\myitems{
+    \item $q_1$ is the portion of $q$ in the interior of $I_a$,
+
+    \item $q_2 = I_{a+1} \cup I_{a+2} \cup ... \cup I_{b-1}$, and
+
+    \item $q_3$ is the remaining portion of $q$ after trimming $q_1$ and $q_2$ (it must hold that $q_3 \subseteq I_b$).
+}
+See Figure~\ref{fig:chunk} for an illustration. Define $S_1 = S \cap q_1$, $S_2 = S \cap q_2$, and $S_3 = S \cap q_3$. For each $j \in [1, 3]$, define $w(S_j) = \sum_{e \in S_j} w(e)$. We can obtain $S_1$ and $S_3$ in their entirety in $O(\log n)$ time by reading the chunks $\I_a$ and $\I_b$ directly. For $S_2$, we cannot afford to enumerate its elements but can obtain $w(S_2)$ in $O(\log n)$ time from the range sum structure. To extract $s$ weighted samples from $S_q$, we first determine the number $s_j$ of samples that will come from $S_j$ for each $j = 1, 2$, and 3 (this can be easily done in $O(s)$ time). By resorting to the alias method, the $s_1$ and $s_3$ samples from $S_1$ and $S_3$ can be fetched in $O(\log n + s_1 + s_3)$ time. Acquiring $s_2$ samples from $S_2$ requires only a chunk-aligned query, which we already know how to solve in $O(\log n + s_2)$ time. We thus conclude that the overall query time is $O(\log n + s_1 + s_2 + s_3) = O(\log n + s)$.
+
+
+\begin{figure}
+    \centering
+    \includegraphics[height=15mm]{./artwork/chunk}
+    \figcapup
+    \caption{Query processing with chunks}
+    \label{fig:chunk}
+\end{figure}
+
+
+\vgap
+
+We have arrived at:
+
+\begin{theorem} \label{thm:wrs}
+    There is a structure of $O(n)$ space that answers an IQS query in $O(\log n + s)$ time.
+\end{theorem}
+
+
+\bibliographystyle{plain}
+\bibliography{ref}
+
+\end{document}
