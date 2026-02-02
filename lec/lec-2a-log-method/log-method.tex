@@ -126,20 +126,16 @@ time.
 
 \subsection{Structure} \label{sec:rebuild:log:str}
 
-Let $S$ be the input set of elements; let $n = |S|$ and $h = \lc \log_2 n \rc$. At all times, we divide $S$ into disjoint subsets $S_0, S_1, ..., S_h$ (some of which may be empty) satisfying:
+Let $S$ be the input set of elements. Set $n = |S|$ and $h = \lc \log_2 n \rc$. At all times, we partition $S$ arbitrarily into disjoint subsets $S_0, S_1, ..., S_h$ (some of which may be empty) satisfying:
 \myeqn{
-    |S_i| &\le& 2^i. \label{eqn:rebuild:log:size}
+    |S_i| &=& \textrm{either 0 or $2^i$}. \label{eqn:rebuild:log:size}
 }
-Create a structure of $\Upsilon$ on each subset; denote by $\Upsilon_i$ the structure on $S_i$. Then, $\Upsilon_1, \Upsilon_2, ..., \Upsilon_h$ together constitute our semi-dynamic structure. The space usage is bounded by $\sum_{i=0}^h F(2^i)$.
-
-\vgap
-
-Before receiving any updates, $S_0 = S_1 = ... = S_{h-1} = \emptyset$ and $S_h = S$. Accordingly, $\Upsilon_0, ..., \Upsilon_{h-1}$ are empty and $\Upsilon_h$ stores the entire $S$.
+(Think: why is such partitioning always possible?) Create a structure of $\Upsilon$ (as is supplied to Theorem~\ref{thm:log:main}) on each subset; denote by $\Upsilon_i$ the structure on $S_i$. Then, $\Upsilon_1, \Upsilon_2, ..., \Upsilon_h$ together constitute our semi-dynamic structure. The space usage is bounded by $\sum_{i=0}^h F(2^i)$.
 
 
 \subsection{Query} \label{sec:rebuild:log:qry}
 
-To answer a query $q$, we simply search all of $\Upsilon_1, ..., \Upsilon_h$. Since the query is decomposable, we can obtain the answer on $S$ from the answers on $S_1, ..., S_h$ in $O(h)$ time. The overall query time is
+To answer a query $q$, we simply search all of $\Upsilon_1, ..., \Upsilon_h$. As the query is decomposable, we can obtain the answer on $S$ from the answers on $S_1, ..., S_h$ in $O(h)$ time. The overall query time is
 \myeqn{
     O(h) + \sum_{i=0}^h Q(2^i) = O(\log n) + \sum_{i=0}^h Q(2^i). \nn
 }
@@ -148,9 +144,9 @@ To answer a query $q$, we simply search all of $\Upsilon_1, ..., \Upsilon_h$. Si
 
 To insert an element $e_\mit{new}$, we first identify the smallest $i \in [0, h]$ satisfying:
 \myeqn{
-    1 + \sum_{j=0}^i |S_j| &\le& 2^i \label{eqn:rebuild:log:i}.
+    1 + \sum_{j=0}^i |S_j| & = & 2^i \label{eqn:rebuild:log:i}.
 }
-We now proceed as follows:
+(Think: why does such an $i$ always exist?) Then, we proceed as follows:
 \myitems{
     \item If $i$ exists, we destroy $\Upsilon_0, \Upsilon_1, ..., \Upsilon_i$ and move all the elements in $S_0, S_1, ..., S_{i-1}$, together with $e_\mit{new}$, {\em into} $S_i$. After this, $S_0, S_1, ..., S_{i-1}$ are empty and $S_i$ contains all their elements, the elements that were already in $S_i$ before, and $e_\mit{new}$. Rebuild $\Upsilon_i$ on the $S_i$ from scratch.
 
