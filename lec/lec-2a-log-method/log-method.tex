@@ -78,51 +78,73 @@ A problem characterized by $(\bD, \bQ)$ is {\em decomposable} if, for any disjoi
 
 Consider, for example, 1D range reporting, where $S$ is a set of integers, a query $q$ is an interval, and $\ans_q(S)$ is $S \cap q$, i.e., the set of integers in $S$ covered by $q$. As another example, in 1D range counting, the meanings of $S$ and $q$ are identical to those  in 1D range reporting, but $\ans_q(S)$ is $|S \cap q|$, i.e., how many integers of $S$ are covered by $q$. Both problems are decomposable.
 
+\section{Non-Decreasing Functions}
+
+A function $f: \real_{>0} \rightarrow \real_{>0}$ is said to grow {\em at least linearly} if $\fr{f(x)}{x}$ is a non-decreasing for $x > 0$.
+
+\begin{lemma}
+    If $f: \real_{>0} \rightarrow \real_{>0}$ grows at least linearly, then $f(a) + f(b) \le f(a+b)$ holds for any $a > 0$ and $b > 0$.
+\end{lemma}
+
+\begin{proof}
+    As $f(x)$ grows at least linearly, we have:
+    \myeqn{
+        \fr{f(a)}{a} &\le& \fr{f(a+b)}{a+b} \nn \\
+        \fr{f(b)}{b} &\le& \fr{f(a+b)}{a+b}. \nn
+    }
+    Combining the above yields:
+    \myeqn{
+        f(a) + f(b) \le \Big(\fr{a}{a+b} + \fr{b}{a+b} \Big) f(a+b)
+        = f(a+b). \nn
+    }
+\end{proof}
+
+
+
 \section{The Logarithmic Method} \label{sec:rebuild:log}
 
 We will prove:
 
 \begin{theorem} \label{thm:log:main}
-    Suppose that there is a static structure $\Upsilon$ that
+    Consider a decomposable problem for which there is a static structure $\Upsilon$ that
     \myitems{
-        \item stores $n$ elements in $F(n)$ space;
+        \item stores $n$ elements in $F(n)$ space, where $F(.)$ grows at least linearly;
         \item can be constructed in $n \cdot U(n)$ time;
-        \item answers a decomposable query in $Q(n)$ time (plus, if necessary, a cost linear to the number of reported elements).
+        \item answers a query in $Q(n)$ time (plus, if necessary, a cost linear to the number of reported elements).
     }
     Set $h = \lc \log_2 n \rc$. There is a semi-dynamic structure $\Upsilon'$ that
     \myitems{
-        \item stores $n$ elements in $\sum_{i=0}^h F(2^i)$ space;
-        \item supports an insertion in $O\left( \sum_{i=0}^h U(2^i) \right)$ amortized time;
-        \item answers a decomposable query in $O(\log n) + \sum_{i=0}^h Q(2^i)$ time (plus, if necessary, a cost linear to the number of reported elements)
+        \item stores $n$ elements in $F(n)$ space;
+        \item supports an insertion in $U(n) \cdot O(\log n)$ amortized time;
+        \item answers a query in $Q(n) \cdot O(\log n)$ time (plus, if necessary, a cost linear to the number of reported elements)
     }
 
 
     %If in addition $\Upsilon$ also supports a deletion in at most $U_\mit{del}(n)$ worst-case time, then $\Upsilon'$ is a fully dynamic structure that supports a deletion in $O(\log n) + U_\mit{del}(n)$ worst-case time, and retains all the above properties.
 \end{theorem}
+%
+% \vgap
+%
+% Before delving into the proof, let us first see an application. Suppose that we have a structure that can be constructed in $O(n \log n)$ time and answers a query in $O(\sqrt{n})$ time. Therefore:
+% \myeqn{
+%     F(n) &=& O(n) \nn \\
+%     U(n) &=& O(\log n) \nn \\
+%     Q(n) &=& O(\sqrt{n}). \nn
+% }
+% Theorem~\ref{thm:log:main} immediately gives a semi-dynamic structure that uses
+% \myeqn{
+%     \sum_{i=0}^{\lc \log_2 n \rc} O(2^i) &=& O(n) \nn
+% }
+% space, supports an insertion in
+% \myeqn{
+%     \sum_{i=0}^{\lc \log_2 n \rc} O\left(\log 2^i\right) &=& O(\log^2 n) \nn
+% }
+% amortized time, and answers a query in
+% \myeqn{
+%     \sum_{i=0}^{\lc \log_2 n \rc} O\left(\sqrt{2^i}\right) &=& O(\sqrt{n}) \nn
+% }
+% time.
 
-\vgap
-
-Before delving into the proof, let us first see an application. Suppose that we have a structure that can be constructed in $O(n \log n)$ time and answers a query in $O(\sqrt{n})$ time. Therefore:
-\myeqn{
-    F(n) &=& O(n) \nn \\
-    U(n) &=& O(\log n) \nn \\
-    Q(n) &=& O(\sqrt{n}). \nn
-}
-Theorem~\ref{thm:log:main} immediately gives a semi-dynamic structure that uses
-\myeqn{
-    \sum_{i=0}^{\lc \log_2 n \rc} O(2^i) &=& O(n) \nn
-}
-space, supports an insertion in
-\myeqn{
-    \sum_{i=0}^{\lc \log_2 n \rc} O\left(\log 2^i\right) &=& O(\log^2 n) \nn
-}
-amortized time, and answers a query in
-\myeqn{
-    \sum_{i=0}^{\lc \log_2 n \rc} O\left(\sqrt{2^i}\right) &=& O(\sqrt{n}) \nn
-}
-time.
-
-%Even better, later we will show how to support a deletion in the kd-tree using $O(\log n)$ worst-case time. The theorem thus yields a fully dynamic structure with all the above performance guarantees and at the same time the ability to support a deletion in $O(\log n)$ worst-case time.
 
 \subsection{Structure} \label{sec:rebuild:log:str}
 
@@ -130,14 +152,18 @@ Let $S$ be the input set of elements. Set $n = |S|$ and $h = \lc \log_2 n \rc$. 
 \myeqn{
     |S_i| &=& \textrm{either 0 or $2^i$}. \label{eqn:rebuild:log:size}
 }
-(Think: why is such partitioning always possible?) Create a structure of $\Upsilon$ (as is supplied to Theorem~\ref{thm:log:main}) on each subset; denote by $\Upsilon_i$ the structure on $S_i$. Then, $\Upsilon_1, \Upsilon_2, ..., \Upsilon_h$ together constitute our semi-dynamic structure. The space usage is bounded by $\sum_{i=0}^h F(2^i)$.
+(Think: why is such partitioning always possible?) Create a structure of $\Upsilon$ (as is supplied to Theorem~\ref{thm:log:main}) on each subset; denote by $\Upsilon_i$ the structure on $S_i$. Then, $\Upsilon_1, \Upsilon_2, ..., \Upsilon_h$ together constitute our semi-dynamic structure.
+
+\vgap
+
+The space usage is bounded by $\sum_{i=0}^h F(|S_i|)$, which is at most $F(\sum_{i=0}^h |S_i|) = F(n)$ because $F(.)$ grows at least linearly.
 
 
 \subsection{Query} \label{sec:rebuild:log:qry}
 
 To answer a query $q$, we simply search all of $\Upsilon_1, ..., \Upsilon_h$. As the query is decomposable, we can obtain the answer on $S$ from the answers on $S_1, ..., S_h$ in $O(h)$ time. The overall query time is
 \myeqn{
-    O(h) + \sum_{i=0}^h Q(2^i) = \sum_{i=0}^h Q(2^i). \nn
+    O(h) + \sum_{i=0}^h Q(2^i) = Q(n) \cdot O(\log n). \nn
 }
 
 \subsection{Insertion} \label{sec:rebuild:log:ins}
@@ -150,25 +176,19 @@ or declare that such an $i$ does not exist.
 \myitems{
     \item If $i$ exists, destroy $\Upsilon_0, \Upsilon_1, ..., \Upsilon_{i-1}$ and move all the elements in $S_0, S_1, ..., S_{i-1}$, together with $e_\mit{new}$, into $S_i$. After this, $S_0, S_1, ..., S_{i-1}$ become empty. Rebuild $\Upsilon_i$ on the $S_i$ from scratch.
 
-    \item Otherwise, destroy $\Upsilon_0, \Upsilon_1, ..., \Upsilon_h$ and move all the elements in $S_0, S_1, ..., S_h$, together with $e_\mit{new}$, {\em into} $S_{h+1}$. After this, $S_0, S_1, ..., S_h$ become empty. Build $\Upsilon_{h+1}$ on $S_{h+1}$ from scratch. The value of $h$ then increases by 1.
+    \item Otherwise, destroy $\Upsilon_0, \Upsilon_1, ..., \Upsilon_h$ and move all the elements in $S_0, S_1, ..., S_h$, together with $e_\mit{new}$, into $S_{h+1}$. After this, $S_0, S_1, ..., S_h$ become empty. Build $\Upsilon_{h+1}$ on $S_{h+1}$ from scratch. The value of $h$ then increases by 1.
 }
 
-Let us now analyze the insertion cost with a charging argument. The reconstruction of $\Upsilon_i$ ($i \ge 0$) requires
+Next, we analyze the insertion cost with a charging argument. The reconstruction of $\Upsilon_i$ ($i \ge 0$) requires
 \myeqn{
     |S_i| \cdot U(|S_i|) &=& 2^i \cdot U(2^i) \label{eqn:rebuild:log:rebuildcost}
 }
 time. We charge this over the $2^i$ elements in $S_i$, each of which bears a cost of $U(2^i)$. As an element can only move from an $S_i$ to an $S_j$ with $i < j$, each element can be charged a total cost of at most
 \myeqn{
-        \sum_{i=0}^h U(2^i). \nn
+        \sum_{i=0}^h U(2^i) = U(n) \cdot O(\log n). \nn
 }
 
-Therefore, any sequence of $n$ insertions can be processed in time
-\myeqn{
-    n \cdot \sum_{i=0}^{\lc \log_2 n \rc} U(2^i). \nn
-}
-
-
-\section{Remarks}
+\section{Remark}
 
 The logarithmic method was developed by Bentley and Saxe \cite{bs80}.
 
