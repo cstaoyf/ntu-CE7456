@@ -174,7 +174,7 @@ To insert an element $e_\mit{new}$, we identify the smallest $i \in [0, h]$ sati
 }
 or declare that such an $i$ does not exist.
 \myitems{
-    \item If $i$ exists, destroy $\Upsilon_0, \Upsilon_1, ..., \Upsilon_{i-1}$ and move all the elements in $S_0, S_1, ..., S_{i-1}$, together with $e_\mit{new}$, into $S_i$. After this, $S_0, S_1, ..., S_{i-1}$ become empty. Rebuild $\Upsilon_i$ on the $S_i$ from scratch.
+    \item If $i$ exists, destroy $\Upsilon_0, \Upsilon_1, ..., \Upsilon_{i-1}$ and move all the elements in $S_0, S_1, ..., S_{i-1}$, together with $e_\mit{new}$, into $S_i$. (Think: why doesn't this violate \eqref{eqn:rebuild:log:size}?) After this, $S_0, S_1, ..., S_{i-1}$ become empty. Rebuild $\Upsilon_i$ on the $S_i$ from scratch.
 
     \item Otherwise, destroy $\Upsilon_0, \Upsilon_1, ..., \Upsilon_h$ and move all the elements in $S_0, S_1, ..., S_h$, together with $e_\mit{new}$, into $S_{h+1}$. After this, $S_0, S_1, ..., S_h$ become empty. Build $\Upsilon_{h+1}$ on $S_{h+1}$ from scratch. The value of $h$ then increases by 1.
 }
