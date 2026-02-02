@@ -137,61 +137,36 @@ Let $S$ be the input set of elements. Set $n = |S|$ and $h = \lc \log_2 n \rc$. 
 
 To answer a query $q$, we simply search all of $\Upsilon_1, ..., \Upsilon_h$. As the query is decomposable, we can obtain the answer on $S$ from the answers on $S_1, ..., S_h$ in $O(h)$ time. The overall query time is
 \myeqn{
-    O(h) + \sum_{i=0}^h Q(2^i) = O(\log n) + \sum_{i=0}^h Q(2^i). \nn
+    O(h) + \sum_{i=0}^h Q(2^i) = \sum_{i=0}^h Q(2^i). \nn
 }
 
 \subsection{Insertion} \label{sec:rebuild:log:ins}
 
-To insert an element $e_\mit{new}$, we first identify the smallest $i \in [0, h]$ satisfying:
+To insert an element $e_\mit{new}$, we identify the smallest $i \in [0, h]$ satisfying
 \myeqn{
-    1 + \sum_{j=0}^i |S_j| & = & 2^i \label{eqn:rebuild:log:i}.
+    |S_i| & = & 0 \label{eqn:rebuild:log:i}.
 }
-(Think: why does such an $i$ always exist?) Then, we proceed as follows:
+or declare that such an $i$ does not exist.
 \myitems{
-    \item If $i$ exists, we destroy $\Upsilon_0, \Upsilon_1, ..., \Upsilon_i$ and move all the elements in $S_0, S_1, ..., S_{i-1}$, together with $e_\mit{new}$, {\em into} $S_i$. After this, $S_0, S_1, ..., S_{i-1}$ are empty and $S_i$ contains all their elements, the elements that were already in $S_i$ before, and $e_\mit{new}$. Rebuild $\Upsilon_i$ on the $S_i$ from scratch.
+    \item If $i$ exists, destroy $\Upsilon_0, \Upsilon_1, ..., \Upsilon_{i-1}$ and move all the elements in $S_0, S_1, ..., S_{i-1}$, together with $e_\mit{new}$, into $S_i$. After this, $S_0, S_1, ..., S_{i-1}$ become empty. Rebuild $\Upsilon_i$ on the $S_i$ from scratch.
 
-    \item If $i$ does not exist, we destroy $\Upsilon_0, \Upsilon_1, ..., \Upsilon_h$, and move all the elements in $S_0, S_1, ..., S_h$, together with $e_\mit{new}$, {\em into} $S_{h+1}$. Build $\Upsilon_{h+1}$ on $S_{h+1}$ from scratch. The value of $h$ then increases by 1.
+    \item Otherwise, destroy $\Upsilon_0, \Upsilon_1, ..., \Upsilon_h$ and move all the elements in $S_0, S_1, ..., S_h$, together with $e_\mit{new}$, {\em into} $S_{h+1}$. After this, $S_0, S_1, ..., S_h$ become empty. Build $\Upsilon_{h+1}$ on $S_{h+1}$ from scratch. The value of $h$ then increases by 1.
 }
 
-Let us now analyze the amortized insertion cost with a charging argument. Each time $\Upsilon_i$ ($i \ge 0$) is rebuilt, we spend
+Let us now analyze the insertion cost with a charging argument. The reconstruction of $\Upsilon_i$ ($i \ge 0$) requires
 \myeqn{
-    O(|S_i|) \cdot U(|S_i|) &=& O(2^i) \cdot U(2^i) \label{eqn:rebuild:log:rebuildcost}
+    |S_i| \cdot U(|S_i|) &=& 2^i \cdot U(2^i) \label{eqn:rebuild:log:rebuildcost}
 }
-cost (recall that, as stated in Theorem~\ref{thm:log:main}, a structure on $n$ elements can be built in $n \cdot U(n)$ time). The lemma below gives a crucial observation:
-
-\begin{lemma} \label{lmm:rebuild:log:rebuild}
-    Every time when $\Upsilon_i$ is rebuilt, at least $1 + 2^{i-1}$ elements are added to $S_i$ (i.e., every such element was in some $S_j$ with $j < i$).
-\end{lemma}
-
-\begin{proof}
-    Set $\lambda = i$. By our choice of $i$, the inequality \eqref{eqn:rebuild:log:i} does not hold for $i = \lambda - 1$. This means:
-    \myeqn{
-        1 + \sum_{j=0}^{\lambda-1} |S_j| &\ge& 1 + 2^{\lambda-1}. \nn
-    }
-    This proves the claim because all the elements in $S_1, ..., S_{\lambda-1}$, as well as $e_\mit{new}$, are added to $S_\lambda$.
-\end{proof}
-
-We can therefore charge the cost of rebuilding $\Upsilon_i$  --- namely the cost in \eqref{eqn:rebuild:log:rebuildcost} --- on the at least $2^{i-1}$ elements added to $S_i$, such that each of those elements bears only
+time. We charge this over the $2^i$ elements in $S_i$, each of which bears a cost of $U(2^i)$. As an element can only move from an $S_i$ to an $S_j$ with $i < j$, each element can be charged a total cost of at most
 \myeqn{
-    \fr{O(2^i)}{2^{i-1}} \cdot U(2^i) &=& O(U(2^i)) \nn
-}
-cost.
-
-\vgap
-
-In other words, every time an element $e$ moves to new $S_i$, it bears a cost of $O(U(2^i))$. Note that an element never moves from $S_i$ to an $S_j$ with $j < i$. Therefore, $e$ can be charged at most $h + 1$ times with a total cost of
-\myeqn{
-    O\left(
         \sum_{i=0}^h U(2^i). \nn
-    \right)
 }
-We have proved that any sequence of $m$ insertions can be processed in
+
+Therefore, any sequence of $n$ insertions can be processed in time
 \myeqn{
-    O\left(
-        m \cdot \sum_{i=0}^h U(2^i) \nn
-    \right)
+    n \cdot \sum_{i=0}^{\lc \log_2 n \rc} U(2^i). \nn
 }
-time.
+
 
 \section{Remarks}
 
