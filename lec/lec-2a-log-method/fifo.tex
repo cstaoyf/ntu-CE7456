@@ -161,14 +161,15 @@ Let $S$ be the input set of elements. At all times, we partition $S$ arbitrarily
 }
 where
 \myitems{
-    \item $h^+ \le h^- = O(\log |S|)$;
-    \item for each $i \in [0, h^+]$, $|I_i|$ is either 0 or $2^i$;
-    \item for each $i \in [0, h^-]$, $|D_i|$ is either 0 or $2^i$;
-    \item if an element $e$ is older than another element $e'$, then the subset containing $e$ must precede the one containing $e'$.
+    \item $h^-$ and $h^+$ are integers in $\set{-1, 0, 1, 2, ...}$ satisfying $h^+ \le h^-$\\ (note: if $h^+ = -1$, then the subsets $I_{h^+}, I_{h^+-1}, ..., I_0$ do not exist; similarly, if $h^- = -1$, then the subsets $D_0, D_1, ..., D_{h^-}$ do not exist);
+    \item if $h^+ \ge 0$, then $|I_{h^+}| = 2^{h^+}$; for each $i \in [0, h^+ - 1]$, $|I_i|$ is either 0 or $2^i$;
+    \item if $h^- \ge 0$, then $|D_{h^-}| = 2^{h^-}$; for each $i \in [0, h^-]$, $|D_i|$ is either 0 or $2^i$;
+    \item if an element $e$ is older than another element $e'$, then the subset containing $e$ must precede (in the sequence defined earlier) the one containing $e'$.
 }
-Specially, if $S = \emptyset$, then $h^- = h^+ = -1$. Note that the first bullet implies that $h^- \ge 0$ as long as $S$ is non-empty.
 
-\vgap
+%Note that the first bullet implies that $h^- \ge 0$ as long as $S$ is non-empty.
+
+%\vgap
 
 Create a structure of $\Upsilon$ (as is supplied to Theorem~\ref{thm:log:main}) on each subset. The set of structures --- denoted as $\Upsilon^D_0, \Upsilon^D_1, ..., \Upsilon^D_{h^-}, \Upsilon^I_{h^+}, \Upsilon^I_{h^+-1}, ..., \Upsilon^I_0$ --- together constitute our FIFO structure. The space usage is bounded by $F(n)$ because $F(.)$ grows at least linearly (proof left to you).
 
@@ -182,7 +183,7 @@ To answer a query $q$, we simply search all the $h^+ + h^-$ structures. As the q
 
 \subsection{Insertion} \label{sec:log:ins}
 
-To delete the {\em oldest} $e_\mit{old}$, we identify the smallest $i \in [0, h^-]$ satisfying
+To insert an element $e_\mit{new}$, we identify the smallest $i \in [0, h^-]$ satisfying
 \myeqn{
     |I_i| & = & 0 \nn
 }
@@ -206,7 +207,7 @@ or declare that such an $i$ does not exist.
 
 \subsection{Deletion} \label{sec:log:del}
 
-To insert an element $e_\mit{new}$, we identify the smallest $i \in [0, h^-]$ satisfying
+To delete the {\em oldest} $e_\mit{old}$, we identify the smallest $i \in [0, h^-]$ satisfying
 \myeqn{
     |I_i| & = & 2^i. \nn
 }
@@ -246,15 +247,21 @@ Let us focus on an arbitrary element $e$. Assume that the size of $S$ is $N_e$ w
 We will prove a crucial fact:
 
 \begin{lemma} \label{lmm:fact}
-    At any moment, every subset --- an $I_i$ or a $D_i$ --- containing $e$ must have a size at most $N_e$.
+    At any moment, every subset --- an $I_i$ or a $D_i$ --- containing $e$ must have a size at most $2N_e$.
 \end{lemma}
 
-The lemma implies our claim --- $e$ is amortized at most a cost of $U(N_e) \cdot O(\log N_e)$ --- because
+The lemma implies our claim --- $e$ is amortized at most a cost of $U(2 N_e) \cdot O(\log N_e)$ --- because
 \myitems{
-    \item every time $e$ is charged, it bears a cost of $U(N_e)$ (see the remarks in Sections~\ref{sec:log:ins} and \ref{sec:log:del});
+    \item every time $e$ is charged, it bears a cost of $U(2N_e)$ (see the remarks in Sections~\ref{sec:log:ins} and \ref{sec:log:del});
     \item $e$ can be charged $O(\log N_e)$ times as
-    every $I_i$ or $D_i$ containing $e$ satisfies $2^i \le N_e$, indicating $i \le \log_2 N_e$.
+    every $I_i$ or $D_i$ containing $e$ satisfies $2^i \le 2N_e$, indicating $i \le 1 + \log_2 N_e$.
 }
+
+\extraspacing {\bf Proof of Lemma~\ref{lmm:fact}.} We use the term {\em crossover} to refer to the moment when the $I$-subset containing $e$ becomes a $D$-subset.
+
+\vgap
+
+Consider any moment before the crossover. At this moment, $e$ is in an $I$-subset; as all the elements in every $D$-subset must be older than $e$, we know $|D_{h^-}| \le N_e$ because there can be at most $N_e$ elements older than $e$. The $I$-subset containing $e$ cannot be larger than
 
 \section{Remark}
 
