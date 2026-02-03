@@ -57,7 +57,7 @@ A data structure is said to be
 \myitems{
     \item {\em static} if it does not support any updates;
     \item {\em semi-dynamic} if it supports only insertions;
-    \item {\em fully-dynamic} if it supports both insertions and deletions.
+    \item {\em fully dynamic} if it supports both insertions and deletions.
 }
 Today, we will learn a generic technique --- called the {\em logarithmic method} --- that can turn a static structure into a semi-dynamic one.
 
@@ -112,7 +112,7 @@ We will prove:
         \item can be constructed in $n \cdot U(n)$ time;
         \item answers a query in $Q(n)$ time (plus, if necessary, a cost linear to the number of reported elements).
     }
-    Set $h = \lc \log_2 n \rc$. There is a semi-dynamic structure $\Upsilon'$ that
+    Set $h = \lc \log_2 n \rc$. There is a semi-dynamic structure  that
     \myitems{
         \item stores $n$ elements in $F(n)$ space;
         \item supports an insertion in $U(n) \cdot O(\log n)$ amortized time;
@@ -152,7 +152,7 @@ Let $S$ be the input set of elements. Set $n = |S|$ and $h = \lc \log_2 n \rc$. 
 \myeqn{
     |S_i| &=& \textrm{either 0 or $2^i$}. \label{eqn:rebuild:log:size}
 }
-(Think: why is such partitioning always possible?) Create a structure of $\Upsilon$ (as is supplied to Theorem~\ref{thm:log:main}) on each subset; denote by $\Upsilon_i$ the structure on $S_i$. Then, $\Upsilon_1, \Upsilon_2, ..., \Upsilon_h$ together constitute our semi-dynamic structure.
+for each $i \in [0, h]$ (think: why is such partitioning always possible?) Create a structure of $\Upsilon$ (as is supplied to Theorem~\ref{thm:log:main}) on each subset; denote by $\Upsilon_i$ the structure on $S_i$. Then, $\Upsilon_1, \Upsilon_2, ..., \Upsilon_h$ together constitute our semi-dynamic structure.
 
 \vgap
 
