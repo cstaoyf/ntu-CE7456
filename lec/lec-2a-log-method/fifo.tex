@@ -250,22 +250,28 @@ There are three scenarios where $e$ is can be moved into a new subset:
 We will prove the lemma by analyzing each case in turn. Hence, we will refer to each $I_i$ (resp., $D_i$) as an {\em $I$-subset} (resp., {\em $D$-subset}).
 
 \myitems{
-    \item {\bf Case 1:} In this case, all the elements in every $D$-subset must be older than $e$. Hence, $|D_{h^-}| \le N_e$ because at most $N_e$ elements can be older than $e$.
+    \item {\bf Case 1:} In this case, all the elements in every $D$-subset must be older than $e$. Hence, $|D_{h^-}| \le N_e$ because at most $N_e$ elements can be older than $e$. Hence, $|I_i| \le |I_{h^+}| \le |D_{h^-}| \le N_e$.
+
+    \item {\bf Case 2:} In this case, before the insertion, we must have:
+    \myitems{
+        \item $e \in I_{h^+}$ and $h^+ = h^-$ (by how our insertion algorithm works);
+        \item $|I_{h^+}| \le |D_{h^-}| \le N_e$ (by the same argument used in Case 1).
+    }
+    The insertion first creates $I_{h^+ + 1}$ --- whose size is $2|I_{h^+}| \le 2N_e$ --- renames $I_{h^+ + 1}$ to $D_{h^- + 1}$, increases $h^-$ by 1, and then sets $h^+ = -1$. The final $D_{h^-}$ is the $I_{h^+ + 1}$ before the renaming and, hence, has a size at most $2N_e$.
+
+    \item {\bf Case 3:} In this case, before the deletion, we must have:
+    \myitems{
+        \item $e \in I_{h^+}$ and $h^+ = h^-$ (by how our deletion algorithm works);
+        \item $|I_{h^+}| \le |D_{h^-}| \le N_e$ (by the same argument used in Case 1).
+    }
+    The deletion first destroys $D_{h^-}$, renames $I_{h^+}$ to $D_{h^-}$, and then decreases $h^+$ (the value of $h^-$ remains unchanged). The final $D_{h^-}$ is the $I_{h^+}$ before the renaming and, hence, has a size at most $N_e$.
+
+    \item {\bf Case 4:} This case can occur only after Case 3. In fact, after Case 3, $e$ can only move to subsets of smaller sizes. Hence, $|D_i|$ must be bounded by $N_e$.
 }
-
-\vgap
-
-We use the term {\em crossover} to refer to the moment when the $I$-subset containing $e$ becomes a $D$-subset.
-
-\vgap
-
-Consider any moment before the crossover. At this moment, $e$ is in an $I$-subset; as  we know  The $I$-subset containing $e$ cannot be larger than
 
 \section{Remark}
 
 The technique in Section~\ref{sec:log} was developed in \cite{st11c}.
-
-%There are standard {\em de-amortization} techniques (see \cite{o87}) that convert a structure with small amortized update time into a structure achieving a small time bound on {\em every} update. By applying those techniques, we can turn our modified kd-tree into a structure that ensures $O(\log^2 n)$ time on every insertion.
 
 
 \bibliographystyle{plain}
