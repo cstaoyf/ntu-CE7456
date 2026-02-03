@@ -249,9 +249,11 @@ We will prove a crucial fact:
     At any moment, every subset --- an $I_i$ or a $D_i$ --- including $e$ must have a size at most $N_e$.
 \end{lemma}
 
-Before proving the lemma, let us observe why it implies our claim: $e$ is amortized at most a cost of $U(N_e) \cdot O(\log N_e)$:
+The lemma implies our claim --- $e$ is amortized at most a cost of $U(N_e) \cdot O(\log N_e)$ --- because
 \myitems{
-    \item d
+    \item every time $e$ is charged, it bears a cost of $U(N_e)$ (see the remarks in Sections~\ref{sec:log:ins} and \ref{sec:log:del});
+    \item $e$ can be charged $O(\log N_e)$ times as
+    every $I_i$ or $D_i$ including $e$ must satisfy $2^i \le N_e$, indicating $i \le \log_2 N_e$.
 }
 
 \section{Remark}
