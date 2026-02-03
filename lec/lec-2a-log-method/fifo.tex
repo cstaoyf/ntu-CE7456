@@ -129,41 +129,41 @@ We will prove:
 
 Let $S$ be the input set of elements. At all times, we partition $S$ into a {\em sequence} of disjoint subsets
 \myeqn{
-    D_0, D_1, ..., D_{h^-}, I_{h^+}, I_{h^+-1}, ..., I_0  \nn
+    D_0, D_1, ..., D_{h^-}, I_{h^+}, I_{h^+-1}, ..., I_0  \label{eqn:seq}
 }
-where
+satisfying the following conditions:
 \myitems{
-    \item $h^-$ and $h^+$ are integers in $\set{-1, 0, 1, 2, ...}$ satisfying $h^+ \le h^-$\\ (note: if $h^+ = -1$, then the subsets $I_{h^+}, I_{h^+-1}, ..., I_0$ do not exist; similarly, if $h^- = -1$, then the subsets $D_0, D_1, ..., D_{h^-}$ do not exist);
-    \item if $h^+ \ge 0$, then $|I_{h^+}| = 2^{h^+}$; for each $i \in [0, h^+ - 1]$, $|I_i|$ is either 0 or $2^i$;
-    \item if $h^- \ge 0$, then $|D_{h^-}| = 2^{h^-}$; for each $i \in [0, h^-]$, $|D_i|$ is either 0 or $2^i$;
-    \item if an element $e$ is older than another element $e'$, then the subset containing $e$ must precede (in the sequence defined earlier) the one containing $e'$.
+    \item {\bf C1:} $h^-$ and $h^+$ are integers in $\set{-1, 0, 1, 2, ...}$ satisfying $h^+ \le h^-$ (note: if $h^+ = -1$, then the subsets $I_{h^+}, I_{h^+-1}, ..., I_0$ do not exist; similarly, if $h^- = -1$, the subsets $D_0, D_1, ..., D_{h^-}$ do not exist).
+    \item {\bf C2:} If $h^+ \ge 0$, then $|I_{h^+}| = 2^{h^+}$; for each $i \in [0, h^+ - 1]$, $|I_i|$ is either 0 or $2^i$.
+    \item {\bf C3:}Iif $h^- \ge 0$, then $|D_{h^-}| = 2^{h^-}$; for each $i \in [0, h^-]$, $|D_i|$ is either 0 or $2^i$.
+    \item {\bf C4:} If an element $e$ is older than another element $e'$, then the subset containing $e$ must precede (in the sequence shown in \eqref{eqn:seq}) the one containing $e'$.
 }
 
 %Note that the first bullet implies that $h^- \ge 0$ as long as $S$ is non-empty.
 
 %\vgap
 
-Create a structure of $\Upsilon$ (as is supplied to Theorem~\ref{thm:log:main}) on each subset. The set of structures --- denoted as $\Upsilon^D_0, \Upsilon^D_1, ..., \Upsilon^D_{h^-}, \Upsilon^I_{h^+}, \Upsilon^I_{h^+-1}, ..., \Upsilon^I_0$ --- together constitute our FIFO structure. The space usage is bounded by $F(n)$ because $F(.)$ grows at least linearly (proof left to you).
+Create a structure of $\Upsilon$ (as is supplied to Theorem~\ref{thm:log:main}) on each subset. The set of structures --- denoted as $\Upsilon^D_0, \Upsilon^D_1, ..., \Upsilon^D_{h^-}, \Upsilon^I_{h^+}, \Upsilon^I_{h^+-1}, ..., \Upsilon^I_0$ following the ordering in \eqref{eqn:seq} --- together constitute our structure. The space usage is bounded by $F(n)$ because $F(.)$ grows at least linearly (proof left to you).
 
 
 \subsection{Query} \label{sec:log:qry}
 
-To answer a query $q$, we simply search all the $h^+ + h^-$ structures. As the query is decomposable, we can obtain the answer on $S$ from the answers on the $h^+ + h^-$ structures in $O(h^+ + h^-) = O(\log n)$ time. The overall query time is
+To answer a query $q$, we simply search all the $h^+ + h^-$ structures. As the query is decomposable, we can obtain the answer on $S$ from the answers on the $h^+ + h^-$ structures in $O(h^+ + h^-) = O(\log n)$ time. The overall query time, excluding the cost of outputting the result, is
 \myeqn{
     O(\log n) + \sum_{i=0}^{h^+} Q(2^i) + \sum_{i=0}^{h^-} Q(2^i) = Q(n) \cdot O(\log n). \nn
 }
 
 \subsection{Insertion} \label{sec:log:ins}
 
-To insert an element $e_\mit{new}$, we identify the smallest $i \in [0, h^-]$ satisfying
+To insert an element $e_\mit{new}$, we identify the smallest $i \in [0, h^+]$ satisfying
 \myeqn{
     |I_i| & = & 0 \nn
 }
 or declare that such an $i$ does not exist.
 \myitems{
-    \item If $i$ exists, destroy $\Upsilon^I_0, \Upsilon^I_1, ..., \Upsilon^I_{i-1}$ and move all the elements in $I_0, I_1, ..., I_{i-1}$, together with $e_\mit{new}$, into $I_i$. After this, $I_0, I_1, ..., I_{i-1}$ become empty. Rebuild $\Upsilon^I_i$ on the $I_i$ from scratch, which takes $2^i \cdot U(2^i)$ time. We amortize this over the $2^i$ elements in $I_i$, each of which bears a cost of $U(2^i)$.
+    \item If $i$ exists, destroy $\Upsilon^I_0, \Upsilon^I_1, ..., \Upsilon^I_{i-1}$ and move all the elements in $I_0, I_1, ..., I_{i-1}$, together with $e_\mit{new}$, into $I_i$. After this, $I_0, I_1, ..., I_{i-1}$ become empty. Build $\Upsilon^I_i$ on $I_i$, which takes $2^i \cdot U(2^i)$ time. We amortize this over the $2^i$ elements in $I_i$, each of which bears a cost of $U(2^i)$.
 
-    \item Otherwise, destroy $\Upsilon^I_0, \Upsilon^I_1, ..., \Upsilon^I_{h^+}$ and move all the elements in $I_0, I_1, ..., I_{h^+}$, together with $e_\mit{new}$, into $I_{h^++1}$. After this, $I_0, I_1, ..., I_{h^+}$ become empty. Build $\Upsilon_{h^++1}$ on $I_{h^++1}$ from scratch, which takes $2^{h^++1} \cdot U(2^{h^++1})$ time. We amortize this over the $2^{h^++1}$ elements in $I_{h^++1}$, each of which bears a cost of $U(2^{h^++1})$.
+    \item Otherwise, destroy $\Upsilon^I_0, \Upsilon^I_1, ..., \Upsilon^I_{h^+}$ and move all the elements in $I_0, I_1, ..., I_{h^+}$, together with $e_\mit{new}$, into $I_{h^++1}$. After this, $I_0, I_1, ..., I_{h^+}$ become empty. Build $\Upsilon_{h^++1}$ on $I_{h^++1}$, which takes $2^{h^++1} \cdot U(2^{h^++1})$ time. We amortize this over the $2^{h^++1}$ elements in $I_{h^++1}$, each of which bears a cost of $U(2^{h^++1})$.
 
     \vgap
 
@@ -183,17 +183,17 @@ To delete the {\em oldest} $e_\mit{old}$, we identify the smallest $i \in [0, h^
 \myeqn{
     |I_i| & = & 2^i. \nn
 }
-Such an $i$ definitely exists (think: why?).
+Such an $i$ definitely exists (think: why?), and $I_i$ must be the subset containing $e_\mit{old}$.
 
 \vgap
 
-We destroy $\Upsilon^D_i$ and partition $D_i \setminus \set{e_\mit{new}}$ into $D_0, D_1, ..., D_{i-1}$ such that
+We destroy $\Upsilon^D_i$ and partition $D_i \setminus \set{e_\mit{old}}$ into $D_0, D_1, ..., D_{i-1}$ such that
 \myitems{
     \item $D_j$ contains $2^j$ elements for every $j \in [0, i-1]$;
 
-    \item if an element $e \in D_i$ is older than another element $e' \in D_i$, then the subsets $D_j$ and $D_{j'}$ containing $e$ and $e'$, respectively, must satisfy $j \le j'$.
+    \item if an element $e \in D_i$ is older than another element $e' \in D_i$, the subsets $D_j$ and $D_{j'}$ containing $e$ and $e'$, respectively, must satisfy $j \le j'$.
 }
-For each $j \in [0, i-1]$, build $\Upsilon^D_j$ on $D_j$ from scratch. The total cost of building $\Upsilon^D_0, \Upsilon^D_2, ..., \Upsilon^D_{i-1}$ is bounded by
+For each $j \in [0, i-1]$, build $\Upsilon^D_j$ on $D_j$. The total cost of building $\Upsilon^D_0, \Upsilon^D_1, ..., \Upsilon^D_{i-1}$ is bounded by
 \myeqn{
     \sum_{j=0}^{i-1} 2^j \cdot U(2^j) \le U(2^i) \cdot \sum_{j=0}^{i-1} 2^j < U(2^i) \cdot 2^i. \nn
 }
@@ -201,7 +201,7 @@ We amortize this over the $2^i$ elements that were in $I_i$; each element thus b
 
 \vgap
 
-We then decrease $h^-$ by 1. At this moment, $h^-$ may be lower than $h^+$. In that case, it must hold that $h^- = h^+ - 1$; we
+Decrease $h^-$ by 1. At this moment, $h^-$ may be lower than $h^+$. In that case, it must hold that $h^- = h^+ - 1$; we
 \myitems{
     \item rename $I_{h^+}$ to $D_{h^- + 1}$ and accordingly $\Upsilon^I_{h^+}$ to $\Upsilon^D_{h^- + 1}$;
     \item increase $h^-$ by 1 and set $h^+$ to the highest $j \in [0, h^+-1]$ such that $D_j$ is non-empty (if no such $j$ exists, set $h^+ = -1$).
@@ -212,7 +212,7 @@ We then decrease $h^-$ by 1. At this moment, $h^-$ may be lower than $h^+$. In t
 
 \subsection{Amortized Update Cost}
 
-Let us focus on an arbitrary element $e$. Assume that the size of $S$ is $N_e$ when $e$ is inserted. Our objective is to show that we can change the total update cost over all the elements ever inserted so that the cost amortized to $e$ is at most $U(2N_e) \cdot O(\log N_e)$. Because $U(2 N_e) = O(U(N_e))$ (as stated in Theorem~\ref{thm:log:main}), we have
+Let us focus on an arbitrary element $e$. Assume that the size of $S$ is $N_e$ when $e$ is inserted. Our objective is to show that the total update cost can be amortized over all the elements ever inserted such that $e$ bears a cost of at most $U(2N_e) \cdot O(\log N_e)$. Because $U(2 N_e) = O(U(N_e))$ --- as stated in Theorem~\ref{thm:log:main} --- we have
 \myeqn{
     U(2N_e) \cdot O(\log N_e)
     =
@@ -226,7 +226,7 @@ Let us focus on an arbitrary element $e$. Assume that the size of $S$ is $N_e$ w
 We will prove a crucial fact:
 
 \begin{lemma} \label{lmm:fact}
-    At any moment, every subset --- an $I_i$ or a $D_i$ --- containing $e$ must have a size at most $2N_e$.
+    After each update, the subset --- which may be an $I_i$ or a $D_i$ --- containing $e$ must have a size at most $2N_e$.
 \end{lemma}
 
 The lemma implies our claim --- $e$ is amortized at most a cost of $U(2 N_e) \cdot O(\log N_e)$ --- because

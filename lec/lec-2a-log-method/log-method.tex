@@ -148,7 +148,7 @@ We will prove:
 
 \subsection{Structure} \label{sec:rebuild:log:str}
 
-Let $S$ be the input set of elements. Set $n = |S|$ and $h = \lc \log_2 n \rc$. At all times, we partition $S$ arbitrarily into disjoint subsets $S_0, S_1, ..., S_h$ (some of which may be empty) satisfying:
+Let $S$ be the input set of elements. Set $n = |S|$ and $h = \lc \log_2 n \rc$. At all times, we partition $S$ into disjoint subsets $S_0, S_1, ..., S_h$ (some of which may be empty) satisfying:
 \myeqn{
     |S_i| &=& \textrm{either 0 or $2^i$}. \label{eqn:rebuild:log:size}
 }
@@ -161,7 +161,7 @@ The space usage is bounded by $\sum_{i=0}^h F(|S_i|)$, which is at most $F(\sum_
 
 \subsection{Query} \label{sec:rebuild:log:qry}
 
-To answer a query $q$, we simply search all of $\Upsilon_1, ..., \Upsilon_h$. As the query is decomposable, we can obtain the answer on $S$ from the answers on $S_1, ..., S_h$ in $O(h)$ time. The overall query time is
+To answer a query $q$, we simply search all of $\Upsilon_1, ..., \Upsilon_h$. As the query is decomposable, we can obtain the answer on $S$ from the answers on $S_1, ..., S_h$ in $O(h)$ time. The overall query time, excluding the cost of outputting the result, is
 \myeqn{
     O(h) + \sum_{i=0}^h Q(2^i) = Q(n) \cdot O(\log n). \nn
 }
@@ -174,9 +174,9 @@ To insert an element $e_\mit{new}$, we identify the smallest $i \in [0, h]$ sati
 }
 or declare that such an $i$ does not exist.
 \myitems{
-    \item If $i$ exists, destroy $\Upsilon_0, \Upsilon_1, ..., \Upsilon_{i-1}$ and move all the elements in $S_0, S_1, ..., S_{i-1}$, together with $e_\mit{new}$, into $S_i$. (Think: why doesn't this violate \eqref{eqn:rebuild:log:size}?) After this, $S_0, S_1, ..., S_{i-1}$ become empty. Rebuild $\Upsilon_i$ on the $S_i$ from scratch.
+    \item If $i$ exists, destroy $\Upsilon_0, \Upsilon_1, ..., \Upsilon_{i-1}$ and move all the elements in $S_0, S_1, ..., S_{i-1}$, together with $e_\mit{new}$, into $S_i$. (Think: why doesn't this violate \eqref{eqn:rebuild:log:size}?) After this, $S_0, S_1, ..., S_{i-1}$ become empty. Build $\Upsilon_i$ on $S_i$.
 
-    \item Otherwise, destroy $\Upsilon_0, \Upsilon_1, ..., \Upsilon_h$ and move all the elements in $S_0, S_1, ..., S_h$, together with $e_\mit{new}$, into $S_{h+1}$. After this, $S_0, S_1, ..., S_h$ become empty. Build $\Upsilon_{h+1}$ on $S_{h+1}$ from scratch. The value of $h$ then increases by 1.
+    \item Otherwise, destroy $\Upsilon_0, \Upsilon_1, ..., \Upsilon_h$ and move all the elements in $S_0, S_1, ..., S_h$, together with $e_\mit{new}$, into $S_{h+1}$. After this, $S_0, S_1, ..., S_h$ become empty. Build $\Upsilon_{h+1}$ on $S_{h+1}$ and increase the value of $h$ by 1.
 }
 
 Next, we analyze the insertion cost with a charging argument. The reconstruction of $\Upsilon_i$ ($i \ge 0$) requires
