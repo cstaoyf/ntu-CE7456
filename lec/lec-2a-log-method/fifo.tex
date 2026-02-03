@@ -51,14 +51,6 @@
 }
 
 
-%\chapter{The Logarithmic Method} \label{lec:rebuild}
-
-A data structure is said to be
-\myitems{
-    \item {\em static} if it does not support any updates;
-    \item {\em semi-dynamic} if it supports only insertions;
-    \item {\em fully dynamic} if it supports both insertions and deletions.
-}
 In the previous lecture, we talked about the {\em logarithmic method} for turning a static structure into a semi-dynamic one. Today, we will see how to use it to make a static structure fully dynamic when insertions and deletions obey the {\em first in first out} (FIFO) order.
 
 
@@ -66,7 +58,7 @@ In the previous lecture, we talked about the {\em logarithmic method} for turnin
 
 %This section will formalize the class of problems to be investigated.
 
-Let $\bD$ be a (possibly infinite) set called the {\em data domain}, whose members are called {\em data elements}. Let $\bQ$ be a (possibly infinite) set called the {\em query domain}, whose members are called {\em queries}. Over a finite $S \subseteq \bD$, each query $q \in \bQ$ returns an {\em answer}, represented as $\ans_q(S)$. In a {\em problem} characterized by $(\bD, \bQ)$, the goal is to store a given set $S \subseteq \bD$ --- where $S$ is called the {\em dataset} --- in a data structure that allows us to compute $\ans_q(S)$ efficiently for any $q \in \bQ$. A problem characterized by $(\bD, \bQ)$ is {\em decomposable} if, for any disjoint sets $S_1, S_2 \subseteq \mathbb{D}$ and any query $q \in \mathbb{Q}$, it is possible to derive $\ans_q(S_1 \cup S_2)$ from $\ans_q(S_1)$ and $ \ans_q(S_2)$ in constant time.
+Let $\bD$ be a (possibly infinite) set called the {\em data domain}, whose members are called {\em data elements}. Let $\bQ$ be a (possibly infinite) set called the {\em query domain}, whose members are called {\em queries}. Over a finite $S \subseteq \bD$, each query $q \in \bQ$ returns an {\em answer}, represented as $\ans_q(S)$. In a {\em problem} characterized by $(\bD, \bQ)$, the goal is to store a given set $S \subseteq \bD$ --- where $S$ is called the {\em dataset} --- in a data structure that allows us to compute $\ans_q(S)$ efficiently for any $q \in \bQ$. The problem is {\em decomposable} if, for any disjoint sets $S_1, S_2 \subseteq \mathbb{D}$ and any query $q \in \mathbb{Q}$, it is possible to derive $\ans_q(S_1 \cup S_2)$ from $\ans_q(S_1)$ and $ \ans_q(S_2)$ in constant time.
 
 \vgap
 
@@ -75,15 +67,20 @@ We assume that $S$ is initially empty and can be updated by two operations:
     \item Insertion$(e)$, which adds a new element $e$ to $S$;
     \item Deletion, which removes from $S$ the ``oldest'' element in $S$ --- namely, the element that was inserted the longest time ago.
 }
-The above is referred to as the {\em FIFO update model}. For convenience, we say that the $i$-th ($i \ge 1$) insertion happens at {\em timestamp $i$}. An element $e$ is older (resp., younger) than another element $e'$ if the insertion time of $e$ is smaller (resp., larger) than that of $e'$.
+The above is the {\em FIFO update model}. For convenience, we say that the $i$-th ($i \ge 1$) insertion happens at {\em timestamp $i$}. An element $e$ is older than another element $e'$ if the insertion time of $e$ is smaller than that of $e'$.
 
 \vgap
 
-Our goal is to maintain a data structure on $S$ to answer all queries efficiently. As in the previous lecture (i.e., insertions only), regarding the update efficiency we aim to achieve a small amortized cost per element ever inserted. However, as the size of $S$ can now fluctuate (i.e., it may go up and down), we must exercise care in defining what it means by ``amortized update cost $U(n)$'', where $U: \real_{\ge 0} \rightarrow \real_{\ge 0}$ is a function. Suppose that $T \ge 1$ elements have been inserted, and that when the $i$-th ($i \in [1, T]$) element $e$ was inserted, the size of $S$ was $N_i$. We require that the element $e$ should be amortized a cost of at most $U(N_i)$. Formally, the total cost of performing all the insertions and deletions thus far must be bounded by
-\myeqn{
-    \sum_{i=1}^T U(N_i). \label{eqn:amortized}
+%However, as the size of $S$ can now fluctuate (i.e., $|S|$ may go up and down), we must exercise care in defining what it means by ``amortized update cost $U(n)$'', where $U: \real_{\ge 0} \rightarrow \real_{\ge 0}$ is a function.
+
+Our goal is to maintain a data structure on $S$ that (i) has small space and query time, and (ii) can be updated with a small ``amortized cost''. Specifically, given a function $U: \real_{\ge 0} \rightarrow \real_{\ge 0}$, we say that a structure can be updated in $U(n)$ {\em amortized time} if the following is true after {\em every} update:
+
+\minipg{0.9\linewidth}{
+    Let $T$ be the total number of insertions received. Suppose that the size of $S$ was $N_i$ ($i \in [1, T]$) when the $i$-th element was inserted. Then, the total cost of performing all the updates (including insertions and deletions) so far is bounded by
+    \myeqn{
+        \sum_{i=1}^T U(N_i). \label{eqn:amortized}
+    }
 }
-Furthermore, this guarantee is required to hold at all times --- namely, you can choose to calculate the total update cost so far after any insertion or deletion, and the guarantee must still hold.
 
 % \section{Non-Decreasing Functions}
 %
@@ -108,7 +105,7 @@ Furthermore, this guarantee is required to hold at all times --- namely, you can
 
 
 
-\section{The Logarithmic Method for FIFO} \label{sec:log}
+\section{The Logarithmic Method for the FIFO Model} \label{sec:log}
 
 We will prove:
 
@@ -116,46 +113,21 @@ We will prove:
     Consider a decomposable problem for which there is a static structure $\Upsilon$ that
     \myitems{
         \item stores $n$ elements in $F(n)$ space, where $F(.)$ grows at least linearly;
-        \item can be constructed in $n \cdot U(n)$ time;
+        \item can be constructed in $n \cdot U(n)$ time where $U(.)$ satisfies $U(2n) = O(U(n))$ for any $n \ge 1$;
         \item answers a query in $Q(n)$ time (plus, if necessary, a cost linear to the number of reported elements).
     }
     Set $h = \lc \log_2 n \rc$. Under the FIFO update model, there is a structure that
     \myitems{
         \item stores $n$ elements in $F(n)$ space;
         \item supports an update (an insertion or a deletion) in $U(n) \cdot O(\log n)$ amortized time;
-        \item answers a query in $Q(n) \cdot O(\log n)$ time (plus, if necessary, a cost linear to the number of reported elements)
+        \item answers a query in $Q(n) \cdot O(\log n)$ time (plus, if necessary, a cost linear to the number of reported elements).
     }
 
-
-    %If in addition $\Upsilon$ also supports a deletion in at most $U_\mit{del}(n)$ worst-case time, then $\Upsilon'$ is a fully dynamic structure that supports a deletion in $O(\log n) + U_\mit{del}(n)$ worst-case time, and retains all the above properties.
 \end{theorem}
-%
-% \vgap
-%
-% Before delving into the proof, let us first see an application. Suppose that we have a structure that can be constructed in $O(n \log n)$ time and answers a query in $O(\sqrt{n})$ time. Therefore:
-% \myeqn{
-%     F(n) &=& O(n) \nn \\
-%     U(n) &=& O(\log n) \nn \\
-%     Q(n) &=& O(\sqrt{n}). \nn
-% }
-% Theorem~\ref{thm:log:main} immediately gives a semi-dynamic structure that uses
-% \myeqn{
-%     \sum_{i=0}^{\lc \log_2 n \rc} O(2^i) &=& O(n) \nn
-% }
-% space, supports an insertion in
-% \myeqn{
-%     \sum_{i=0}^{\lc \log_2 n \rc} O\left(\log 2^i\right) &=& O(\log^2 n) \nn
-% }
-% amortized time, and answers a query in
-% \myeqn{
-%     \sum_{i=0}^{\lc \log_2 n \rc} O\left(\sqrt{2^i}\right) &=& O(\sqrt{n}) \nn
-% }
-% time.
-
 
 \subsection{Structure} \label{sec:log:str}
 
-Let $S$ be the input set of elements. At all times, we partition $S$ arbitrarily into a {\em sequence} of disjoint subsets
+Let $S$ be the input set of elements. At all times, we partition $S$ into a {\em sequence} of disjoint subsets
 \myeqn{
     D_0, D_1, ..., D_{h^-}, I_{h^+}, I_{h^+-1}, ..., I_0  \nn
 }
@@ -240,9 +212,16 @@ We then decrease $h^-$ by 1. At this moment, $h^-$ may be lower than $h^+$. In t
 
 \subsection{Amortized Update Cost}
 
-Let us focus on an arbitrary element $e$. Assume that the size of $S$ is $N_e$ when $e$ is inserted. Our objective is to show that we can change the total update cost over all the elements ever inserted so that the cost amortized to $e$ is at most $U(N_e) \cdot O(\log N_e)$.
+Let us focus on an arbitrary element $e$. Assume that the size of $S$ is $N_e$ when $e$ is inserted. Our objective is to show that we can change the total update cost over all the elements ever inserted so that the cost amortized to $e$ is at most $U(2N_e) \cdot O(\log N_e)$. Because $U(2 N_e) = O(U(N_e))$ (as stated in Theorem~\ref{thm:log:main}), we have
+\myeqn{
+    U(2N_e) \cdot O(\log N_e)
+    =
+    O(U(N_e)) \cdot O(\log N_e)
+    =
+    U(N_e) \cdot O(\log N_e). \nn
+}
 
-\vgap
+%\vgap
 
 We will prove a crucial fact:
 
@@ -257,7 +236,19 @@ The lemma implies our claim --- $e$ is amortized at most a cost of $U(2 N_e) \cd
     every $I_i$ or $D_i$ containing $e$ satisfies $2^i \le 2N_e$, indicating $i \le 1 + \log_2 N_e$.
 }
 
-\extraspacing {\bf Proof of Lemma~\ref{lmm:fact}.} We use the term {\em crossover} to refer to the moment when the $I$-subset containing $e$ becomes a $D$-subset.
+\extraspacing {\bf Proof of Lemma~\ref{lmm:fact}.} There are three scenarios where $e$ is added to a subset:
+\myitems{
+    \item an insertion puts $e$ into $I_i$ for some $i \ge 0$.
+}
+
+Consider a moment when $e$ is added to a subset $I_i$ for some $i \ge 0$.
+\myitems{
+    \item If $i < h^+$
+}
+
+\vgap
+
+We use the term {\em crossover} to refer to the moment when the $I$-subset containing $e$ becomes a $D$-subset.
 
 \vgap
 
