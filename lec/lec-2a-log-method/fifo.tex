@@ -1,0 +1,257 @@
+\include{./def/yf-formatting}
+\include{./def/yf-def}
+
+\title{}
+\author{}
+\date{}
+
+
+\def\InvS{\textrm{InvS}}
+\def\deg{\textrm{deg}}
+
+\def\bD{\mathbb{D}}
+\def\bQ{\mathbb{Q}}
+
+% \def\A{\mathcal{A}}
+\def\B{\mathcal{B}}
+\def\C{\mathcal{C}}
+\def\Cb{\mathbb{C}}
+\def\E{\mathcal{E}}
+\def\F{\mathcal{F}}
+\def\G{\mathcal{G}}
+\def\I{\mathcal{I}}
+\def\L{\mathcal{L}}
+\def\R{\mathcal{R}}
+\def\T{\mathcal{T}}
+%\def\U{\mathcal{U}}
+%\def\X{\mathcal{X}}
+
+\def\ans{\textsc{Ans}}
+
+\def\extraspacing{\vspace{3mm} \noindent}
+\def\vgap{\vspace{3mm}}
+\def\vslit{\vspace{0.5mm}}
+
+\begin{document}
+
+% \begin{center}
+%     {\bf \large Lecture Notes} \\
+%     {\bf \large Approximate Nearest Neighbor Search 1 : Proximity Graphs} \\[5mm]
+%     {\large Yufei Tao} \\[10mm]
+% \end{center}
+
+\boxminipg{\linewidth}{
+    \begin{center}
+        \vspace{3mm}
+    {\Large
+    (CE7456 Lecture Notes 6) FIFO Indexes} \\[2mm]
+    {\large Yufei Tao}
+        \vspace{3mm}
+    \end{center}
+}
+
+
+%\chapter{The Logarithmic Method} \label{lec:rebuild}
+
+A data structure is said to be
+\myitems{
+    \item {\em static} if it does not support any updates;
+    \item {\em semi-dynamic} if it supports only insertions;
+    \item {\em fully dynamic} if it supports both insertions and deletions.
+}
+In the previous lecture, we talked about the {\em logarithmic method} for turning a static structure into a semi-dynamic one. Today, we will see how to use it to make a static structure fully dynamic when insertions and deletions obey the {\em first in first out} (FIFO) order.
+
+
+\section{Decomposable Problems under FIFO Updates} \label{sec:decomp}
+
+%This section will formalize the class of problems to be investigated.
+
+Let $\bD$ be a (possibly infinite) set called the {\em data domain}, whose members are called {\em data elements}. Let $\bQ$ be a (possibly infinite) set called the {\em query domain}, whose members are called {\em queries}. Over a finite $S \subseteq \bD$, each query $q \in \bQ$ returns an {\em answer}, represented as $\ans_q(S)$. In a {\em problem} characterized by $(\bD, \bQ)$, the goal is to store a given set $S \subseteq \bD$ --- where $S$ is called the {\em dataset} --- in a data structure that allows us to compute $\ans_q(S)$ efficiently for any $q \in \bQ$. A problem characterized by $(\bD, \bQ)$ is {\em decomposable} if, for any disjoint sets $S_1, S_2 \subseteq \mathbb{D}$ and any query $q \in \mathbb{Q}$, it is possible to derive $\ans_q(S_1 \cup S_2)$ from $\ans_q(S_1)$ and $ \ans_q(S_2)$ in constant time.
+
+\vgap
+
+We assume that $S$ is initially empty and can be updated by two operations:
+\myitems{
+    \item Insertion$(e)$, which adds a new element $e$ to $S$;
+    \item Deletion, which removes from $S$ the ``oldest'' element in $S$ --- namely, the element that was inserted the longest time ago.
+}
+The above is referred to as the {\em FIFO update model}. For convenience, we say that the $i$-th ($i \ge 1$) insertion happens at {\em timestamp $i$}. An element $e$ is older (resp., younger) than another element $e'$ if the insertion time of $e$ is smaller (resp., larger) than that of $e'$.
+
+\vgap
+
+Our goal is to maintain a data structure on $S$ to answer all queries efficiently. As in the previous lecture (i.e., insertions only), regarding the update efficiency we aim to achieve a small amortized cost per element ever inserted. However, as the size of $S$ can now fluctuate (i.e., it may go up and down), we must exercise care in defining what it means by ``amortized update cost $U(n)$'', where $U: \real_{\ge 0} \rightarrow \real_{\ge 0}$ is a function. Suppose that $T \ge 1$ elements have been inserted, and that when the $i$-th ($i \in [1, T]$) element $e$ was inserted, the size of $S$ was $N_i$. We require that the element $e$ should be amortized a cost of at most $U(N_i)$. Formally, the total cost of performing all the insertions and deletions thus far must be bounded by
+\myeqn{
+    \sum_{i=1}^T U(N_i). \label{eqn:amortized}
+}
+Furthermore, this guarantee is required to hold at all times --- namely, you can choose to calculate the total update cost so far after any insertion or deletion, and the guarantee must still hold.
+
+% \section{Non-Decreasing Functions}
+%
+% A function $f: \real_{>0} \rightarrow \real_{>0}$ is said to grow {\em at least linearly} if $\fr{f(x)}{x}$ is a non-decreasing for $x > 0$.
+%
+% \begin{lemma}
+%     If $f: \real_{>0} \rightarrow \real_{>0}$ grows at least linearly, then $f(a) + f(b) \le f(a+b)$ holds for any $a > 0$ and $b > 0$.
+% \end{lemma}
+%
+% \begin{proof}
+%     As $f(x)$ grows at least linearly, we have:
+%     \myeqn{
+%         \fr{f(a)}{a} &\le& \fr{f(a+b)}{a+b} \nn \\
+%         \fr{f(b)}{b} &\le& \fr{f(a+b)}{a+b}. \nn
+%     }
+%     Combining the above yields:
+%     \myeqn{
+%         f(a) + f(b) \le \Big(\fr{a}{a+b} + \fr{b}{a+b} \Big) f(a+b)
+%         = f(a+b). \nn
+%     }
+% \end{proof}
+
+
+
+\section{The Logarithmic Method for FIFO} \label{sec:log}
+
+We will prove:
+
+\begin{theorem} \label{thm:log:main}
+    Consider a decomposable problem for which there is a static structure $\Upsilon$ that
+    \myitems{
+        \item stores $n$ elements in $F(n)$ space, where $F(.)$ grows at least linearly;
+        \item can be constructed in $n \cdot U(n)$ time;
+        \item answers a query in $Q(n)$ time (plus, if necessary, a cost linear to the number of reported elements).
+    }
+    Set $h = \lc \log_2 n \rc$. Under the FIFO update model, there is a structure that
+    \myitems{
+        \item stores $n$ elements in $F(n)$ space;
+        \item supports an update (an insertion or a deletion) in $U(n) \cdot O(\log n)$ amortized time;
+        \item answers a query in $Q(n) \cdot O(\log n)$ time (plus, if necessary, a cost linear to the number of reported elements)
+    }
+
+
+    %If in addition $\Upsilon$ also supports a deletion in at most $U_\mit{del}(n)$ worst-case time, then $\Upsilon'$ is a fully dynamic structure that supports a deletion in $O(\log n) + U_\mit{del}(n)$ worst-case time, and retains all the above properties.
+\end{theorem}
+%
+% \vgap
+%
+% Before delving into the proof, let us first see an application. Suppose that we have a structure that can be constructed in $O(n \log n)$ time and answers a query in $O(\sqrt{n})$ time. Therefore:
+% \myeqn{
+%     F(n) &=& O(n) \nn \\
+%     U(n) &=& O(\log n) \nn \\
+%     Q(n) &=& O(\sqrt{n}). \nn
+% }
+% Theorem~\ref{thm:log:main} immediately gives a semi-dynamic structure that uses
+% \myeqn{
+%     \sum_{i=0}^{\lc \log_2 n \rc} O(2^i) &=& O(n) \nn
+% }
+% space, supports an insertion in
+% \myeqn{
+%     \sum_{i=0}^{\lc \log_2 n \rc} O\left(\log 2^i\right) &=& O(\log^2 n) \nn
+% }
+% amortized time, and answers a query in
+% \myeqn{
+%     \sum_{i=0}^{\lc \log_2 n \rc} O\left(\sqrt{2^i}\right) &=& O(\sqrt{n}) \nn
+% }
+% time.
+
+
+\subsection{Structure} \label{sec:log:str}
+
+Let $S$ be the input set of elements. At all times, we partition $S$ arbitrarily into a {\em sequence} of disjoint subsets
+\myeqn{
+    D_0, D_1, ..., D_{h^-}, I_{h^+}, I_{h^+-1}, ..., I_0  \nn
+}
+where
+\myitems{
+    \item $h^+ \le h^- = O(\log |S|)$;
+    \item for each $i \in [0, h^+]$, $|I_i|$ is either 0 or $2^i$;
+    \item for each $i \in [0, h^-]$, $|D_i|$ is either 0 or $2^i$;
+    \item if an element $e$ is older than another element $e'$, then the subset containing $e$ must precede the one containing $e'$.
+}
+Specially, if $S = \emptyset$, then $h^- = h^+ = -1$. Note that the first bullet implies that $h^- \ge 0$ as long as $S$ is non-empty.
+
+\vgap
+
+Create a structure of $\Upsilon$ (as is supplied to Theorem~\ref{thm:log:main}) on each subset. The set of structures --- denoted as $\Upsilon^D_0, \Upsilon^D_1, ..., \Upsilon^D_{h^-}, \Upsilon^I_{h^+}, \Upsilon^I_{h^+-1}, ..., \Upsilon^I_0$ --- together constitute our FIFO structure. The space usage is bounded by $F(n)$ because $F(.)$ grows at least linearly (proof left to you).
+
+
+\subsection{Query} \label{sec:log:qry}
+
+To answer a query $q$, we simply search all the $h^+ + h^-$ structures. As the query is decomposable, we can obtain the answer on $S$ from the answers on the $h^+ + h^-$ structures in $O(h^+ + h^-) = O(\log n)$ time. The overall query time is
+\myeqn{
+    O(\log n) + \sum_{i=0}^{h^+} Q(2^i) + \sum_{i=0}^{h^-} Q(2^i) = Q(n) \cdot O(\log n). \nn
+}
+
+\subsection{Insertion} \label{sec:log:ins}
+
+To delete the {\em oldest} $e_\mit{old}$, we identify the smallest $i \in [0, h^-]$ satisfying
+\myeqn{
+    |I_i| & = & 0 \nn
+}
+or declare that such an $i$ does not exist.
+\myitems{
+    \item If $i$ exists, destroy $\Upsilon^I_0, \Upsilon^I_1, ..., \Upsilon^I_{i-1}$ and move all the elements in $I_0, I_1, ..., I_{i-1}$, together with $e_\mit{new}$, into $I_i$. After this, $I_0, I_1, ..., I_{i-1}$ become empty. Rebuild $\Upsilon^I_i$ on the $I_i$ from scratch, which takes $2^i \cdot U(2^i)$ time. We amortize this over the $2^i$ elements in $I_i$, each of which bears a cost of $U(2^i)$.
+
+    \item Otherwise, destroy $\Upsilon^I_0, \Upsilon^I_1, ..., \Upsilon^I_{h^+}$ and move all the elements in $I_0, I_1, ..., I_{h^+}$, together with $e_\mit{new}$, into $I_{h^++1}$. After this, $I_0, I_1, ..., I_{h^+}$ become empty. Build $\Upsilon_{h^++1}$ on $I_{h^++1}$ from scratch, which takes $2^{h^++1} \cdot U(2^{h^++1})$ time. We amortize this over the $2^{h^++1}$ elements in $I_{h^++1}$, each of which bears a cost of $U(2^{h^++1})$.
+
+    \vgap
+
+    The value of $h^+$ then increases by 1.
+    Importantly, at this moment, $h^+$ may be greater than $h^-$. In that case, it must hold that $h^+ = h^- + 1$ (think: why?); we
+    \myitems{
+        \item rename $I_{h^+}$ to $D_{h^- + 1}$ and accordingly $\Upsilon^I_{h^+}$ to $\Upsilon^D_{h^- + 1}$;
+        \item increase $h^-$ by 1 and reset $h^+$ to $-1$.
+    }
+}
+
+\noindent {\bf Remark.} We insert a remark here that will be useful later.
+
+\subsection{Deletion} \label{sec:log:del}
+
+To insert an element $e_\mit{new}$, we identify the smallest $i \in [0, h^-]$ satisfying
+\myeqn{
+    |I_i| & = & 2^i. \nn
+}
+Such an $i$ definitely exists (think: why?).
+
+\vgap
+
+We destroy $\Upsilon^D_i$ and partition $D_i \setminus \set{e_\mit{new}}$ into $D_0, D_1, ..., D_{i-1}$ such that
+\myitems{
+    \item $D_j$ contains $2^j$ elements for every $j \in [0, i-1]$;
+
+    \item if an element $e \in D_i$ is older than another element $e' \in D_i$, then the subsets $D_j$ and $D_{j'}$ containing $e$ and $e'$, respectively, must satisfy $j \le j'$.
+}
+For each $j \in [0, i-1]$, build $\Upsilon^D_j$ on $D_j$ from scratch. When this is done, we decrease $h^-$ by 1.
+
+\vgap
+
+Importantly, at this moment, $h^-$ may be lower than $h^-$. In that case, it must hold that $h^- = h^+ - 1$; we
+\myitems{
+    \item rename $I_{h^+}$ to $D_{h^- + 1}$ and accordingly $\Upsilon^I_{h^+}$ to $\Upsilon^D_{h^- + 1}$;
+    \item increase $h^-$ by 1 and set $h^+$ to the highest $j \in [0, h^+-1]$ such that $D_j$ is non-empty (or if no such $j$ exists, set $h^+ = -1$).
+}
+
+\subsection{Amortized Update Cost}
+
+Let us focus on an arbitrary element $e$. Assume that the size of $S$ is $N_e$ when $e$ is inserted. Our objective is to show that we can amortize the total update cost over all the elements ever inserted so that the cost amortized to $e$ is at most $U(N_e) \cdot O(\log N_e)$.
+
+\vgap
+
+We will prove a crucial fact:
+
+\begin{lemma} \label{lmm:fact}
+    At any moment, every subset --- an $I_i$ or a $D_i$ --- including $e$ must have a size at most $N_e$.
+\end{lemma}
+
+Before proving the lemma, let us first analyze why
+
+\section{Remark}
+
+The technique in Section~\ref{sec:log} was developed in \cite{st11c}.
+
+%There are standard {\em de-amortization} techniques (see \cite{o87}) that convert a structure with small amortized update time into a structure achieving a small time bound on {\em every} update. By applying those techniques, we can turn our modified kd-tree into a structure that ensures $O(\log^2 n)$ time on every insertion.
+
+
+\bibliographystyle{plain}
+\bibliography{ref}
+
+\end{document}
