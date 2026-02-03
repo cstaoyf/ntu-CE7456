@@ -239,7 +239,7 @@ We then decrease $h^-$ by 1. At this moment, $h^-$ may be lower than $h^+$. In t
 
 \subsection{Amortized Update Cost}
 
-Let us focus on an arbitrary element $e$. Assume that the size of $S$ is $N_e$ when $e$ is inserted. Our objective is to show that we can amortize the total update cost over all the elements ever inserted so that the cost amortized to $e$ is at most $U(N_e) \cdot O(\log N_e)$.
+Let us focus on an arbitrary element $e$. Assume that the size of $S$ is $N_e$ when $e$ is inserted. Our objective is to show that we can change the total update cost over all the elements ever inserted so that the cost amortized to $e$ is at most $U(N_e) \cdot O(\log N_e)$.
 
 \vgap
 
@@ -249,7 +249,10 @@ We will prove a crucial fact:
     At any moment, every subset --- an $I_i$ or a $D_i$ --- including $e$ must have a size at most $N_e$.
 \end{lemma}
 
-Before proving the lemma, let us first analyze why
+Before proving the lemma, let us observe why it implies our claim: $e$ is amortized at most a cost of $U(N_e) \cdot O(\log N_e)$:
+\myitems{
+    \item d
+}
 
 \section{Remark}
 
