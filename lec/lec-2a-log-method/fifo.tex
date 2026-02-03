@@ -202,7 +202,7 @@ or declare that such an $i$ does not exist.
     }
 }
 
-\noindent {\bf Remark.} We insert a remark here that will be useful later.
+\noindent {\bf Remark.} We insert a remark here that will be useful for analyzing the amortized update cost. Whenever a new subset $I_i$ --- for some $i \ge 0$ --- is created, every element in $I_i$ is amortized a cost of $U(|I_i|)$.
 
 \subsection{Deletion} \label{sec:log:del}
 
@@ -220,15 +220,22 @@ We destroy $\Upsilon^D_i$ and partition $D_i \setminus \set{e_\mit{new}}$ into $
 
     \item if an element $e \in D_i$ is older than another element $e' \in D_i$, then the subsets $D_j$ and $D_{j'}$ containing $e$ and $e'$, respectively, must satisfy $j \le j'$.
 }
-For each $j \in [0, i-1]$, build $\Upsilon^D_j$ on $D_j$ from scratch. When this is done, we decrease $h^-$ by 1.
+For each $j \in [0, i-1]$, build $\Upsilon^D_j$ on $D_j$ from scratch. The total cost of building $\Upsilon^D_0, \Upsilon^D_2, ..., \Upsilon^D_{i-1}$ is bounded by
+\myeqn{
+    \sum_{j=0}^{i-1} 2^j \cdot U(2^j) \le U(2^i) \cdot \sum_{j=0}^{i-1} 2^j < U(2^i) \cdot 2^i. \nn
+}
+We amortize this over the $2^i$ elements that were in $I_i$; each element thus bears a cost of $U(2^i)$.
 
 \vgap
 
-Importantly, at this moment, $h^-$ may be lower than $h^-$. In that case, it must hold that $h^- = h^+ - 1$; we
+We then decrease $h^-$ by 1. At this moment, $h^-$ may be lower than $h^+$. In that case, it must hold that $h^- = h^+ - 1$; we
 \myitems{
     \item rename $I_{h^+}$ to $D_{h^- + 1}$ and accordingly $\Upsilon^I_{h^+}$ to $\Upsilon^D_{h^- + 1}$;
-    \item increase $h^-$ by 1 and set $h^+$ to the highest $j \in [0, h^+-1]$ such that $D_j$ is non-empty (or if no such $j$ exists, set $h^+ = -1$).
+    \item increase $h^-$ by 1 and set $h^+$ to the highest $j \in [0, h^+-1]$ such that $D_j$ is non-empty (if no such $j$ exists, set $h^+ = -1$).
 }
+
+\noindent {\bf Remark.} We insert a remark here that will be useful for analyzing the amortized update cost. Whenever a subset $D_i$ --- for some $i \ge 0$ --- is destroyed, every element in $D_i$ is amortized a cost of $U(|D_i|)$.
+
 
 \subsection{Amortized Update Cost}
 
