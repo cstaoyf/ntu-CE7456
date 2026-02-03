@@ -236,14 +236,21 @@ The lemma implies our claim --- $e$ is amortized at most a cost of $U(2 N_e) \cd
     every $I_i$ or $D_i$ containing $e$ satisfies $2^i \le 2N_e$, indicating $i \le 1 + \log_2 N_e$.
 }
 
-\extraspacing {\bf Proof of Lemma~\ref{lmm:fact}.} There are three scenarios where $e$ is added to a subset:
-\myitems{
-    \item an insertion puts $e$ into $I_i$ for some $i \ge 0$.
-}
+\extraspacing {\bf Proof of Lemma~\ref{lmm:fact}.} We say that an update {\em moves $e$ into} a subset $I_i$ (for some $i \ge 0$) (i) $e \notin I_i$ before the update but (ii) $e \in I_i$ after the update. Similarly, we say that an update {\em moves $e$ into} a subset $D_i$ (for some $i \ge 0$) (i) $e \notin D_i$ before the update but (ii) $e \in D_i$ after the update.
 
-Consider a moment when $e$ is added to a subset $I_i$ for some $i \ge 0$.
+\vgap
+
+There are three scenarios where $e$ is can be moved into a new subset:
+\myenums{
+    \item an insertion moves $e$ into $I_i$ for some $i \ge 0$;
+    \item an insertion moves $e$ into $D_{h^-}$;
+    \item a deletion moves $e$ into $D_{h^-}$;
+    \item a deletion moves $e$ into $D_i$ for some $i \ge 0$.
+}
+We will prove the lemma by analyzing each case in turn. Hence, we will refer to each $I_i$ (resp., $D_i$) as an {\em $I$-subset} (resp., {\em $D$-subset}).
+
 \myitems{
-    \item If $i < h^+$
+    \item {\bf Case 1:} In this case, all the elements in every $D$-subset must be older than $e$. Hence, $|D_{h^-}| \le N_e$ because at most $N_e$ elements can be older than $e$.
 }
 
 \vgap
@@ -252,7 +259,7 @@ We use the term {\em crossover} to refer to the moment when the $I$-subset conta
 
 \vgap
 
-Consider any moment before the crossover. At this moment, $e$ is in an $I$-subset; as all the elements in every $D$-subset must be older than $e$, we know $|D_{h^-}| \le N_e$ because there can be at most $N_e$ elements older than $e$. The $I$-subset containing $e$ cannot be larger than
+Consider any moment before the crossover. At this moment, $e$ is in an $I$-subset; as  we know  The $I$-subset containing $e$ cannot be larger than
 
 \section{Remark}
 
