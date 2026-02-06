@@ -254,7 +254,7 @@ We will prove the lemma by analyzing each case in turn. Hence, we will refer to 
 
     \item {\bf Case 2:} In this case, before the insertion, we must have:
     \myitems{
-        \item $e \in I_{h^+}$ and $h^+ = h^-$ (by how our insertion algorithm works);
+        \item $h^+ = h^-$ (by how our insertion algorithm works);
         \item $|I_{h^+}| \le |D_{h^-}| \le N_e$ (by the same argument used in Case 1).
     }
     The insertion first creates $I_{h^+ + 1}$ --- whose size is $2|I_{h^+}| \le 2N_e$ --- renames $I_{h^+ + 1}$ to $D_{h^- + 1}$, increases $h^-$ by 1, and then sets $h^+ = -1$. The final $D_{h^-}$ is the $I_{h^+ + 1}$ before the renaming and, hence, has a size at most $2N_e$.
