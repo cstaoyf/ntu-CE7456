@@ -201,7 +201,7 @@ We amortize this over the $2^i$ elements that were in $I_i$; each element thus b
 
 \vgap
 
-Decrease $h^-$ by 1. At this moment, $h^-$ may be lower than $h^+$. In that case, it must hold that $h^- = h^+ - 1$; we
+If $i = h^-$, decrease $h^-$ by 1, after which $h^-$ may be lower than $h^+$. In that case, it must hold that $h^- = h^+ - 1$; we
 \myitems{
     \item rename $I_{h^+}$ to $D_{h^- + 1}$ and accordingly $\Upsilon^I_{h^+}$ to $\Upsilon^D_{h^- + 1}$;
     \item increase $h^-$ by 1 and set $h^+$ to the highest $j \in [0, h^+-1]$ such that $D_j$ is non-empty (if no such $j$ exists, set $h^+ = -1$).
