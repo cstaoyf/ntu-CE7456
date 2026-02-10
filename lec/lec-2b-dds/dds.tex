@@ -160,12 +160,12 @@ In this section, we will establish:
     \myeqn{
         s = 2^{2^i} \nn
     }
-    and create a structure $\T$ --- the structure promised by $(B(n), Q(n))$ spectrum indexability --- on $S$ in $O(n \cdot B(s))$ time. The structure allows us to answer any query  in $O(\fr{n}{s} \cdot Q(s))$ time. The $i$-th epoch finishes after $\ceil{s / Q(s)}$ queries are answered {\em during} the epoch. These queries demand a total cost of
+    and create a structure $\T$ --- the structure promised by $(B(n), Q(n))$ spectrum indexability --- on $S$ in $O(n \cdot B(s))$ time. The structure allows us to answer any query  in $O(\fr{n}{s} \cdot Q(s))$ time. The $i$-th epoch finishes after $s$ queries are answered {\em during} the epoch. These queries demand a total cost of
     \myeqn{
-        \lc \fr{s}{Q(s)} \rc \cdot O\Big(\fr{n}{s} \cdot Q(s) \Big) &=& O(n). \nn
+        s \cdot O\Big(\fr{n}{s} \cdot Q(s) \Big) &=& O(n \cdot Q(s)). \nn
     }
 
-    It is clear that the total computation time of the $i$-th epoch is $O(n \cdot B(s)) = O(n \cdot 2^i)$, i.e., the time to construct $\T$ dominates the time of answering all the queries in the epoch.
+    It is clear that the total computation time of the $i$-th epoch is $O(n \cdot B(s) + n \cdot Q(s)) = O(n \cdot 2^i)$, i.e., the time to construct $\T$ dominates the time of answering all the queries in the epoch.
 
     \vgap
 
@@ -173,7 +173,7 @@ In this section, we will establish:
     \myitems{
         \item {\bf C1:} $2^{2^h} \le n$ (the value of $s$ must not exceed $n$);
         \item {\bf C2:} $
-        \sum_{i=1}^h \lc \fr{2^{2^i}}{Q(2^{2^i})} \rc \ge r$ (the number of queries that can be answered by $h$ epochs must be at least $r$).
+        \sum_{i=1}^h 2^{2^i} \ge r$ (the number of queries that can be answered by $h$ epochs must be at least $r$).
     }
 
     \begin{lemma} \label{lmm:h1}
@@ -181,11 +181,7 @@ In this section, we will establish:
     \end{lemma}
 
     \begin{proof}
-        The condition {\bf C1} states that $2^h \le \log n$. It suffices to prove that the lowest $h$ satisfying {\bf C2} is $O(\Log r)$. For this purpose, we define a new condition:
-        \myitems{
-            \item {\bf C2-relaxed:} $2^{2^h} \ge r$.
-        }
-        Clearly, any $h$ satisfying {\bf C2-relaxed} must also satisfy {\bf C2}. The lowest $h$ satisfying {\bf C2-relaxed} is clearly $O(\Log r)$. The claim in Lemma~\ref{lmm:h1} therefore holds.
+        The condition {\bf C1} states that $2^h \le \log n$. It suffices to prove that the lowest $h$ satisfying {\bf C2} is $O(\Log r)$. This is obvious because (i) for $r < 4$, {\bf C2} is satisfied by $h = 1$; (ii) for $r \ge 4$, {\bf C2} is satisfied by $h = \log\log r$.
     \end{proof}
 
     This completes the proof of Theorem~\ref{thm:main}.
