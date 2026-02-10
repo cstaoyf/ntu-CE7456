@@ -148,51 +148,57 @@ Two observations are in order here:
     \item Consider any decomposable problem with the following property: for any dataset $S \subseteq \mathbb{D}$, we can build a data structure $\T$ in $O(|S| \cdot B(|S|))$ time to answer a query in $O(Q(|S|))$ time. Then, the problem must be $(B(n),Q(n))$ spectrum indexable. To see why, given an integer $s \in [|S|]$, divide $S$ arbitrarily into $m = \ceil{|S|/s}$ disjoint subsets $S_1, S_2, ..., S_m$ where all subsets have size $s$ except $S_m$. For each $i \in [m]$, create a structure $\T(S_i)$ in $O(|S_i| \cdot B(s))$ time; the total time to create all the $m$ structures is $O(m \cdot s \cdot B(s)) = O(|S| \cdot B(s))$. To answer a query $q$, simply search every $\T(S_i)$ to obtain $\ans_q(S_i)$ in $O(Q(s)))$ time and then combine $\ans_q(S_1), \ans_q(S_2), ..., \ans_q(S_m)$ into $\ans_q(S)$ using $O(m)$ time. The total query time is therefore $O(m \cdot Q(s))$.
 }
 
-\section{A Universal Algorithm} %\label{sec:reductions:2}
+\section{A Universal Algorithm for $(O(\log n), O(\log n))$ Spectrum Indexable Problems} %\label{sec:reductions:2}
 
 In this section, we will prove
 
 %\boxminipg{\linewidth}{
 \begin{theorem} \label{thm:main}
     %Suppose that $B(n)$ and $Q(n)$ are non-decreasing functions such that $B(n) = O(\log n)$ and $Q(n) = O(n^{1-\eps})$ where $\eps > 0$ is an arbitrarily small constant.
-    Every $(O(\log n), O(\log n))$ spectrum indexable problem admits a DDS algorithm that can process any $r \ge 1$ queries in $O(n \cdot \Log r)$ time.
+    Every $(B(n), Q(n))$ spectrum indexable problem with $B(n) = O(\log n)$ and $Q(n) = O(\log n)$ admits a DDS algorithm that can process any $r \ge 1$ queries in $O(n \cdot \Log r)$ time.
 \end{theorem}
 %}
 
 
-\begin{proof}
+%\begin{proof}
+    Next, we prove the theorem by explicitly describing a DDS algorithm achieving $\time(n ,r) = O(n \cdot \Log r)$. Due to the same reasoning as in Section~\ref{sec:prelim}, it remains to do so by targeting $r \le n$.
+
+    \vgap
+
     Assume, w.l.o.g., that $n$ is a power of 2. Our algorithm executes in {\em epochs}. At the beginning of the $i$-th ($i \ge 1$) epoch, we set
     \myeqn{
         s = 2^{2^i} \nn
     }
-    and create a structure $\T$ --- the structure promised by $(B(n), Q(n))$ spectrum indexability --- on $S$ in $O(n \cdot B(s))$ time. The structure allows us to answer any query  in $O(\fr{n}{s} \cdot Q(s))$ time. The $i$-th epoch finishes after $\ceil{s / Q(s)}$ queries\footnote{In practice, our algorithm may be slightly improved by making this number $\ceil{s \cdot B(s) / Q(s)}$, but this will not be necessary for the purpose of proving Theorem~\ref{thm:main}} are answered {\em during} the epoch. These queries demand a total cost of
+    and create a structure $\T$ --- the structure promised by $(B(n), Q(n))$ spectrum indexability --- on $S$ in $O(n \cdot B(s))$ time. The structure allows us to answer any query  in $O(\fr{n}{s} \cdot Q(s))$ time. The $i$-th epoch finishes after $\ceil{s / Q(s)}$ queries are answered {\em during} the epoch. These queries demand a total cost of
     \myeqn{
         \lc \fr{s}{Q(s)} \rc \cdot O\Big(\fr{n}{s} \cdot Q(s) \Big) &=& O(n). \nn
     }
 
-    It is clear from the above that the total computation time of the $i$-th epoch is $O(n \cdot B(s)) = O(n \cdot 2^i)$. As $n \cdot 2^i$ doubles when $i$ increases by 1, the overall cost of answering $r$ queries is $O(n \cdot 2^{h^*})$, where $h^*$ is the number of epochs needed. Precisely, the value of $h^*$ is the smallest integer $h \ge 1$ satisfying two conditions:
+    It is clear from the above that the total computation time of the $i$-th epoch is $O(n \cdot B(s)) = O(n \cdot 2^i)$, i.e., the time to construct $\T$ dominates the time of answering all the queries in the epoch).
+
+    \vgap
+
+    As $n \cdot 2^i$ doubles when $i$ increases by 1, the overall cost of answering $r$ queries is $O(n \cdot 2^{h^*})$, where $h^*$ is the number of epochs needed. Precisely, the value of $h^*$ is the \uline{\em lowest} integer $h \ge 1$ satisfying two conditions:
     \myitems{
         \item {\bf C1:} $2^{2^h} \le n$ (the value of $s$ must not exceed $n$);
         \item {\bf C2:} $
         \sum_{i=1}^h \lc \fr{2^{2^i}}{Q(2^{2^i})} \rc \ge r$ (the number of queries that can be answered by $h$ epochs must be at least $r$).
     }
 
-    As our goal is to find an upper bound for $h$, we replace condition {\bf C2} with a more stringent condition: $2^{2^h} / Q(2^{2^h}) \ge r$. Because $Q(n) = O(n^{1-\eps})$, we know $Q(n) \le \alpha \cdot n^{1-\eps}$ for some constant $\alpha > 0$. With this, we modify {\bf C2} further into an even more stringent inequality:
-    \myeqn{
-        \fr{2^{2^h}}{\alpha \cdot (2^{2^h})^{1-\eps}} = \fr{(2^{2^h})^{\eps}}{\alpha} \ge r
-        &\Leftrightarrow&
-        2^{2^h} \ge (\alpha \cdot r)^{1/\eps}. \label{eqn:proof-lmm-reductions-2:help1}
-    }
-    Let $H$ represent the smallest integer $h \ge 1$ validating \eqref{eqn:proof-lmm-reductions-2:help1}. This means
-    \myeqn{
-        2^{2^{H-1}} < (\alpha \cdot r)^{1/\eps} &\Leftrightarrow& 2^{2^H} < (\alpha \cdot r)^{2/\eps}. \label{eqn:proof-lmm-reductions-2:help2}
-    }
-    When $2^{2^{H}} \le n$, the above argument assures us that the number of epochs $h^*$ is at most $H$ (the inequality $2^{2^{H}} \le n$ implies that $2^{2^{h^*}} \le n$, obeying Condition {\bf C1}). In this case, all epochs incur a total cost of $O(n \cdot 2^{h^*}) = O(n \cdot 2^{H})$, which is $O(n \Log r)$ by \eqref{eqn:proof-lmm-reductions-2:help2}.
+    \begin{lemma} \label{lmm:h1}
+        $2^{h^*} = O(\Log r)$.
+    \end{lemma}
 
-    \vgap
+    \begin{proof}
+        The condition {\bf C1} states that $2^h \le \log n$. It suffices to prove that the lowest $h$ satisfying {\bf C2} is $O(\Log r)$. For this purpose, we define a new condition:
+        \myitems{
+            \item {\bf C2-relaxed:} $2^{2^h} \ge r$.
+        }
+        Clearly, any $h$ satisfying {\bf C2-relaxed} must also satisfy {\bf C2}. The lowest $h$ satisfying {\bf C2-relaxed} is clearly $O(\Log r)$. The claim in Lemma~\ref{lmm:h1} therefore holds.
+    \end{proof}
 
-    The above argument does not work if $2^{2^{H}} > n$. However, when this happens, we know from \eqref{eqn:proof-lmm-reductions-2:help2} that $(\alpha \cdot r)^{2/\eps} > 2^{2^H} > n$, leading to $r > n^{\eps/2} / \alpha$. As soon as $r$ reaches $\ceil{n^{\eps/2} / \alpha}$ --- the {\em snapping point}  --- we create a structure $\T$ on the whole $S$ in $O(n \log n) = O(n \log r)$ time, and use it to answer every subsequent query in $O(Q(n))$ time until $r = \min \{n, \fr{c \cdot n \log n}{Q(n)}\}$. The queries after the snapping point require a total cost of $O(n \log n) = O(n \log r)$. We thus have obtained an algorithm that guarantees $\time(n, r) = O(n \Log r)$ for all $r \le \min \{n, \fr{c \cdot n \log n}{Q(n)}\}$, completing the proof of Theorem~\ref{thm:main}.
-\end{proof}
+    This completes the proof of Theorem~\ref{thm:main}.
+%\end{proof}
 
 \section{Remark}
 
