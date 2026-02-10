@@ -12,7 +12,7 @@
 \def\bD{\mathbb{D}}
 \def\bQ{\mathbb{Q}}
 
-% \def\A{\mathcal{A}}
+\def\A{\mathcal{A}}
 \def\B{\mathcal{B}}
 \def\C{\mathcal{C}}
 \def\Cb{\mathbb{C}}
@@ -25,12 +25,16 @@
 \def\T{\mathcal{T}}
 %\def\U{\mathcal{U}}
 %\def\X{\mathcal{X}}
+\def\time{\textsc{Time}}
+
 
 \def\ans{\textsc{Ans}}
 
 \def\extraspacing{\vspace{3mm} \noindent}
 \def\vgap{\vspace{3mm}}
 \def\vslit{\vspace{0.5mm}}
+
+\DeclareMathOperator*{\Log}{Log}
 
 \begin{document}
 
@@ -44,235 +48,155 @@
     \begin{center}
         \vspace{3mm}
     {\Large
-    (CE7456 Lecture Notes 6) FIFO Indexes} \\[2mm]
+    (CE7456 Lecture Notes 7) Deferred Data Structuring} \\[1mm]
+    {\Large (a.k.a.\ Database Cracking and Merging)} \\[2mm]
     {\large Yufei Tao}
-        \vspace{3mm}
+    \vspace{3mm}
     \end{center}
 }
 
 
-In the previous lecture, we talked about the {\em logarithmic method} for turning a static structure into a semi-dynamic one. Today, we will see how to use it to make a static structure fully dynamic when insertions and deletions obey the {\em first in first out} (FIFO) order.
-
-
-\section{Decomposable Problems under FIFO Updates} \label{sec:decomp}
-
-%This section will formalize the class of problems to be investigated.
-
-Let $\bD$ be a (possibly infinite) set called the {\em data domain}, whose members are called {\em data elements}. Let $\bQ$ be a (possibly infinite) set called the {\em query domain}, whose members are called {\em queries}. Over a finite $S \subseteq \bD$, each query $q \in \bQ$ returns an {\em answer}, represented as $\ans_q(S)$. In a {\em problem} characterized by $(\bD, \bQ)$, the goal is to store a given set $S \subseteq \bD$ --- where $S$ is called the {\em dataset} --- in a data structure that allows us to compute $\ans_q(S)$ efficiently for any $q \in \bQ$. The problem is {\em decomposable} if, for any disjoint sets $S_1, S_2 \subseteq \mathbb{D}$ and any query $q \in \mathbb{Q}$, it is possible to derive $\ans_q(S_1 \cup S_2)$ from $\ans_q(S_1)$ and $ \ans_q(S_2)$ in constant time.
+Traditional indexing first creates an index on the whole dataset before starting to answer queries. For example, after building a binary search tree (BST) on an (unsorted) set $S$ of $n$ integers in $O(n \log n)$ time, we can use the tree to answer each predecessor query\footnote{Given a search value $q$, a predecessor query returns the largest element in $S$ that does not exceed $q$.} in $O(\log n)$ time. This paradigm, however, falls short when the dataset $S$ will only be searched a small number of times. In the extreme, if only one query needs to be answered, the best approach is to scan $S$ in full, which requires only $O(n)$ time.
 
 \vgap
 
-We assume that $S$ is initially empty and can be updated by two operations:
+{\em Deferred data structuring} (DDS) asks the question: if we are to answer $r$ queries in an {\em online} manner --- that is, the next query is given after the result of the previous query has been output --- what is the smallest total executing time (for answering $r$ queries)? This question arises in many big-data applications where large volumes of data are collected but only sparingly queried. In those environments, the problem size $n$ is huge such that even sorting is considered expensive and should be avoided as much as possible. Furthermore, it is impossible to predict how many queries --- namely, the integer $r$ mentioned earlier --- will need to be supported. Instead of constructing a complete index right away, a better algorithm is to carry out only a calculated portion of the construction during each query. If $r$ eventually reaches a certain threshold, the index will be created in full, but it is more likely that $r$ will stop at some value significantly lower than that threshold. The challenge is to ensure ``smoothness'': as $r$ grows, the total cost of all the $r$ queries {\em so far} ought to increase as slowly as possible.
+
+\vgap
+
+For a large class of DDS problems (such as predecessor search), it is known \cite{kmr88} that the total time of answering $r$ queries from a non-preprocessed dataset must be $\Omega(n \log (1+r))$ \cite{kmr88} for \uline{\em every} value $r \in [1, n]$. In today's lecture, we will discuss techniques for matching this lower bound.
+
+\extraspacing {\bf Math Conventions.} For any integer $x \ge 1$, let $[x]$ represent the set $\set{1, 2, ..., x}$. Every logarithm has base 2 by default. Define $\Log(x) = \log(1+x)$ for any $x \ge 1$.
+
+
+\section{Problem Definition} \label{sec:intro-prob}
+
+Let $\bD$ be a (possibly infinite) set called the {\em data domain}, whose members are called {\em data elements}. Let $\bQ$ be a (possibly infinite) set called the {\em query domain}, whose members are called {\em queries}. Over a finite $S \subseteq \bD$, each query $q \in \bQ$ returns an {\em answer}, represented as $\ans_q(S)$. In a {\em problem} characterized by $(\bD, \bQ)$, the goal is to store a given set $S \subseteq \bD$ --- where $S$ is called the {\em dataset} --- in a data structure that allows us to compute $\ans_q(S)$ efficiently for any $q \in \bQ$.
+
+\vgap
+
+We consider that, for any $q \in \mathbb{Q}$, the answer $\ans_q(S)$ can be represented using $O(1)$ words and can be computed in $O(n)$ time (which essentially means that the query can be answered using a brute-force algorithm such as exhaustive scan).
+
+\vgap
+
+We now formalize the DDS problem. Initially, an algorithm $\A$ is given the dataset $S$ in an array, where the elements are arbitrarily permuted. An adversary first chooses a query $q_1 \in \bQ$, and solicits the answer $\ans_{q_1}(S)$ from $\A$. Iteratively, for each $i \ge 2$, after the answer of the ($i-1$)-th query has been obtained, the adversary chooses the predicate $q_i \in \bQ$ for the next query and solicits $\ans_{q_i}(S)$ from $\A$. The adversary is permitted to observe the execution of $\A$ and, thus, capable of selecting a ``bad'' $q_i$ for $\A$.
+
+\vgap
+
+The algorithm $\A$ is said to guarantee {\em running time} $\time(n, r)$ if, for {\em every} $r \ge 1$, the first $r$ queries are processed with a total cost at most $\time(n, r)$.
+
+
+\section{Merging and Cracking} \label{sec:prelim}
+
+This section will introduce two popular techniques --- named {\em merging} and {\em cracking} --- for tackling DDS problems, using predecessor search as a representative example. In this problem, $S$ is a set of $n$ integers. Each query $q \in \mathbb{Q}$ is an integer; and $\ans_q(S)$ is the largest integer in $S$ at most $q$, or \ttt{null} if all the integers in $S$ are greater than $q$. This problem can be solved in $\time(n,r) = O(n \Log r)$ time. Next, we will prove this using both techniques. Our discussion will consider only $r \le n$ --- once we can achieve $\time(n, r) = O(n \Log r)$ for all $r \le n$, it is easy to show that there is a way to achieve $\time(n, r) = O(n \log r)$ for all $r \ge 1$ (think: why?).
+
+\extraspacing {\bf Merging.} We assume, w.l.o.g., that $n$ is a power of 2. Let us first describe an algorithm that works under the condition $r \Log r \le n / 2$.
+
+\vgap
+
+At all times, we partition $S$ arbitrarily into disjoint subsets --- referred to as {\em runs} --- each having the same size $s = 2^i$ for some $i \ge 0$. Every run is sorted and stored in an array. Initially, $s = 1$, i.e., a run contains one individual element of $S$. Over time, the run size $s$ increases monotonically. Whenever $s$ needs to go from $2^i$ to $2^j$ for some value $j > i$, an {\em overhaul} is carried out to build the new runs. As a run of size $2^j$ can be obtained by merging $2^{j-i}$ runs of size $2^i$ in $O(2^j \cdot (j-i))$ time, the overhaul can be completed in $O(n \cdot (j-i))$ time. Therefore, if the current run size is $s$, the overall cost of producing all the runs in history is $O(n \Log s)$.
+
+\vgap
+
+A (predecessor) query is answered simply by performing binary search on every run. To control the cost, however, the algorithm makes sure that the current size $s$ is at least $i \Log i$ before processing the $i$-th ($i \ge 1$) query. If the condition is not met, an overhaul is invoked to increase $s$ to the nearest power of 2 at least $i \Log i$. After that, the query entails a cost of $O(\fr{n}{s} \Log s) = O(\fr{n}{i \Log i} \cdot \log (i \Log i)) = O(n/i)$ time. If we add this up for all $r$ queries, the sum becomes $O(n \sum_{i=1}^r \fr{1}{i}) = O(n \Log r)$. As the final run size $s$ is at most $2r \Log r$, we can conclude that the algorithm processes $r$ queries in $O(n \Log r)$ time.
+
+\vgap
+
+When $r \Log r \ge n / 2$, it holds that $r = \Omega(n / \log n)$. The algorithm can afford to sort the entire $S$ in $O(n \log n) = O(n \log r)$ time and answer every subsequent query in $O(\log n) = O(\log r)$ time. Thus, the algorithm achieves $\time(n, r) = O(n \Log r)$ for all $r \le n$.
+
+\extraspacing {\bf Cracking.} This approach mimics the following strategy for building a binary search tree (BST) $\T$ on $S$: (i) find the median of $S$, and splits $S$ into $S_1$ and $S_2$ at the median; (ii) store the median as the root's key, and then build the root's left (resp., right) subtree recursively on $S_1$ (resp., $S_2$). Rather than doing a full construction outright, the algorithm builds $\T$ on an ``as-needed'' basis during query processing.
+
+\vgap
+
+In the beginning, only the root exists and it is put in the {\em unexpanded} mode. In general, an unexpanded node $u$ has no children yet, but is associated with the subset $S_u \subseteq S$ of elements that ought to be stored in its subtree. A query is answered in the same manner as in a normal BST, by traversing a root-to-leaf path $\pi$ of $\T$. The main difference is that as the search comes to an unexpanded node $u$ on $\pi$, the algorithm must {\em expand} it first. Expanding $u$ means creating two child nodes for $u$, splitting $S_u$ at the median (the key of $u$), dividing $S_u$ at the median into two parts, and associating each part with a child. After that, $u$ becomes {\em expanded} with its children put in the unexpanded mode. The expansion takes $O(|S_u|)$ time (finding the median of a set takes linear time \cite{bfp+73}).
+
+\vgap
+
+After $r$ queries, the BST $\T$ is partially built because only the nodes on the $r$ root-to-leaf paths traversed during query processing are expanded. The nodes at the first $\Log r$ levels\footnote{The {\em level} of a node is the number of edges on the path from the node to the root.} can incur a total expansion cost of $O(n \Log r)$. For each root-to-leaf path $\pi$, the node $u$ at level $\Log r$ has expansion cost $O(n/r)$, which dominates the total expansion cost of the descendants of $u$ on $\pi$. Therefore, other than the nodes at the first $\Log r$ levels, all the other nodes in $\T$ have an expansion cost of $r \cdot O(\fr{n}{r}) = O(n)$ in total. The algorithm therefore achieves $\time(n, r) = O(n \Log r)$ for all $r \le n$.
+
+\section{The Class of Spectrum-Indexable Problems}
+
+%Next, we will learn a ``universal'' algorithm that can achieve $O(n \Log r)$ time for a class of DDS problems.
+
+We define a data structure problem parameterized by $(\bD, \bQ)$ to be $(B(n),Q(n))$ {\em spectrum indexable} if the following property holds on every dataset $S \subseteq \mathbb{D}$:
+
+\minipg{0.8\linewidth}{
+    For every integer $s \in [|S|]$, it is possible to construct a data structure on $S$ in $O(|S| \cdot B(s))$ time that can answer any query in $O(\fr{|S|}{s} \cdot Q(s))$ time.
+}
+The term ``spectrum indexable'' is chosen to reflect the ability to build a ``good'' index structure --- as far as functions $B(n)$ and $Q(n)$ are concerned --- for the whole spectrum of the parameter $s$.
+
+%Recall that a data structure problem parameterized by $(\bD, \bQ)$ is {\em decomposable} if, for any disjoint sets $S_1, S_2 \subseteq \mathbb{D}$ and any query $q \in \mathbb{Q}$, it is possible to derive $\ans_q(S_1 \cup S_2)$ from $\ans_q(S_1)$ and $ \ans_q(S_2)$ in constant time.
+%
+%
+% For this purpose, we introduce two problem classes relevant to our discussion:
+% \myitems{
+%     \item A problem instance is {\em decomposable} if, for any disjoint sets $S_1, S_2 \subseteq \mathbb{D}$ and any predicate $q \in \mathbb{Q}$, it is possible to derive $\ans_q(S_1 \cup S_2)$ from $\ans_q(S_1)$ and $ \ans_q(S_2)$ in constant time.
+%
+%     \item We define a problem instance to be $(B(n),Q(n))$ {\em spectrum indexable} if it possesses the following property for
+%     every dataset $S \subseteq \mathbb{D}$: for every integer $s \in [|S|]$, it is possible to construct a data structure on $S$ in $O(|S| \cdot B(s))$ time that can answer any query in $O(\fr{|S|}{s} \cdot Q(s))$ time. The term ``spectrum indexable'' is chosen to reflect the ability to build a ``good'' index structure --- as far as functions $B(n)$ and $Q(n)$ are concerned --- for the whole spectrum of the parameter $s$.
+% }
+
+\vgap
+
+Two observations are in order here:
 \myitems{
-    \item Insertion$(e)$, which adds a new element $e$ to $S$;
-    \item Deletion, which removes from $S$ the ``oldest'' element in $S$ --- namely, the element that was inserted the longest time ago.
-}
-The above is the {\em FIFO update model}. For convenience, we say that the $i$-th ($i \ge 1$) insertion happens at {\em timestamp $i$}. An element $e$ is older than another element $e'$ if the insertion time of $e$ is smaller than that of $e'$.
+    \item
+    $(B(n),Q(n))$ {\em spectrum indexability} implies that we can build a data structure on any dataset $S \subseteq \mathbb{D}$ in $O(|S| \cdot B(|S|))$ time to answer a query in $O(Q(|S|))$ time (for this purpose, simply set $s = |S|$).
 
-\vgap
+    %\vspace{1mm}
 
-%However, as the size of $S$ can now fluctuate (i.e., $|S|$ may go up and down), we must exercise care in defining what it means by ``amortized update cost $U(n)$'', where $U: \real_{\ge 0} \rightarrow \real_{\ge 0}$ is a function.
-
-Our goal is to maintain a data structure on $S$ that (i) has small space and query time, and (ii) can be updated with a small ``amortized cost''. Specifically, given a function $U: \real_{\ge 0} \rightarrow \real_{\ge 0}$, we say that a structure can be updated in $U(n)$ {\em amortized time} if the following is true after {\em every} update:
-
-\minipg{0.9\linewidth}{
-    Let $T$ be the total number of insertions received. Suppose that the size of $S$ was $N_i$ ($i \in [1, T]$) when the $i$-th element was inserted. Then, the total cost of performing all the updates (including insertions and deletions) so far is bounded by
-    \myeqn{
-        \sum_{i=1}^T U(N_i). \label{eqn:amortized}
-    }
+    \item Consider any decomposable problem with the following property: for any dataset $S \subseteq \mathbb{D}$, we can build a data structure $\T$ in $O(|S| \cdot B(|S|))$ time to answer a query in $O(Q(|S|))$ time. Then, the problem must be $(B(n),Q(n))$ spectrum indexable. To see why, given an integer $s \in [|S|]$, divide $S$ arbitrarily into $m = \ceil{|S|/s}$ disjoint subsets $S_1, S_2, ..., S_m$ where all subsets have size $s$ except $S_m$. For each $i \in [m]$, create a structure $\T(S_i)$ in $O(|S_i| \cdot B(s))$ time; the total time to create all the $m$ structures is $O(m \cdot s \cdot B(s)) = O(|S| \cdot B(s))$. To answer a query $q$, simply search every $\T(S_i)$ to obtain $\ans_q(S_i)$ in $O(Q(s)))$ time and then combine $\ans_q(S_1), \ans_q(S_2), ..., \ans_q(S_m)$ into $\ans_q(S)$ using $O(m)$ time. The total query time is therefore $O(m \cdot Q(s))$.
 }
 
-% \section{Non-Decreasing Functions}
-%
-% A function $f: \real_{>0} \rightarrow \real_{>0}$ is said to grow {\em at least linearly} if $\fr{f(x)}{x}$ is a non-decreasing for $x > 0$.
-%
-% \begin{lemma}
-%     If $f: \real_{>0} \rightarrow \real_{>0}$ grows at least linearly, then $f(a) + f(b) \le f(a+b)$ holds for any $a > 0$ and $b > 0$.
-% \end{lemma}
-%
-% \begin{proof}
-%     As $f(x)$ grows at least linearly, we have:
-%     \myeqn{
-%         \fr{f(a)}{a} &\le& \fr{f(a+b)}{a+b} \nn \\
-%         \fr{f(b)}{b} &\le& \fr{f(a+b)}{a+b}. \nn
-%     }
-%     Combining the above yields:
-%     \myeqn{
-%         f(a) + f(b) \le \Big(\fr{a}{a+b} + \fr{b}{a+b} \Big) f(a+b)
-%         = f(a+b). \nn
-%     }
-% \end{proof}
+\section{A Universal Algorithm} %\label{sec:reductions:2}
 
+In this section, we will prove
 
-
-\section{The Logarithmic Method for the FIFO Model} \label{sec:log}
-
-We will prove:
-
-\begin{theorem} \label{thm:log:main}
-    Consider a decomposable problem for which there is a static structure $\Upsilon$ that
-    \myitems{
-        \item stores $n$ elements in $F(n)$ space, where $F(.)$ grows at least linearly;
-        \item can be constructed in $n \cdot U(n)$ time where $U(.)$ satisfies $U(2n) = O(U(n))$ for any $n \ge 1$;
-        \item answers a query in $Q(n)$ time (plus, if necessary, a cost linear to the number of reported elements).
-    }
-    Set $h = \lc \log_2 n \rc$. Under the FIFO update model, there is a structure that
-    \myitems{
-        \item stores $n$ elements in $F(n)$ space;
-        \item supports an update (an insertion or a deletion) in $U(n) \cdot O(\log n)$ amortized time;
-        \item answers a query in $Q(n) \cdot O(\log n)$ time (plus, if necessary, a cost linear to the number of reported elements).
-    }
-
+%\boxminipg{\linewidth}{
+\begin{theorem} \label{thm:main}
+    %Suppose that $B(n)$ and $Q(n)$ are non-decreasing functions such that $B(n) = O(\log n)$ and $Q(n) = O(n^{1-\eps})$ where $\eps > 0$ is an arbitrarily small constant.
+    Every $(O(\log n), O(\log n))$ spectrum indexable problem admits a DDS algorithm that can process any $r \ge 1$ queries in $O(n \cdot \Log r)$ time.
 \end{theorem}
-
-\subsection{Structure} \label{sec:log:str}
-
-Let $S$ be the input set of elements. At all times, we partition $S$ into a {\em sequence} of disjoint subsets
-\myeqn{
-    D_0, D_1, ..., D_{h^-}, I_{h^+}, I_{h^+-1}, ..., I_0  \label{eqn:seq}
-}
-satisfying the following conditions:
-\myitems{
-    \item {\bf C1:} $h^-$ and $h^+$ are integers in $\set{-1, 0, 1, 2, ...}$ satisfying $h^+ \le h^-$ (note: if $h^+ = -1$, then the subsets $I_{h^+}, I_{h^+-1}, ..., I_0$ do not exist; similarly, if $h^- = -1$, the subsets $D_0, D_1, ..., D_{h^-}$ do not exist).
-    \item {\bf C2:} If $h^+ \ge 0$, then $|I_{h^+}| = 2^{h^+}$; for each $i \in [0, h^+ - 1]$, $|I_i|$ is either 0 or $2^i$.
-    \item {\bf C3:}Iif $h^- \ge 0$, then $|D_{h^-}| = 2^{h^-}$; for each $i \in [0, h^-]$, $|D_i|$ is either 0 or $2^i$.
-    \item {\bf C4:} If an element $e$ is older than another element $e'$, then the subset containing $e$ must precede (in the sequence shown in \eqref{eqn:seq}) the one containing $e'$.
-}
-
-%Note that the first bullet implies that $h^- \ge 0$ as long as $S$ is non-empty.
-
-%\vgap
-
-Create a structure of $\Upsilon$ (as is supplied to Theorem~\ref{thm:log:main}) on each subset. The set of structures --- denoted as $\Upsilon^D_0, \Upsilon^D_1, ..., \Upsilon^D_{h^-}, \Upsilon^I_{h^+}, \Upsilon^I_{h^+-1}, ..., \Upsilon^I_0$ following the ordering in \eqref{eqn:seq} --- together constitute our structure. The space usage is bounded by $F(n)$ because $F(.)$ grows at least linearly (proof left to you).
+%}
 
 
-\subsection{Query} \label{sec:log:qry}
+\begin{proof}
+    Assume, w.l.o.g., that $n$ is a power of 2. Our algorithm executes in {\em epochs}. At the beginning of the $i$-th ($i \ge 1$) epoch, we set
+    \myeqn{
+        s = 2^{2^i} \nn
+    }
+    and create a structure $\T$ --- the structure promised by $(B(n), Q(n))$ spectrum indexability --- on $S$ in $O(n \cdot B(s))$ time. The structure allows us to answer any query  in $O(\fr{n}{s} \cdot Q(s))$ time. The $i$-th epoch finishes after $\ceil{s / Q(s)}$ queries\footnote{In practice, our algorithm may be slightly improved by making this number $\ceil{s \cdot B(s) / Q(s)}$, but this will not be necessary for the purpose of proving Theorem~\ref{thm:main}} are answered {\em during} the epoch. These queries demand a total cost of
+    \myeqn{
+        \lc \fr{s}{Q(s)} \rc \cdot O\Big(\fr{n}{s} \cdot Q(s) \Big) &=& O(n). \nn
+    }
 
-To answer a query $q$, we simply search all the $h^+ + h^-$ structures. As the query is decomposable, we can obtain the answer on $S$ from the answers on the $h^+ + h^-$ structures in $O(h^+ + h^-) = O(\log n)$ time. The overall query time, excluding the cost of outputting the result, is
-\myeqn{
-    O(\log n) + \sum_{i=0}^{h^+} Q(2^i) + \sum_{i=0}^{h^-} Q(2^i) = Q(n) \cdot O(\log n). \nn
-}
+    It is clear from the above that the total computation time of the $i$-th epoch is $O(n \cdot B(s)) = O(n \cdot 2^i)$. As $n \cdot 2^i$ doubles when $i$ increases by 1, the overall cost of answering $r$ queries is $O(n \cdot 2^{h^*})$, where $h^*$ is the number of epochs needed. Precisely, the value of $h^*$ is the smallest integer $h \ge 1$ satisfying two conditions:
+    \myitems{
+        \item {\bf C1:} $2^{2^h} \le n$ (the value of $s$ must not exceed $n$);
+        \item {\bf C2:} $
+        \sum_{i=1}^h \lc \fr{2^{2^i}}{Q(2^{2^i})} \rc \ge r$ (the number of queries that can be answered by $h$ epochs must be at least $r$).
+    }
 
-\subsection{Insertion} \label{sec:log:ins}
-
-To insert an element $e_\mit{new}$, we identify the smallest $i \in [0, h^+]$ satisfying
-\myeqn{
-    |I_i| & = & 0 \nn
-}
-or declare that such an $i$ does not exist.
-\myitems{
-    \item If $i$ exists, destroy $\Upsilon^I_0, \Upsilon^I_1, ..., \Upsilon^I_{i-1}$ and move all the elements in $I_0, I_1, ..., I_{i-1}$, together with $e_\mit{new}$, into $I_i$. After this, $I_0, I_1, ..., I_{i-1}$ become empty. Build $\Upsilon^I_i$ on $I_i$, which takes $2^i \cdot U(2^i)$ time. We amortize this over the $2^i$ elements in $I_i$, each of which bears a cost of $U(2^i)$.
-
-    \item Otherwise, destroy $\Upsilon^I_0, \Upsilon^I_1, ..., \Upsilon^I_{h^+}$ and move all the elements in $I_0, I_1, ..., I_{h^+}$, together with $e_\mit{new}$, into $I_{h^++1}$. After this, $I_0, I_1, ..., I_{h^+}$ become empty. Build $\Upsilon_{h^++1}$ on $I_{h^++1}$, which takes $2^{h^++1} \cdot U(2^{h^++1})$ time. We amortize this over the $2^{h^++1}$ elements in $I_{h^++1}$, each of which bears a cost of $U(2^{h^++1})$.
+    As our goal is to find an upper bound for $h$, we replace condition {\bf C2} with a more stringent condition: $2^{2^h} / Q(2^{2^h}) \ge r$. Because $Q(n) = O(n^{1-\eps})$, we know $Q(n) \le \alpha \cdot n^{1-\eps}$ for some constant $\alpha > 0$. With this, we modify {\bf C2} further into an even more stringent inequality:
+    \myeqn{
+        \fr{2^{2^h}}{\alpha \cdot (2^{2^h})^{1-\eps}} = \fr{(2^{2^h})^{\eps}}{\alpha} \ge r
+        &\Leftrightarrow&
+        2^{2^h} \ge (\alpha \cdot r)^{1/\eps}. \label{eqn:proof-lmm-reductions-2:help1}
+    }
+    Let $H$ represent the smallest integer $h \ge 1$ validating \eqref{eqn:proof-lmm-reductions-2:help1}. This means
+    \myeqn{
+        2^{2^{H-1}} < (\alpha \cdot r)^{1/\eps} &\Leftrightarrow& 2^{2^H} < (\alpha \cdot r)^{2/\eps}. \label{eqn:proof-lmm-reductions-2:help2}
+    }
+    When $2^{2^{H}} \le n$, the above argument assures us that the number of epochs $h^*$ is at most $H$ (the inequality $2^{2^{H}} \le n$ implies that $2^{2^{h^*}} \le n$, obeying Condition {\bf C1}). In this case, all epochs incur a total cost of $O(n \cdot 2^{h^*}) = O(n \cdot 2^{H})$, which is $O(n \Log r)$ by \eqref{eqn:proof-lmm-reductions-2:help2}.
 
     \vgap
 
-    The value of $h^+$ then increases by 1.
-    Importantly, at this moment, $h^+$ may be greater than $h^-$. In that case, it must hold that $h^+ = h^- + 1$ (think: why?); we
-    \myitems{
-        \item rename $I_{h^+}$ to $D_{h^- + 1}$ and accordingly $\Upsilon^I_{h^+}$ to $\Upsilon^D_{h^- + 1}$;
-        \item increase $h^-$ by 1 and reset $h^+$ to $-1$.
-    }
-}
-
-\noindent {\bf Remark.} We insert a remark here that will be useful for analyzing the amortized update cost. Whenever a new subset $I_i$ --- for some $i \ge 0$ --- is created, every element in $I_i$ is amortized a cost of $U(|I_i|)$.
-
-\subsection{Deletion} \label{sec:log:del}
-
-To delete the {\em oldest} $e_\mit{old}$, we identify the smallest $i \in [0, h^-]$ satisfying
-\myeqn{
-    |I_i| & = & 2^i. \nn
-}
-Such an $i$ definitely exists (think: why?), and $I_i$ must be the subset containing $e_\mit{old}$.
-
-\vgap
-
-We destroy $\Upsilon^D_i$ and partition $D_i \setminus \set{e_\mit{old}}$ into $D_0, D_1, ..., D_{i-1}$ such that
-\myitems{
-    \item $D_j$ contains $2^j$ elements for every $j \in [0, i-1]$;
-
-    \item if an element $e \in D_i$ is older than another element $e' \in D_i$, the subsets $D_j$ and $D_{j'}$ containing $e$ and $e'$, respectively, must satisfy $j \le j'$.
-}
-For each $j \in [0, i-1]$, build $\Upsilon^D_j$ on $D_j$. The total cost of building $\Upsilon^D_0, \Upsilon^D_1, ..., \Upsilon^D_{i-1}$ is bounded by
-\myeqn{
-    \sum_{j=0}^{i-1} 2^j \cdot U(2^j) \le U(2^i) \cdot \sum_{j=0}^{i-1} 2^j < U(2^i) \cdot 2^i. \nn
-}
-We amortize this over the $2^i$ elements that were in $I_i$; each element thus bears a cost of $U(2^i)$.
-
-\vgap
-
-If $i = h^-$, decrease $h^-$ by 1, after which $h^-$ may be lower than $h^+$. In that case, it must hold that $h^- = h^+ - 1$; we
-\myitems{
-    \item rename $I_{h^+}$ to $D_{h^- + 1}$ and accordingly $\Upsilon^I_{h^+}$ to $\Upsilon^D_{h^- + 1}$;
-    \item increase $h^-$ by 1 and set $h^+$ to the highest $j \in [0, h^+-1]$ such that $D_j$ is non-empty (if no such $j$ exists, set $h^+ = -1$).
-}
-
-\noindent {\bf Remark.} We insert a remark here that will be useful for analyzing the amortized update cost. Whenever a subset $D_i$ --- for some $i \ge 0$ --- is destroyed, every element in $D_i$ is amortized a cost of $U(|D_i|)$.
-
-
-\subsection{Amortized Update Cost}
-
-Let us focus on an arbitrary element $e$. Assume that the size of $S$ is $N_e$ when $e$ is inserted. Our objective is to show that the total update cost can be amortized over all the elements ever inserted such that $e$ bears a cost of at most $U(2N_e) \cdot O(\log N_e)$. Because $U(2 N_e) = O(U(N_e))$ --- as stated in Theorem~\ref{thm:log:main} --- we have
-\myeqn{
-    U(2N_e) \cdot O(\log N_e)
-    =
-    O(U(N_e)) \cdot O(\log N_e)
-    =
-    U(N_e) \cdot O(\log N_e). \nn
-}
-
-%\vgap
-
-We will prove a crucial fact:
-
-\begin{lemma} \label{lmm:fact}
-    After each update, the subset --- which may be an $I_i$ or a $D_i$ --- containing $e$ must have a size at most $2N_e$.
-\end{lemma}
-
-The lemma implies our claim --- $e$ is amortized at most a cost of $U(2 N_e) \cdot O(\log N_e)$ --- because
-\myitems{
-    \item every time $e$ is charged, it bears a cost of $U(2N_e)$ (see the remarks in Sections~\ref{sec:log:ins} and \ref{sec:log:del});
-    \item $e$ can be charged $O(\log N_e)$ times as
-    every $I_i$ or $D_i$ containing $e$ satisfies $2^i \le 2N_e$, indicating $i \le 1 + \log_2 N_e$.
-}
-
-\extraspacing {\bf Proof of Lemma~\ref{lmm:fact}.} We say that an update {\em moves $e$ into} a subset $I_i$ (for some $i \ge 0$) (i) $e \notin I_i$ before the update but (ii) $e \in I_i$ after the update. Similarly, we say that an update {\em moves $e$ into} a subset $D_i$ (for some $i \ge 0$) (i) $e \notin D_i$ before the update but (ii) $e \in D_i$ after the update.
-
-\vgap
-
-There are three scenarios where $e$ is can be moved into a new subset:
-\myenums{
-    \item an insertion moves $e$ into $I_i$ for some $i \ge 0$;
-    \item an insertion moves $e$ into $D_{h^-}$;
-    \item a deletion moves $e$ into $D_{h^-}$;
-    \item a deletion moves $e$ into $D_i$ for some $i \ge 0$.
-}
-We will prove the lemma by analyzing each case in turn. Hence, we will refer to each $I_i$ (resp., $D_i$) as an {\em $I$-subset} (resp., {\em $D$-subset}).
-
-\myitems{
-    \item {\bf Case 1:} In this case, all the elements in every $D$-subset must be older than $e$. Hence, $|D_{h^-}| \le N_e$ because at most $N_e$ elements can be older than $e$. Hence, $|I_i| \le |I_{h^+}| \le |D_{h^-}| \le N_e$.
-
-    \item {\bf Case 2:} In this case, before the insertion, we must have:
-    \myitems{
-        \item $h^+ = h^-$ (by how our insertion algorithm works);
-        \item $|I_{h^+}| \le |D_{h^-}| \le N_e$ (by the same argument used in Case 1).
-    }
-    The insertion first creates $I_{h^+ + 1}$ --- whose size is $2|I_{h^+}| \le 2N_e$ --- renames $I_{h^+ + 1}$ to $D_{h^- + 1}$, increases $h^-$ by 1, and then sets $h^+ = -1$. The final $D_{h^-}$ is the $I_{h^+ + 1}$ before the renaming and, hence, has a size at most $2N_e$.
-
-    \item {\bf Case 3:} In this case, before the deletion, we must have:
-    \myitems{
-        \item $e \in I_{h^+}$ and $h^+ = h^-$ (by how our deletion algorithm works);
-        \item $|I_{h^+}| \le |D_{h^-}| \le N_e$ (by the same argument used in Case 1).
-    }
-    The deletion first destroys $D_{h^-}$, renames $I_{h^+}$ to $D_{h^-}$, and then decreases $h^+$ (the value of $h^-$ remains unchanged). The final $D_{h^-}$ is the $I_{h^+}$ before the renaming and, hence, has a size at most $N_e$.
-
-    \item {\bf Case 4:} This case can occur only after Case 3. In fact, after Case 3, $e$ can only move to subsets of smaller sizes. Hence, $|D_i|$ must be bounded by $N_e$.
-}
+    The above argument does not work if $2^{2^{H}} > n$. However, when this happens, we know from \eqref{eqn:proof-lmm-reductions-2:help2} that $(\alpha \cdot r)^{2/\eps} > 2^{2^H} > n$, leading to $r > n^{\eps/2} / \alpha$. As soon as $r$ reaches $\ceil{n^{\eps/2} / \alpha}$ --- the {\em snapping point}  --- we create a structure $\T$ on the whole $S$ in $O(n \log n) = O(n \log r)$ time, and use it to answer every subsequent query in $O(Q(n))$ time until $r = \min \{n, \fr{c \cdot n \log n}{Q(n)}\}$. The queries after the snapping point require a total cost of $O(n \log n) = O(n \log r)$. We thus have obtained an algorithm that guarantees $\time(n, r) = O(n \Log r)$ for all $r \le \min \{n, \fr{c \cdot n \log n}{Q(n)}\}$, completing the proof of Theorem~\ref{thm:main}.
+\end{proof}
 
 \section{Remark}
 
-The technique in Section~\ref{sec:log} was developed in \cite{st11c}.
-
+\todo{Later}
 
 \bibliographystyle{plain}
 \bibliography{ref}
