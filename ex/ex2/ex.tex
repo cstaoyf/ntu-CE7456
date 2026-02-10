@@ -39,7 +39,7 @@ Prepared by Yufei Tao \\
 Let $P$ be a set of $n$ points in $\real^2$, each carrying an integer positive weight. Given an axis-parallel rectangle $q$ and an integer $s \ge 1$, an IQS query returns $s$ independent weighted samples from $P \cap q$. Our goal is to design a data structure of linear space $O(n)$ that can answer such queries in $O(n^c + s)$ time, where $c$ can be an arbitrarily small constant.
 
 \myitems{
-    \item (a) Divide $\real^2$ into $\sqrt{n}$ slabs, each containing $\sqrt{n}$ points of $P$. An axis-parallel rectangle $q$ can be partitioned into
+    \item (a) Divide $\real^2$ into $\sqrt{n}$ vertical slabs, each containing $\sqrt{n}$ points of $P$. An axis-parallel rectangle $q$ can be partitioned into
 \myitems{
     \item a number of ``middle rectangles'', each spanning a slab in the x-projection;
     \item at most two ``boundary rectangles'', each of which has an x-projection contained within that of a slab.
@@ -62,9 +62,9 @@ Describe a data structure of $O(n)$ space such that, for each middle rectangle $
 
 \vgap
 
-Hint: Talk to a LLM about ``range trees''.
+Hint: Talk to a LLM about ``the range tree'' and integrate it with the 1D solution given in the class.
 
-\extraspacing {\bf Problem 3.} Let $P$ be a set of $n$ points in $\real^2$. Given an axis-parallel rectangle $q$, a {\em range query} returns $P \cap q$. In $O(n \log n)$ time, we can construct a kd-tree of $O(n)$ space that answers a range query in $O(\sqrt{n} + k)$ time, where $k = |P \cap q|$.
+\extraspacing {\bf Problem 3.} Let $P$ be a set of $n$ points in $\real^2$. Given an axis-parallel rectangle $q$, a {\em range query} returns $P \cap q$. In $O(n \log n)$ time, we can construct a so-called {\em kd-tree} that uses $O(n)$ space and answers a range query in $O(\sqrt{n} + k)$ time, where $k = |P \cap q|$.
 
 \myitems{
     \item (a) Prove: there is a semi-dynamic structure of $O(n)$ space that can answer a range query in $O(\sqrt{n} \log n + k)$ time and can support an insertion in $O(\log^2 n)$ amortized time.
@@ -86,5 +86,5 @@ Hint: Note that the update time is $O(\log n)$, rather than $O(\log^2 n)$! Furth
 
 \vgap
 
-Hint: The problem is hard! You need to support arbitrary insertions and deletions (rather than just FIFO updates)! For this purpose, you first need to figure out how to support deletions. Start with this problem: design a data structure of $O(n)$ space that supports a deletion in $O(1)$ time
+Hint: The problem is hard! You need to support arbitrary insertions and deletions (rather than just FIFO updates)! For this purpose, you first need to figure out how to support deletions. Start with this problem: design a data structure of $O(n)$ space that supports a deletion in $O(1)$ time.
 \end{document}
