@@ -21,7 +21,7 @@
 
 \begin{document}
 
-\section*{CE7456: Exercise List 1}
+\section*{CE7456: Exercise List 2}
 Prepared by Yufei Tao \\
 
 % \begin{center}
@@ -32,30 +32,48 @@ Prepared by Yufei Tao \\
     These exercises are designed to help you practice the techniques taught in class. Attempt them ``at your own risk'' because they are research-oriented and can be rather challenging. Solutions will not be provided in written form. I will be happy to act as a collaborator and sounding board --- I look forward to discussing your creative approaches, refining your key steps, and walking through your attempted solutions with you.
 }
 
-\extraspacing {\bf Problem 1.} Let $P$ be a set of $n$ points in $[U]^2$, where $U$ is an integer that fits in a word (note: $[x]$ represents the set $\set{1, 2, ..., x}$). Given an axis-parallel rectangle $q = [x_1, x_2] \times [y_1, y_2]$, a {\em counting query} returns $|P \cap q|$. It is known that we can preprocess $P$ into a data structure of $O(n)$ space that can answer any counting query in $O(\log n)$ time.
-\myitems{
-    \item Describe how to construct a data structure of $O(n)$ space that, given any axis-parallel rectangle $q$, can report $|P \cap q|$ in $O((k + 1) \log n)$ time, where $k = |P \cap q|$. Note: the query time does not depend on $U$.
-
-    \item Describe how to construct a data structure of $O(n)$ space that, given any axis-parallel rectangle $q$, can extract a point from $|P \cap q|$ uniformly at random in $O(\log^2 n)$ time. Again, note that the query time does not depend on $U$.
-}
-
-\extraspacing {\bf Problem 2.}  Fix any real value $m > 0$. Let $X$ be a real-valued random variable whose support is $[0, m]$, and $Y$ be a uniformly random variable over $[0, m]$ (note: this is an interval of real values). Prove: if $X$ and $Y$ are independent, then $\Pr[Y \le X] = \fr{1}{m} \expt[X]$.
-
-\extraspacing {\bf Problem 3.} (Weighted Set-Union Sampling)
-Let $U$ be a set of elements, where each element $e \in U$ has a real-valued weight $w(e) > 0$. Define $W = \sum_{e \in U} w(e)$. Let $S_1, S_2, ..., S_m$ be $m \ge 2$ subsets of $U$ such that $\bigcup_{i=1}^m S_i = U$. Each $S_i$ ($i \in [m]$) supports three operations in constant time:
-    \myenums{
-        \item {({\em weight-sum})} return $\sum_{e \in S_i} w(e)$;
-        \item {({\em membership})} check whether a given element is in $S_i$;
-        \item {({\em weighted sampling})} return an element $X$ of $S_i$ such that $\Pr[X = e] = w(e) / \sum_{e' \in S_i} w(e')$ holds for each $e \in S_i$.
-    }
-    Describe an algorithm to perform weighted sampling from $U$ in $O(m)$ expected time --- that is, draw an element $X \in U$ such that $\Pr[X = e] = w(e) / W$ holds for each $e \in U$.
-
-\extraspacing {\bf Problem 4.} (Sampling from Keyword Search) \\
-Let $P$ be a set of points in $[U]^2$, where $U$ is an integer that fits in a word. Each point $p \in P$ carries a set $C(p)$ of {\em colors} (a.k.a.\ keywords), where each color is an integer. Given $m$ colors $c_1, c_2, ..., c_m$, a query returns a point drawn uniformly at random from those points $p \in P$ that carry at least one chosen color, namely, $C(p) \cap \set{c_1, ..., c_m} \ne \emptyset$. Different queries may differ in their $m$ values (and, of course, also in the color choices).
+\extraspacing {\bf Problem 1.} This problem is intended to guide you step by step in applying bootstrapping to design an IQS structure.
 
 \vgap
 
-Let $N = \sum_{p \in P} |C(p)|$. Describe a structure of $O(N)$ space that answers each query in $O(m \polylog N)$ expected time. You may assume the ``counting structure'' in Problem 1.
+Let $P$ be a set of $n$ points in $\real^2$, each carrying an integer positive weight. Given an axis-parallel rectangle $q$ and an integer $s \ge 1$, an IQS query returns $s$ independent weighted samples from $P \cap q$. Our goal is to design a data structure of linear space $O(n)$ that can answer such queries in $O(n^c + s)$ time, where $c$ can be an arbitrarily small constant.
 
+\myitems{
+    \item (a) Divide $\real^2$ into $\sqrt{n}$ slabs, each containing $\sqrt{n}$ points of $P$. An axis-parallel rectangle $q$ can be partitioned into
+\myitems{
+    \item a number of ``middle rectangles'', each spanning a slab in the x-projection;
+    \item at most two ``boundary rectangles'', each of which has an x-projection contained within that of a slab.
+}
+Describe a data structure of $O(n)$ space such that, for each middle rectangle $q_{mid}$, the total weight of the points in $P \cap q_{mid}$ can be found in $O(\log n)$ time.
+
+    \item (b) Describe a data structure of $O(n)$ space that can answer an IQS query in $O(\sqrt{n} \log n + s)$ time.
+
+    Hint: For each middle rectangle, resort to a 1D IQS structure described in the class. For each boundary rectangle, simply read all the points in the corresponding slab.
+
+    \item (c) Describe a data structure of $O(n)$ space that can answer an IQS query in $O(n^{1/3} \log n + s)$ time.
+
+    Hint: Divide $\real^2$ into $n^{1/3}$ slabs, each containing $n^{2/3}$ points. You can no longer process each boundary rectangle in a brute-force manner. Resort to your structure in (b) instead.
+
+    \item (d) Prove: Suppose that there is a structure of $O(n)$ space that guarantees IQS query time $O(n^{1/c} \log n + s)$ for a constant $c$. Then, there is a structure of $O(n)$ space that guarantees IQS query time $O(n^{1/(c+1)} \log n + s)$.
+
+}
+
+\extraspacing {\bf Problem 2.} Same problem as in Problem 1. Describe a structure of $O(n \polylog n)$ space that can answer an IQS query in $O(\polylog n + s)$ time.
+
+\vgap
+
+Hint: Talk to a LLM about ``range trees''.
+
+\extraspacing {\bf Problem 3.} Let $P$ be a set of $n$ points in $\real^2$. Given an axis-parallel rectangle $q$, a {\em range query} returns $P \cap q$. In $O(n \log n)$ time, we can construct a kd-tree of $O(n)$ space that answers a range query in $O(\sqrt{n} + k)$ time, where $k = |P \cap q|$.
+
+\myitems{
+    \item (a) Prove: there is a semi-dynamic structure of $O(n)$ space that can answer a range query in $O(\sqrt{n} \log n + k)$ time and can support an insertion in $O(\log^2 n)$ amortized time.
+
+    \item (b) Improve your solution to (a) by reducing the query time to $O(\sqrt{n} + k)$
+
+    \vgap
+
+    Hint: Analyze the time of the query algorithm of the logarithmic method more carefully --- you should see a geometric series.
+}
 
 \end{document}
