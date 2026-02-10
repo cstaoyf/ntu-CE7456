@@ -21,41 +21,53 @@
 
 \begin{document}
 
-\section*{CE7456: Exercise List 1}
-Prepared by Yufei Tao \\
+\section*{CE7456: Quiz 1}
+
+\noindent Name:  \hspace{50mm}
+Student ID:
 
 % \begin{center}
 %     \uline{Classroom Discussion}
 % \end{center}
 
-\boxminipg{0.95\linewidth}{
-    These exercises are designed to help you practice the techniques taught in class. Attempt them ``at your own risk'' because they are research-oriented and can be rather challenging. Solutions will not be provided in written form. I will be happy to act as a collaborator and sounding board --- I look forward to discussing your creative approaches, refining your key steps, and walking through your attempted solutions with you.
-}
+\extraspacing
 
-\extraspacing {\bf Problem 1.} Let $P$ be a set of $n$ points in $[U]^2$, where $U$ is an integer that fits in a word (note: $[x]$ represents the set $\set{1, 2, ..., x}$). Given an axis-parallel rectangle $q = [x_1, x_2] \times [y_1, y_2]$, a {\em counting query} returns $|P \cap q|$. It is known that we can preprocess $P$ into a data structure of $O(n)$ space that can answer any counting query in $O(\log n)$ time.
-\myitems{
-    \item Describe how to construct a data structure of $O(n)$ space that, given any axis-parallel rectangle $q$, can report $|P \cap q|$ in $O((k + 1) \log n)$ time, where $k = |P \cap q|$. Note: the query time does not depend on $U$.
 
-    \item Describe how to construct a data structure of $O(n)$ space that, given any axis-parallel rectangle $q$, can extract a point from $|P \cap q|$ uniformly at random in $O(\log^2 n)$ time. Again, note that the query time does not depend on $U$.
-}
+\extraspacing {\bf Problem 1.} Consider elements $e_1, e_2, ..., e_5$ whose weights are 1, 2, ..., 5, respectively. Build an alias structure on $S = \set{e_1, e_2, ..., e_5}$. Show the contents of each urn in the structure, and provide the necessary details to explain how each urn is obtained.
 
-\extraspacing {\bf Problem 2.}  Fix any real value $m > 0$. Let $X$ be a real-valued random variable whose support is $[0, m]$, and $Y$ be a uniformly random variable over $[0, m]$ (note: this is an interval of real values). Prove: if $X$ and $Y$ are independent, then $\Pr[Y \le X] = \fr{1}{m} \expt[X]$.
 
-\extraspacing {\bf Problem 3.} (Weighted Set-Union Sampling)
-Let $U$ be a set of elements, where each element $e \in U$ has a real-valued weight $w(e) > 0$. Define $W = \sum_{e \in U} w(e)$. Let $S_1, S_2, ..., S_m$ be $m \ge 2$ subsets of $U$ such that $\bigcup_{i=1}^m S_i = U$. Each $S_i$ ($i \in [m]$) supports three operations in constant time:
-    \myenums{
-        \item {({\em weight-sum})} return $\sum_{e \in S_i} w(e)$;
-        \item {({\em membership})} check whether a given element is in $S_i$;
-        \item {({\em weighted sampling})} return an element $X$ of $S_i$ such that $\Pr[X = e] = w(e) / \sum_{e' \in S_i} w(e')$ holds for each $e \in S_i$.
-    }
-    Describe an algorithm to perform weighted sampling from $U$ in $O(m)$ expected time --- that is, draw an element $X \in U$ such that $\Pr[X = e] = w(e) / W$ holds for each $e \in U$.
+\pagebreak
 
-\extraspacing {\bf Problem 4.} (Sampling from Keyword Search) \\
-Let $P$ be a set of points in $[U]^2$, where $U$ is an integer that fits in a word. Each point $p \in P$ carries a set $C(p)$ of {\em colors} (a.k.a.\ keywords), where each color is an integer. Given $m$ colors $c_1, c_2, ..., c_m$, a query returns a point drawn uniformly at random from those points $p \in P$ that carry at least one chosen color, namely, $C(p) \cap \set{c_1, ..., c_m} \ne \emptyset$. Different queries may differ in their $m$ values (and, of course, also in the color choices).
+\extraspacing {\bf Problem 2.} Consider the following tree $\T$, where the number in each node indicates the node's weight:
+\begin{center}
+    \includegraphics[height=50mm]{./artwork/ts}
+\end{center}
+
+\noindent Recall that, in tree sampling, we want to perform weighted sampling on the set of leaves of $\T$ (i.e., the gray nodes in the figure). Further recall that the tree sampling algorithm works by descending a path from the root, and may either {\em succeed} (in extracting a sample) or {\em fail}. Answer the questions below:
 
 \vgap
 
-Let $N = \sum_{p \in P} |C(p)|$. Describe a structure of $O(N)$ space that answers each query in $O(m \polylog N)$ expected time. You may assume the ``counting structure'' in Problem 1.
+(a) What is the success probability for one run of the algorithm?
+
+(b) In expectation, how many repeats of the algorithm are needed to extract a sample?
+
+\pagebreak
+
+\extraspacing {\bf Problem 3.} Consider using logarithmic method to handle insertions. Recall that, at all times, the method partitions the current dataset $S$ into disjoint subsets $S_0, S_1, ..., S_h$ where $h = \lc \log_2 |S| \rc$ and each $S_i$ has size either 0 or $2^i$.
+
+\vgap
+
+Show the subset sizes when $|S| = 75$.
+
+\pagebreak
+
+\extraspacing {\bf Problem 4.} Let $S_1, S_2, ..., S_m$ be $m$ disjoint sets, where each element $e$ is an integer and is associated with an integer positive weight $w(e)$. Set $n = \max_{i=1}^m |S_i|$. On each $S_i$ ($1 \le i \le h$), there is
+\myitems{
+    \item an IQS structure that, given any interval $q$,  can extract a weighted sample from $q \cap S_i$ in $O(\log n)$ time;
+
+    \item a ``range sum'' structure that, given any interval $q$, can obtain the total weight of the elements in $q \cap S_i$ in $O(\log n)$ time.
+}
+Given an arbitrary subset $U \subseteq \set{1, 2, ..., n}$, explain how to extract in $O(|U| \log n)$ time a weighted sample from $\bigcup_{j \in U} S_j$.
 
 
 \end{document}
