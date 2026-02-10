@@ -60,7 +60,7 @@ Traditional indexing first creates an index on the whole dataset before starting
 
 \vgap
 
-{\em Deferred data structuring} (DDS) asks the question: if we are to answer $r$ queries in an {\em online} manner --- that is, the next query is given after the result of the previous query has been output --- what is the smallest total executing time (for answering $r$ queries)? This question arises in many big-data applications where large volumes of data are collected but only sparingly queried. In those environments, the problem size $n$ is huge such that even sorting is considered expensive and should be avoided as much as possible. Furthermore, it is impossible to predict how many queries --- namely, the integer $r$ mentioned earlier --- will need to be supported. Instead of constructing a complete index right away, a better algorithm is to carry out only a calculated portion of the construction during each query. If $r$ eventually reaches a certain threshold, the index will be created in full, but it is more likely that $r$ will stop at some value significantly lower than that threshold. The challenge is to ensure ``smoothness'': as $r$ grows, the total cost of all the $r$ queries {\em so far} ought to increase as slowly as possible.
+{\em Deferred data structuring} (DDS) asks the question: if we are to answer $r$ queries in an {\em online} manner --- that is, the next query is given after the result of the previous query has been output --- what is the smallest total executing time (of $r$ queries)? This question arises in many applications where large volumes of data are collected but only sparingly queried. In those environments, the problem size $n$ is huge such that even sorting is considered expensive and should be avoided as much as possible. Furthermore, it is impossible to predict how many queries --- namely, the integer $r$ mentioned earlier --- will need to be supported. Instead of constructing a complete index right away, a better algorithm is to carry out only a calculated portion of the construction during each query. If $r$ eventually reaches a certain threshold, the index will be created in full, but it is more likely that $r$ will stop at some value significantly lower than that threshold. The challenge is to ensure ``smoothness'': as $r$ grows, the total cost of all the $r$ queries {\em so far} ought to increase as slowly as possible.
 
 \vgap
 
@@ -79,11 +79,11 @@ We consider that, for any $q \in \mathbb{Q}$, the answer $\ans_q(S)$ can be repr
 
 \vgap
 
-We now formalize the DDS version of the data structure problem parameterized by $(\bD, \bQ)$. Initially, an algorithm $\A$ is given the dataset $S$ in an array, where the elements are arbitrarily permuted. An adversary first chooses a query $q_1 \in \bQ$, and solicits the answer $\ans_{q_1}(S)$ from $\A$. Iteratively, for each $i \ge 2$, after the answer of the ($i-1$)-th query has been obtained, the adversary chooses the predicate $q_i \in \bQ$ for the next query and solicits $\ans_{q_i}(S)$ from $\A$. The adversary is permitted to observe the execution of $\A$ and, thus, capable of selecting a ``bad'' $q_i$ for $\A$.
+We now formalize the DDS version of the data structure problem parameterized by $(\bD, \bQ)$. Initially, an algorithm $\A$ is given the dataset $S$ in an array, where the elements are arbitrarily permuted. An adversary first chooses a query $q_1 \in \bQ$, and solicits the answer $\ans_{q_1}(S)$ from $\A$. Iteratively, for each $i \in [2, n]$, after the answer of the ($i-1$)-th query has been obtained, the adversary chooses the next query $q_i \in \bQ$ and solicits $\ans_{q_i}(S)$ from $\A$. The adversary is permitted to observe the execution of $\A$ and, thus, capable of selecting a ``bad'' $q_i$ for $\A$.
 
 \vgap
 
-The algorithm $\A$ is said to guarantee {\em running time} $\time(n, r)$ if, for {\em every} $r \ge 1$, the first $r$ queries are processed with a total cost at most $\time(n, r)$.
+The algorithm $\A$ is said to guarantee {\em running time} $\time(n, r)$ if, for {\em every} $r \in [1, n]$, the first $r$ queries are processed with a total cost at most $\time(n, r)$.
 
 
 \section{The Class of Spectrum-Indexable Problems}
@@ -113,11 +113,11 @@ Two observations are in order here:
 
 \section{Merging and Cracking} \label{sec:prelim}
 
-This section will introduce two popular techniques --- named {\em merging} and {\em cracking} --- for tackling DDS problems, using predecessor search as a representative example. In this problem, $S$ is a set of $n$ integers. Each query $q \in \mathbb{Q}$ is an integer; and $\ans_q(S)$ is the largest integer in $S$ at most $q$, or \ttt{null} if all the integers in $S$ are greater than $q$. The problem is $(O(\log n), O(\log n))$ spectrum indexable.
+This section will introduce two popular techniques --- named {\em merging} and {\em cracking} --- for tackling DDS problems, using predecessor search as a representative example. In this problem, $S$ is a set of $n$ integers. Each query $q \in \mathbb{Q}$ is an integer; and $\ans_q(S)$ is the largest integer in $S$ at most $q$, or \ttt{null} if all the integers in $S$ are greater than $q$. The problem is $(O(\log n), O(\log n))$ spectrum indexable (think: why?).
 
 \vgap
 
-Next, we will give two proofs --- each based on a different technique --- that the DDS version of the predecessor search problem can be solved in $\time(n,r) = O(n \Log r)$ time. Our discussion will consider only $r \le n$ --- once we can achieve $\time(n, r) = O(n \Log r)$ for all $r \le n$, it is easy to show that there is a way to achieve $\time(n, r) = O(n \log r)$ for all $r \ge 1$ (think: why?).
+Next, we will give two proofs --- each based on a different technique --- that the DDS version of the predecessor search problem can be solved in $\time(n,r) = O(n \Log r)$ time.
 
 \extraspacing {\bf Merging.} We assume, w.l.o.g., that $n$ is a power of 2. Let us first describe an algorithm that works under the condition $r \Log r \le n / 2$.
 
@@ -150,17 +150,13 @@ In this section, we will establish:
 %\boxminipg{\linewidth}{
 \begin{theorem} \label{thm:main}
     %Suppose that $B(n)$ and $Q(n)$ are non-decreasing functions such that $B(n) = O(\log n)$ and $Q(n) = O(n^{1-\eps})$ where $\eps > 0$ is an arbitrarily small constant.
-    Every $(B(n), Q(n))$ spectrum indexable problem with $B(n) = O(\log n)$ and $Q(n) = O(\log n)$ admits a DDS algorithm that can process any $r \ge 1$ queries in $O(n \cdot \Log r)$ time.
+    Every $(B(n), Q(n))$ spectrum indexable problem with $B(n) = O(\log n)$ and $Q(n) = O(\log n)$ admits a DDS algorithm that can process any $r \in [1, n]$ queries in $O(n \cdot \Log r)$ time.
 \end{theorem}
 %}
 
 
 %\begin{proof}
-    Next, we prove the theorem by explicitly describing a DDS algorithm achieving $\time(n ,r) = O(n \cdot \Log r)$. Due to the same reasoning as in Section~\ref{sec:prelim}, it remains to do so by targeting $r \le n$.
-
-    \vgap
-
-    Assume, w.l.o.g., that $n$ is a power of 2. Our algorithm executes in {\em epochs}. At the beginning of the $i$-th ($i \ge 1$) epoch, we set
+    Next, we prove the theorem by explicitly describing a DDS algorithm achieving $\time(n ,r) = O(n \cdot \Log r)$. Assume, w.l.o.g., that $n$ is a power of 2. Our algorithm executes in {\em epochs}. At the beginning of the $i$-th ($i \ge 1$) epoch, we set
     \myeqn{
         s = 2^{2^i} \nn
     }
