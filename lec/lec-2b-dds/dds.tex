@@ -69,7 +69,7 @@ For a large class of DDS problems (such as predecessor search), it is known \cit
 \extraspacing {\bf Math Conventions.} For any integer $x \ge 1$, let $[x]$ represent the set $\set{1, 2, ..., x}$. Every logarithm has base 2 by default. Define $\Log(x) = \log(1+x)$ for any $x \ge 1$.
 
 
-\section{Problem Definition} \label{sec:intro-prob}
+\section{Formalization of DDS} \label{sec:intro-prob}
 
 Let $\bD$ be a (possibly infinite) set called the {\em data domain}, whose members are called {\em data elements}. Let $\bQ$ be a (possibly infinite) set called the {\em query domain}, whose members are called {\em queries}. Over a finite $S \subseteq \bD$, each query $q \in \bQ$ returns an {\em answer}, represented as $\ans_q(S)$. In a {\em problem} characterized by $(\bD, \bQ)$, the goal is to store a given set $S \subseteq \bD$ --- where $S$ is called the {\em dataset} --- in a data structure that allows us to compute $\ans_q(S)$ efficiently for any $q \in \bQ$.
 
@@ -79,16 +79,45 @@ We consider that, for any $q \in \mathbb{Q}$, the answer $\ans_q(S)$ can be repr
 
 \vgap
 
-We now formalize the DDS problem. Initially, an algorithm $\A$ is given the dataset $S$ in an array, where the elements are arbitrarily permuted. An adversary first chooses a query $q_1 \in \bQ$, and solicits the answer $\ans_{q_1}(S)$ from $\A$. Iteratively, for each $i \ge 2$, after the answer of the ($i-1$)-th query has been obtained, the adversary chooses the predicate $q_i \in \bQ$ for the next query and solicits $\ans_{q_i}(S)$ from $\A$. The adversary is permitted to observe the execution of $\A$ and, thus, capable of selecting a ``bad'' $q_i$ for $\A$.
+We now formalize the DDS version of the data structure problem parameterized by $(\bD, \bQ)$. Initially, an algorithm $\A$ is given the dataset $S$ in an array, where the elements are arbitrarily permuted. An adversary first chooses a query $q_1 \in \bQ$, and solicits the answer $\ans_{q_1}(S)$ from $\A$. Iteratively, for each $i \ge 2$, after the answer of the ($i-1$)-th query has been obtained, the adversary chooses the predicate $q_i \in \bQ$ for the next query and solicits $\ans_{q_i}(S)$ from $\A$. The adversary is permitted to observe the execution of $\A$ and, thus, capable of selecting a ``bad'' $q_i$ for $\A$.
 
 \vgap
 
 The algorithm $\A$ is said to guarantee {\em running time} $\time(n, r)$ if, for {\em every} $r \ge 1$, the first $r$ queries are processed with a total cost at most $\time(n, r)$.
 
 
+\section{The Class of Spectrum-Indexable Problems}
+
+%Next, we will learn a ``universal'' algorithm that can achieve $O(n \Log r)$ time for a class of DDS problems.
+
+A data structure problem parameterized by $(\bD, \bQ)$ to be $(B(n),Q(n))$ is {\em spectrum indexable} if the following property holds on every dataset $S \subseteq \mathbb{D}$:
+
+\minipg{0.8\linewidth}{
+    For every integer $s \in [|S|]$, it is possible to construct a data structure on $S$ in $O(|S| \cdot B(s))$ time that can answer any query in $O(\fr{|S|}{s} \cdot Q(s))$ time.
+}
+The term ``spectrum indexable'' is chosen to reflect the ability to build a ``good'' index structure --- as far as functions $B(n)$ and $Q(n)$ are concerned --- for the whole spectrum of the parameter $s$.
+
+\vgap
+
+Two observations are in order here:
+\myitems{
+    \item
+    $(B(n),Q(n))$ {\em spectrum indexability} implies that we can build a data structure on any dataset $S \subseteq \mathbb{D}$ in $O(|S| \cdot B(|S|))$ time to answer a query in $O(Q(|S|))$ time (for this purpose, simply set $s = |S|$).
+
+    %\vspace{1mm}
+
+    \item Consider any decomposable problem with the following property: for any dataset $S \subseteq \mathbb{D}$, we can build a data structure $\T$ in $O(|S| \cdot B(|S|))$ time to answer a query in $O(Q(|S|))$ time. Then, the problem must be $(B(n),Q(n))$ spectrum indexable. To see why, given an integer $s \in [|S|]$, divide $S$ arbitrarily into $m = \ceil{|S|/s}$ disjoint subsets $S_1, S_2, ..., S_m$ where all subsets have size $s$ except $S_m$. For each $i \in [m]$, create a structure $\T(S_i)$ in $O(|S_i| \cdot B(s))$ time; the total time to create all the $m$ structures is $O(m \cdot s \cdot B(s)) = O(|S| \cdot B(s))$. To answer a query $q$, simply search every $\T(S_i)$ to obtain $\ans_q(S_i)$ in $O(Q(s)))$ time and then combine $\ans_q(S_1), \ans_q(S_2), ..., \ans_q(S_m)$ into $\ans_q(S)$ using $O(m)$ time. The total query time is therefore $O(m \cdot Q(s))$.
+}
+
+
+
 \section{Merging and Cracking} \label{sec:prelim}
 
-This section will introduce two popular techniques --- named {\em merging} and {\em cracking} --- for tackling DDS problems, using predecessor search as a representative example. In this problem, $S$ is a set of $n$ integers. Each query $q \in \mathbb{Q}$ is an integer; and $\ans_q(S)$ is the largest integer in $S$ at most $q$, or \ttt{null} if all the integers in $S$ are greater than $q$. This problem can be solved in $\time(n,r) = O(n \Log r)$ time. Next, we will prove this using both techniques. Our discussion will consider only $r \le n$ --- once we can achieve $\time(n, r) = O(n \Log r)$ for all $r \le n$, it is easy to show that there is a way to achieve $\time(n, r) = O(n \log r)$ for all $r \ge 1$ (think: why?).
+This section will introduce two popular techniques --- named {\em merging} and {\em cracking} --- for tackling DDS problems, using predecessor search as a representative example. In this problem, $S$ is a set of $n$ integers. Each query $q \in \mathbb{Q}$ is an integer; and $\ans_q(S)$ is the largest integer in $S$ at most $q$, or \ttt{null} if all the integers in $S$ are greater than $q$. The problem is $(O(\log n), O(\log n))$ spectrum indexable.
+
+\vgap
+
+Next, we will give two proofs --- each based on a different technique --- that the DDS version of the predecessor search problem can be solved in $\time(n,r) = O(n \Log r)$ time. Our discussion will consider only $r \le n$ --- once we can achieve $\time(n, r) = O(n \Log r)$ for all $r \le n$, it is easy to show that there is a way to achieve $\time(n, r) = O(n \log r)$ for all $r \ge 1$ (think: why?).
 
 \extraspacing {\bf Merging.} We assume, w.l.o.g., that $n$ is a power of 2. Let us first describe an algorithm that works under the condition $r \Log r \le n / 2$.
 
@@ -114,43 +143,9 @@ In the beginning, only the root exists and it is put in the {\em unexpanded} mod
 
 After $r$ queries, the BST $\T$ is partially built because only the nodes on the $r$ root-to-leaf paths traversed during query processing are expanded. The nodes at the first $\Log r$ levels\footnote{The {\em level} of a node is the number of edges on the path from the node to the root.} can incur a total expansion cost of $O(n \Log r)$. For each root-to-leaf path $\pi$, the node $u$ at level $\Log r$ has expansion cost $O(n/r)$, which dominates the total expansion cost of the descendants of $u$ on $\pi$. Therefore, other than the nodes at the first $\Log r$ levels, all the other nodes in $\T$ have an expansion cost of $r \cdot O(\fr{n}{r}) = O(n)$ in total. The algorithm therefore achieves $\time(n, r) = O(n \Log r)$ for all $r \le n$.
 
-\section{The Class of Spectrum-Indexable Problems}
-
-%Next, we will learn a ``universal'' algorithm that can achieve $O(n \Log r)$ time for a class of DDS problems.
-
-We define a data structure problem parameterized by $(\bD, \bQ)$ to be $(B(n),Q(n))$ {\em spectrum indexable} if the following property holds on every dataset $S \subseteq \mathbb{D}$:
-
-\minipg{0.8\linewidth}{
-    For every integer $s \in [|S|]$, it is possible to construct a data structure on $S$ in $O(|S| \cdot B(s))$ time that can answer any query in $O(\fr{|S|}{s} \cdot Q(s))$ time.
-}
-The term ``spectrum indexable'' is chosen to reflect the ability to build a ``good'' index structure --- as far as functions $B(n)$ and $Q(n)$ are concerned --- for the whole spectrum of the parameter $s$.
-
-%Recall that a data structure problem parameterized by $(\bD, \bQ)$ is {\em decomposable} if, for any disjoint sets $S_1, S_2 \subseteq \mathbb{D}$ and any query $q \in \mathbb{Q}$, it is possible to derive $\ans_q(S_1 \cup S_2)$ from $\ans_q(S_1)$ and $ \ans_q(S_2)$ in constant time.
-%
-%
-% For this purpose, we introduce two problem classes relevant to our discussion:
-% \myitems{
-%     \item A problem instance is {\em decomposable} if, for any disjoint sets $S_1, S_2 \subseteq \mathbb{D}$ and any predicate $q \in \mathbb{Q}$, it is possible to derive $\ans_q(S_1 \cup S_2)$ from $\ans_q(S_1)$ and $ \ans_q(S_2)$ in constant time.
-%
-%     \item We define a problem instance to be $(B(n),Q(n))$ {\em spectrum indexable} if it possesses the following property for
-%     every dataset $S \subseteq \mathbb{D}$: for every integer $s \in [|S|]$, it is possible to construct a data structure on $S$ in $O(|S| \cdot B(s))$ time that can answer any query in $O(\fr{|S|}{s} \cdot Q(s))$ time. The term ``spectrum indexable'' is chosen to reflect the ability to build a ``good'' index structure --- as far as functions $B(n)$ and $Q(n)$ are concerned --- for the whole spectrum of the parameter $s$.
-% }
-
-\vgap
-
-Two observations are in order here:
-\myitems{
-    \item
-    $(B(n),Q(n))$ {\em spectrum indexability} implies that we can build a data structure on any dataset $S \subseteq \mathbb{D}$ in $O(|S| \cdot B(|S|))$ time to answer a query in $O(Q(|S|))$ time (for this purpose, simply set $s = |S|$).
-
-    %\vspace{1mm}
-
-    \item Consider any decomposable problem with the following property: for any dataset $S \subseteq \mathbb{D}$, we can build a data structure $\T$ in $O(|S| \cdot B(|S|))$ time to answer a query in $O(Q(|S|))$ time. Then, the problem must be $(B(n),Q(n))$ spectrum indexable. To see why, given an integer $s \in [|S|]$, divide $S$ arbitrarily into $m = \ceil{|S|/s}$ disjoint subsets $S_1, S_2, ..., S_m$ where all subsets have size $s$ except $S_m$. For each $i \in [m]$, create a structure $\T(S_i)$ in $O(|S_i| \cdot B(s))$ time; the total time to create all the $m$ structures is $O(m \cdot s \cdot B(s)) = O(|S| \cdot B(s))$. To answer a query $q$, simply search every $\T(S_i)$ to obtain $\ans_q(S_i)$ in $O(Q(s)))$ time and then combine $\ans_q(S_1), \ans_q(S_2), ..., \ans_q(S_m)$ into $\ans_q(S)$ using $O(m)$ time. The total query time is therefore $O(m \cdot Q(s))$.
-}
-
 \section{A Universal Algorithm for $(O(\log n), O(\log n))$ Spectrum Indexable Problems} %\label{sec:reductions:2}
 
-In this section, we will prove
+In this section, we will establish:
 
 %\boxminipg{\linewidth}{
 \begin{theorem} \label{thm:main}
@@ -200,9 +195,9 @@ In this section, we will prove
     This completes the proof of Theorem~\ref{thm:main}.
 %\end{proof}
 
-\section{Remark}
 
-\todo{Later}
+\extraspacing {\bf Remark.} Theorem~\ref{thm:main} is a special case of a result in \cite{t25}.
+
 
 \bibliographystyle{plain}
 \bibliography{ref}
