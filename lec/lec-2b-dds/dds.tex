@@ -60,18 +60,18 @@ Traditional indexing first creates an index on the whole dataset before starting
 
 \vgap
 
-{\em Deferred data structuring} (DDS) asks the question: if we are to answer $r$ queries in an {\em online} manner --- that is, the next query is given after the result of the previous query has been output --- what is the smallest total executing time (of $r$ queries)? This question arises in many applications where large volumes of data are collected but only sparingly queried. In those environments, the problem size $n$ is huge such that even sorting is considered expensive and should be avoided as much as possible. Furthermore, it is impossible to predict how many queries --- namely, the integer $r$ mentioned earlier --- will need to be supported. Instead of constructing a complete index right away, a better algorithm is to carry out only a calculated portion of the construction during each query. If $r$ eventually reaches a certain threshold, the index will be created in full, but it is more likely that $r$ will stop at some value significantly lower than that threshold. The challenge is to ensure ``smoothness'': as $r$ grows, the total cost of all the $r$ queries {\em so far} ought to increase as slowly as possible.
+{\em Deferred data structuring} (DDS) asks the question: if we are to answer $r$ queries in an {\em online} manner --- that is, the next query is given after the result of the previous query has been output --- what is the smallest total execution time (of $r$ queries)? This question arises in many applications where large volumes of data are collected but only sparingly queried. In those environments, the problem size $n$ is huge such that even sorting is considered expensive and should be avoided as much as possible. Furthermore, it is impossible to predict how many queries --- namely, the integer $r$ mentioned earlier --- will need to be supported. Instead of constructing a complete index right away, a better algorithm is to carry out only a calculated portion of the construction during each query. If $r$ eventually reaches a certain threshold, the index will be created in full, but it is more likely that $r$ will stop at some value significantly lower than that threshold. The challenge is to ensure ``smoothness'': as $r$ grows, the total cost of all the $r$ queries {\em so far} ought to increase as slowly as possible.
 
 \vgap
 
-For a large class of DDS problems (such as predecessor search), it is known \cite{kmr88} that the total time of answering $r$ queries from a non-preprocessed dataset must be $\Omega(n \log (1+r))$ \cite{kmr88} for \uline{\em every} value $r \in [1, n]$. In today's lecture, we will discuss techniques for matching this lower bound.
+For a large class of DDS problems (such as predecessor search), it is known \cite{kmr88} that the total time of answering $r$ queries from a non-preprocessed dataset must be $\Omega(n \log (1+r))$ \cite{kmr88} for \uline{\em every} value of $r \in [1, n]$. In today's lecture, we will discuss techniques for matching this lower bound.
 
 \extraspacing {\bf Math Conventions.} For any integer $x \ge 1$, let $[x]$ represent the set $\set{1, 2, ..., x}$. Every logarithm has base 2 by default. Define $\Log(x) = \log(1+x)$ for any $x \ge 1$.
 
 
 \section{Formalization of DDS} \label{sec:intro-prob}
 
-Let $\bD$ be a (possibly infinite) set called the {\em data domain}, whose members are called {\em data elements}. Let $\bQ$ be a (possibly infinite) set called the {\em query domain}, whose members are called {\em queries}. Over a finite $S \subseteq \bD$, each query $q \in \bQ$ returns an {\em answer}, represented as $\ans_q(S)$. In a {\em problem} characterized by $(\bD, \bQ)$, the goal is to store a given set $S \subseteq \bD$ --- where $S$ is called the {\em dataset} --- in a data structure that allows us to compute $\ans_q(S)$ efficiently for any $q \in \bQ$.
+Let $\bD$ be a (possibly infinite) set called the {\em data domain}, whose members are called {\em data elements}. Let $\bQ$ be a (possibly infinite) set called the {\em query domain}, whose members are called {\em queries}. Over a finite $S \subseteq \bD$, each query $q \in \bQ$ returns an {\em answer}, represented as $\ans_q(S)$. In a (data structure) {\em problem} characterized by $(\bD, \bQ)$, the goal is to store a given set $S \subseteq \bD$ --- where $S$ is called the {\em dataset} --- in a data structure that allows us to compute $\ans_q(S)$ efficiently for any $q \in \bQ$.
 
 \vgap
 
@@ -79,7 +79,7 @@ We consider that, for any $q \in \mathbb{Q}$, the answer $\ans_q(S)$ can be repr
 
 \vgap
 
-We now formalize the DDS version of the data structure problem parameterized by $(\bD, \bQ)$. Initially, an algorithm $\A$ is given the dataset $S$ in an array, where the elements are arbitrarily permuted. An adversary first chooses a query $q_1 \in \bQ$, and solicits the answer $\ans_{q_1}(S)$ from $\A$. Iteratively, for each $i \in [2, n]$, after the answer of the ($i-1$)-th query has been obtained, the adversary chooses the next query $q_i \in \bQ$ and solicits $\ans_{q_i}(S)$ from $\A$. The adversary is permitted to observe the execution of $\A$ and, thus, capable of selecting a ``bad'' $q_i$ for $\A$.
+We now formalize the DDS version of the problem parameterized by $(\bD, \bQ)$. Initially, an algorithm $\A$ is given the dataset $S$ in an array, where the elements are arbitrarily permuted. An adversary first chooses a query $q_1 \in \bQ$ and solicits the answer $\ans_{q_1}(S)$ from $\A$. Iteratively, for each $i \in [2, n]$, after the answer of the ($i-1$)-th query has been obtained, the adversary chooses the next query $q_i \in \bQ$ and solicits $\ans_{q_i}(S)$ from $\A$. The adversary is permitted to observe the execution of $\A$ and, thus, capable of selecting a ``bad'' $q_i$ for $\A$.
 
 \vgap
 
@@ -90,7 +90,7 @@ The algorithm $\A$ is said to guarantee {\em running time} $\time(n, r)$ if, for
 
 %Next, we will learn a ``universal'' algorithm that can achieve $O(n \Log r)$ time for a class of DDS problems.
 
-A data structure problem parameterized by $(\bD, \bQ)$ to be $(B(n),Q(n))$ is {\em spectrum indexable} if the following property holds on every dataset $S \subseteq \mathbb{D}$:
+A problem parameterized by $(\bD, \bQ)$ is $(B(n),Q(n))$ {\em spectrum indexable} if the following property holds on every dataset $S \subseteq \mathbb{D}$:
 
 \minipg{0.8\linewidth}{
     For every integer $s \in [|S|]$, it is possible to construct a data structure on $S$ in $O(|S| \cdot B(s))$ time that can answer any query in $O(\fr{|S|}{s} \cdot Q(s))$ time.
