@@ -127,7 +127,11 @@ At all times, we partition $S$ arbitrarily into disjoint subsets --- referred to
 
 \vgap
 
-A (predecessor) query is answered simply by performing binary search on every run. To control the cost, however, the algorithm makes sure that the current size $s$ is at least $i \Log i$ before processing the $i$-th ($i \ge 1$) query. If the condition is not met, an overhaul is invoked to increase $s$ to the nearest power of 2 at least $i \Log i$. After that, the query entails a cost of $O(\fr{n}{s} \Log s) = O(\fr{n}{i \Log i} \cdot \log (i \Log i)) = O(n/i)$ time. If we add this up for all $r$ queries, the sum becomes $O(n \sum_{i=1}^r \fr{1}{i}) = O(n \Log r)$. As the final run size $s$ is at most $2r \Log r$, we can conclude that the algorithm processes $r$ queries in $O(n \Log r)$ time.
+A (predecessor) query is answered simply by performing binary search on every run. To control the cost, however, the algorithm makes sure that the current size $s$ is at least $i \Log i$ before processing the $i$-th ($i \ge 1$) query. If the condition is not met, an overhaul is invoked to increase $s$ to the nearest power of 2 at least $i \Log i$. This implies $s \le 2 \cdot i \log i$. Indeed, if $s$ was increased right before answering the $i$-th query, then obviously $s \le 2 \cdot i \log i$, Otherwise, suppose that $s$ was increased to the current value right before answering the $i_{last}$-th query; then $s \le 2 \cdot i_{last} \log i_{last} < 2 i \log i$.
+
+\vgap
+
+Therefore, the $i$-th query entails a cost of $O(\fr{n}{s} \Log s) = O(\fr{n}{i \Log i} \cdot \log (i \Log i)) = O(n/i)$ time. If we add this up for all $r$ queries, the sum becomes $O(n \sum_{i=1}^r \fr{1}{i}) = O(n \Log r)$. As the final run size $s$ is at most $2r \Log r$, we can conclude that the algorithm processes $r$ queries in $O(n \Log r)$ time.
 
 \vgap
 
