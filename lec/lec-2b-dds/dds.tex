@@ -131,7 +131,7 @@ A (predecessor) query is answered simply by performing binary search on every ru
 
 \vgap
 
-Therefore, the $i$-th query entails a cost of $O(\fr{n}{s} \Log s) = O(\fr{n}{i \Log i} \cdot \log (i \Log i)) = O(n/i)$ time. If we add this up for all $r$ queries, the sum becomes $O(n \sum_{i=1}^r \fr{1}{i}) = O(n \Log r)$. As the final run size $s$ is at most $2r \Log r$, we can conclude that the algorithm processes $r$ queries in $O(n \Log r)$ time.
+We can now assert that the $i$-th query entails a cost of $O(\fr{n}{s} \Log s) = O(\fr{n}{i \Log i} \cdot \log (i \Log i)) = O(n/i)$ time. It thus follows that the total cost of $r$ queries is $O(n \sum_{i=1}^r \fr{1}{i}) = O(n \Log r)$. As the final run size $s$ is at most $2r \Log r$, we can conclude that the algorithm processes $r$ queries in $O(n \Log r)$ time.
 
 \vgap
 
