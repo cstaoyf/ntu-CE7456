@@ -143,20 +143,24 @@ In the beginning, only the root exists and it is put in the {\em unexpanded} mod
 
 After $r$ queries, the BST $\T$ is partially built because only the nodes on the $r$ root-to-leaf paths traversed during query processing are expanded. The nodes at the first $\Log r$ levels\footnote{The {\em level} of a node is the number of edges on the path from the node to the root.} can incur a total expansion cost of $O(n \Log r)$. For each root-to-leaf path $\pi$, the node $u$ at level $\Log r$ has expansion cost $O(n/r)$, which dominates the total expansion cost of the descendants of $u$ on $\pi$. Therefore, other than the nodes at the first $\Log r$ levels, all the other nodes in $\T$ have an expansion cost of $r \cdot O(\fr{n}{r}) = O(n)$ in total. The algorithm therefore achieves $\time(n, r) = O(n \Log r)$ for all $r \le n$.
 
-\section{A Universal Algorithm for $(O(\log n), O(\log n))$ Spectrum Indexable Problems} %\label{sec:reductions:2}
+\section{A Universal Algorithm for $(\log n, \log n)$ Spectrum Indexable Problems} %\label{sec:reductions:2}
 
 In this section, we will establish:
 
 %\boxminipg{\linewidth}{
 \begin{theorem} \label{thm:main}
     %Suppose that $B(n)$ and $Q(n)$ are non-decreasing functions such that $B(n) = O(\log n)$ and $Q(n) = O(n^{1-\eps})$ where $\eps > 0$ is an arbitrarily small constant.
-    Every $(B(n), Q(n))$ spectrum indexable problem with $B(n) = O(\log n)$ and $Q(n) = O(\log n)$ admits a DDS algorithm that can process any $r \in [1, n]$ queries in $O(n \cdot \Log r)$ time.
+    Every $(\log n, \log n)$ spectrum indexable problem admits a DDS algorithm that can process any $r \in [1, n]$ queries in $O(n \cdot \Log r)$ time.
 \end{theorem}
 %}
 
 
 %\begin{proof}
-    Next, we prove the theorem by explicitly describing a DDS algorithm achieving $\time(n ,r) = O(n \cdot \Log r)$. Assume, w.l.o.g., that $n$ is a power of 2. Our algorithm executes in {\em epochs}. At the beginning of the $i$-th ($i \ge 1$) epoch, we set
+    Next, we prove the theorem by explicitly describing a DDS algorithm achieving $\time(n ,r) = O(n \cdot \Log r)$. Assume, w.l.o.g., that $n$ is a power of 2. Define $B(n) = \log n$ and $Q(n) = \log n$.
+
+    \vgap
+
+    Our algorithm executes in {\em epochs}. At the beginning of the $i$-th ($i \ge 1$) epoch, we set
     \myeqn{
         s = 2^{2^i} \nn
     }
