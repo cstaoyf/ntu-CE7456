@@ -97,7 +97,7 @@ and a function $\hat{r}_S: [U] \rightarrow [n]$ as:
         $n$ &
         if $q > b$
     \end{tabular}
-    \right. \label{eqn:approx-r}
+    \right. \label{eqn:hat-r}
 }
 
 Our data structure consists of (i) the values $a, b$ and $n$, (ii) the sorted array $A$, and the function $\hat{r}_S$. In particular, we store $\hat{r}_S$ in an array of size $n$ such that, for any $q \in I_i$ with any $i \in [n]$, we can return $\hat{r}_S(q)$ in constant time. The total space consumption is $O(n)$ in the worst case.
@@ -130,6 +130,16 @@ If
 }
 the query time is bounded by $O(\log \Delta_S(q))$.
 
+\vgap
+
+We mention a proposition here that will be useful later:
+
+\begin{proposition} \label{prop:bound-on-delta-Sq}
+    If $q \in I_i$ (for some $i \in [n]$), then $\Delta_S(q) \le n_i/2$.
+\end{proposition}
+
+The proof is easy and left to you.
+
 \section{Analysis} \label{sec:analysis}
 
 Define $f$ as the probability density function of $\D$, namely, $Pr[X = x] = f(x)$ for a random variable $X$ drawn from $\D$. We will prove:
@@ -158,15 +168,20 @@ Specially, define
 }
 For each $j \in \set{0, 1, ..., n+1}$, set
 \myeqn{
-    m_j &=& |S \cap J_j|. \label{eqn:analysis-m-j}
+    m_j &=& |S \cap J_j|. \label{eqn:analysis:mj}
 }
 
-Note that each interval $J_j$ ($j \in [n]$) has a length of $U/n$, which is never shorter than that of an interval $I_i$ ($i \in [n]$) defined in \eqref{eqn:Ii}. The proposition below follows immediately:
+Each interval $J_j$ ($j \in [n]$) has a length of $U/n$, which is never shorter than that of an interval $I_i$ ($i \in [n]$) defined in \eqref{eqn:Ii}. The proposition below follows immediately:
 
 \begin{proposition} \label{prop:analysis:J-covers-I}
     Each interval $I_i$ ($i \le [n]$) defined in \eqref{eqn:Ii} is covered by $J_j \cup J_{j+1}$ for some $j \in [n-1]$.
 \end{proposition}
 
+\begin{corollary} \label{crl:analysis:J-covers-I}
+    Fix an arbitrary $j \in [n]$. If an interval $I_i$ ($i \le [n]$) intersects with $J_j$, then $I_i$ is covered by $J_{j-1} \cup J_j \cup J_{j+1}$.
+\end{corollary}
+
+The proof is easy and left to you.
 
 \subsection{A Core Lemma} \label{sec:analysis:core}
 
@@ -175,53 +190,55 @@ Define for each $j \in [n]$
     p_j = \Pr_{X \sim \D} [X \in J_j].
     \label{eqn:analysis:pj}
 }
-This section serves as the proof of
+This section serves as the proof of the lemma below:
 
 \begin{lemma} \label{lmm:anayslis-core}
     $\expt_{Q, S} [\Delta_S(Q)] = O(n) \cdot \sum_{j=1}^n p_j^2$.
 \end{lemma}
 
-The total law of expectation tells us:
+
+\extraspacing {\bf Proof of Lemma~\ref{lmm:anayslis-core}.} The total law of expectation tells us:
 \myeqn{
     \expt_{Q, S}[\Delta_S(Q)] &=& \expt_S \Big[\expt_{Q \mid S} \Big[\Delta_S(Q) | S \Big] \Big] \nn  \\
     \explain{by independence of $Q$ and $S$} &=& \expt_S \Big[\expt_{Q} \Big[\Delta_S(Q) | S \Big] \Big].
     \label{eqn:analysis-core-h1}
 }
-The subsequent discussion will focus on $\expt_Q [\Delta_S(Q) | S]$, for which we have:
+Regarding $\expt_Q [\Delta_S(Q) | S]$, we can derive:
 \myeqn{
     \expt_Q [\Delta_S(Q) | S]
     &=&
-    \int_0^U \Delta_S(q) \cdot f(q) dq \nn \\
+    \sum_{q \in [U]} \Delta_S(q) \cdot f(q) \nn \\
     &=&
-    \sum_{i=1}^n \int_{I_i} \Delta_S(q) \cdot f(q) dq \nn \\
-    \explain{\todo{reason}}
+    \sum_{i \in [n]} \sum_{q \in I_i} \Delta_S(q) \cdot f(q) \nn \\
+    \explain{by Proposition~\ref{prop:bound-on-delta-Sq}}
     &\le&
-    \sum_{i=1}^n \fr{n_i}{2} \int_{I_i} f(q) dq \label{eqn:analysis-core-h2}
+    \sum_{i=1}^n \fr{n_i}{2} \sum_{q \in I_i} f(q). \label{eqn:analysis-core-h2}
 }
-where --- let us recall --- $n_i = |S \cap I_i|$. Define for each $i, j \in [n]$:
+
+Define for each $i, j \in [n]$:
 \myeqn{
     n_{i,j} = |S \cap I_i \cap J_j|. \label{eqn:analysis-n-ij} \nn
 }
 Thus
 \myeqn{
     \eqref{eqn:analysis-core-h2} =
-    \fr{1}{2} \sum_{i=1}^n \sum_{j=1}^n n_{i,j} \int_{I_i} f(q) dq
+    \fr{1}{2} \sum_{i=1}^n \sum_{j=1}^n n_{i,j} \sum_{q \in I_i} f(q)
     =
-    \fr{1}{2} \sum_{j=1}^n \sum_{i=1}^n n_{i,j} \int_{I_i} f(q) dq.
+    \fr{1}{2} \sum_{j=1}^n \sum_{i=1}^n n_{i,j} \sum_{q \in I_i} f(q).
     \label{eqn:analysis-core-h3}
 }
 For a specific $j \in [n]$, we have
 \myeqn{
-    \sum_{i=1}^n n_{i,j} \int_{I_i} f(q) dq
+    \sum_{i=1}^n n_{i,j} \sum_{q \in I_i} f(q)
     &=&
-    \sum_{i \in [n]: I_i \cap J_j \ne \emptyset} n_{i,j} \int_{I_i} f(q) dq \nn \\
-    \explain{\todo{}}
+    \sum_{i \in [n]: I_i \cap J_j \ne \emptyset} n_{i,j} \sum_{q \in I_i} f(q) \nn \\
+    \explain{by Corollary~\ref{crl:analysis:J-covers-I}}
     &\le&
-    \sum_{i \in [n]: I_i \cap J_j \ne \emptyset} n_{i,j} \int_{J_{j-1} \cup J_j \cup J_{j+1}} f(q) dq \nn \\
+    \sum_{i \in [n]: I_i \cap J_j \ne \emptyset} n_{i,j} \sum_{q \in J_{j-1} \cup J_j \cup J_{j+1}} f(q) \nn \\
     &=&
     m_j \cdot (p_{j-1} + p_j + p_{j+1}). \nn
 }
-Plugging the above into \eqref{eqn:analysis-core-h3} and then into \eqref{eqn:analysis-core-h2} yields
+where $m_j$ and $p_j$ are defined in \eqref{eqn:analysis:mj} and \eqref{eqn:analysis:pj}, respectively. Plugging the above into \eqref{eqn:analysis-core-h3} and then into \eqref{eqn:analysis-core-h2} yields
 \myeqn{
     \expt_Q [\Delta_S(Q) | S] =
     \fr{1}{2} \sum_{j=1}^n  m_j \cdot (p_{j-1} + p_j + p_{j+1}) \nn
@@ -238,13 +255,12 @@ which, together with \eqref{eqn:analysis-core-h1}, gives
     \fr{n}{2} \cdot \sum_{j=1}^n  p_j p_{j-1} + p_j^2 + p_j p_{j+1}. \label{eqn:analysis-core-h4}
 }
 
-The proof of the next fact is left to you as an exercise:
 
 \begin{proposition}
     $\sum_{j=1}^n  p_j p_{j-1} = O(\sum_{j=1}^n p_j^2)$ and $\sum_{j=1}^n  p_j p_{j+1} = O(\sum_{j=1}^n p_j^2)$.
 \end{proposition}
 
-Lemma~\ref{lmm:anayslis-core} now follows by combining the above proposition and \eqref{eqn:analysis-core-h4}.
+The proof is left to you as an exercise. Lemma~\ref{lmm:anayslis-core} now follows by combining the above proposition and \eqref{eqn:analysis-core-h4}.
 
 
 \appendix
