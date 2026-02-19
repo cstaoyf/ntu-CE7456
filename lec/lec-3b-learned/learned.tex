@@ -49,7 +49,7 @@ So far all the complexities in our algorithmic analysis are claimed in the {\em 
 
 \vgap
 
-We still use predecessor search as the representative example: the input (i.e., the dataset) is a set $S$ of $n$ integers; given an integer $q$, a query returns the the largest element $e \in S$ satisfying $e \le q$, or declares that such an element does not exist. All the integers --- including those in $S$ and the query value $q$ --- are assumed to fall in the domain $[U]$ (for an integer $x > 0$, the notation $[x]$ represents the set $\set{1, 2, ..., x}$) for some (large) integer $U$. W.l.o.g., we consider that $U$ is a multiple of $n$ (if not, increase $U$ to make the property hold).
+We still use predecessor search as the representative example: the input (i.e., the dataset) is a collection $S$ of $n$ integers; given an integer $q$, a query returns the the largest element $e \in S$ satisfying $e \le q$, or declares that such an element does not exist. All the integers --- including those in $S$ and the query value $q$ --- are assumed to fall in the domain $[U]$ (for an integer $x > 0$, the notation $[x]$ represents the set $\set{1, 2, ..., x}$) for some (large) integer $U$. W.l.o.g., we consider that $U$ is a multiple of $n$ (if not, increase $U$ to make the property hold).
 
 \vgap
 
@@ -64,6 +64,43 @@ Let $\tm_S(Q)$ be the time of an algorithm $\A$ for answering a query with searc
 }
 The worst-case $O(\log n)$ guarantee of BST directly implies an average query time of $O(\log n)$. The challenge is to find a data structure with a lower average query time on ``easy'' distributions $\D$.
 
+\section{Structure} \label{sec:str}
+
+Define
+\myeqn{
+    a &=& \min_{e \in S} e \nn \\
+    b &=& \max_{e \in S} e. \nn
+}
+We consider $a < b$ (the problem is trivial otherwise).
+Use an array $A$ to store the elements of $S$ in ascending order. Divide the range $[a, b]$ into $n$ intervals with equal length; specifically, the $i$-th interval ($i \in [n]$) is
+\myeqn{
+    I_i &=& \left\{
+    \begin{tabular}{ll}
+        $\Big[a + (b-a) \cdot \fr{i-1}{n}, a + (b-a) \cdot \fr{i}{n} \Big)$ & if $i < n$  \\[2mm]
+        $\Big[a + (b-a) \cdot \fr{i-1}{n}, a + (b-a) \cdot \fr{i}{n} \Big]$ & if $i = n$.
+    \end{tabular}
+    \right.
+    \label{eqn:Ii}
+}
+For each $i \in [n]$, define
+\myeqn{
+    n_i &=& |S \cap I_i|. \label{eqn:ni}
+}
+and a function $\hat{r}: [U] \rightarrow [n]$ as:
+\myeqn{
+    \hat{r}(q)
+    &=&
+    \left\{
+    \begin{tabular} {ll}
+        0 & if $q < a$ \\
+        $\fr{n_i}{2} + \sum_{k=1}^{i-1} n_i$ & if $q \in I_i$ for some $i \in [n]$ \\
+        $n$ &
+        if $q > b$
+    \end{tabular}
+    \right. \label{eqn:approx-r}
+}
+
+Our data structure consists of (i) the values $a, b$ and $n$, (ii) the sorted array $A$, and the function $\hat{r}$. In particular, we store $\hat{r}$ in an array of size $n$ such that, for any $q \in I_i$ with any $i \in [n]$, we can return $\hat{r}(q)$ in constant time. The total space consumption is $O(n)$ in the worst case.
 
 
 
@@ -160,6 +197,12 @@ The proof of the next fact is left to you as an exercise:
 \end{proposition}
 
 Lemma~\ref{lmm:anayslis-core} now follows by combining the above proposition and \eqref{eqn:analysis-core-h4}.
+
+
+\appendix
+
+\section{Exponential Search}
+
 \bibliographystyle{plain}
 \bibliography{ref}
 
