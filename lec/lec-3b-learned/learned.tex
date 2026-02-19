@@ -71,7 +71,7 @@ Define
     a &=& \min_{e \in S} e \nn \\
     b &=& \max_{e \in S} e. \nn
 }
-We consider $a < b$ (the problem is trivial otherwise).
+We consider $a < b$ (the problem is trivial otherwise; think: why?).
 Use an array $A$ to store the elements of $S$ in ascending order. Divide the range $[a, b]$ into $n$ intervals with equal length; specifically, the $i$-th interval ($i \in [n]$) is
 \myeqn{
     I_i &=& \left\{
@@ -132,22 +132,36 @@ the query time is bounded by $O(\log \Delta_S(q))$.
 
 \section{Analysis} \label{sec:analysis}
 
-Partition the data domain $[0, U]$ into $n$ intervals of equal length; specifically, for each $j \in [n]$, the $j$-th interval is
+Define $f$ as the probability density function of $\D$, namely, $Pr[X = x] = f(x)$ for a random variable $X$ drawn from $\D$. We will prove:
+
+\begin{theorem} \label{thm:main}
+    The average query time of the algorithm in Section~\ref{sec:query} is $O(U \cdot \sum_{x \in [U]} (f(x))^2)$.
+\end{theorem}
+
+For example, when $\D$ is uniform over $[U]$, we have $f(x) = 1/U$ for all $x \in [U]$, in which case the average query time is $O(U \cdot (U \cdot 1/U^2)) = O(1)$. More generally, the average query complexity is $O(t^2)$ if $f(x) \le t/U$ for all $x \in [U]$ --- for $t = o(\sqrt{\log n})$, the structure strictly improves the BST (in terms of average running time).
+
+\subsection{Domain-Partitioning Intervals} \label{sec:analysis}
+
+To facilitate our analysis, we partition the domain $[U]$ into $n$ intervals of equal length; specifically, for each $j \in [n]$, the $j$-th interval is
 \myeqn{
-    J_j &=& [(j-1)/n, j/n]. \label{eqn:analysis-J-j}
+    J_j &=& \left\{
+    \begin{tabular}{ll}
+        $\Big[1 + (U-1) \cdot \fr{j-1}{n}, 1 + (U-1) \cdot \fr{j}{n} \Big)$ & if $j < n$  \\[2mm]
+        $\Big[1 + (U-1) \cdot \fr{j-1}{n}, 1 + (U-1) \cdot \fr{j}{n} \Big]$ & if $j = n$.
+    \end{tabular}
+    \right.
+    \label{eqn:Jj}
 }
 Specially, define
 \myeqn{
     J_0 = J_{n+1} = \emptyset. \nn
 }
-Set
+For each $j \in \set{0, 1, ..., n+1}$, set
 \myeqn{
     m_j &=& |S \cap J_j|. \label{eqn:analysis-m-j}
 }
-for each $j \in \set{0, 1, ..., n+1}$.
-\todo{comparison remark}
 
-\vgap
+\subsection{A Core Lemma} \label{sec:analysis:core}
 
 The core of our analysis is to prove:
 
