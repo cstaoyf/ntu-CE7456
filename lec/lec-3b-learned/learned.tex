@@ -203,22 +203,18 @@ Lemma~\ref{lmm:anayslis-core} now follows by combining the above proposition and
 
 \section{Exponential Search}
 
-\section{Exponential Search}
-
-\subsection{Problem Setting}
-
 Let $A$ be a sorted array of $n$ elements (in non-decreasing order),
-and let $q$ be a target value. We wish to determine whether $q$ appears in $A$,
-and if so, return its index.
-
-\extraspacing{\bf Algorithm.} If $q < A[1]$, return ``absence''. Otherwise, identify the smallest $h \in [n]$ such that
+and let $q$ be a target value. Exponential search decides whether $q$ appears in $A$
+--- if so, return its index --- as follows. If $q < A[1]$, return ``absence''. Otherwise, identify the smallest $h \in [n]$ such that
 \myitems{
     \item $h$ is a power of 2 or $h = n$, and
     \item $A[n] \ge q$
 }
-By definition of $h$, the value $q$ --- if it exists in $A$ --- must lie in the subarray from $A[\lc h/2 \rc]$ to $A[h]$. We then perform binary search to look for $q$ in the subarray.
+The value $q$ --- if it exists in $A$ --- must lie in the subarray from $A[\lc h/2 \rc]$ to $A[h]$. We then perform binary search to look for $q$ in the subarray.
 
-\extraspacing {\bf Analysis.} Let $\Delta$ be the number of elements in $A$ that are at most $q$. Clearly, $h \le 2\Delta$. It is rudimentary to show that the running time is $O(\log \Delta)$.
+\vgap
+
+Let $\Delta$ be the number of elements in $A$ that are at most $q$. Clearly, $h \le 2\Delta$. It is rudimentary to show that the running time is $O(\log \Delta)$.
 
 
 \bibliographystyle{plain}
