@@ -51,7 +51,6 @@
 }
 
 
-Traditional indexing first creates an index on the whole dataset before starting to answer queries. For example, after building a binary search tree (BST) on an (unsorted) set $S$ of $n$ integers in $O(n \log n)$ time, we can use the tree to answer each predecessor query\footnote{Given a search value $q$, a predecessor query returns the largest element in $S$ that does not exceed $q$.} in $O(\log n)$ time. This paradigm, however, falls short when the dataset $S$ will only be searched a small number of times. In the extreme, if only one query needs to be answered, the best approach is to scan $S$ in full, which requires only $O(n)$ time.
 
 \section{Analysis} \label{sec:analysis}
 
@@ -63,11 +62,18 @@ Partition the data domain $[0, U]$ into $n$ intervals of equal length; specifica
 \myeqn{
     J_j &=& [(j-1)/n, j/n]. \label{eqn:analysis-J-j}
 }
+Specially, define
+\myeqn{
+    J_0 = J_{n+1} = \emptyset. \nn
+}
 Set
 \myeqn{
     m_j &=& |S \cap J_j|. \label{eqn:analysis-m-j}
 }
+for each $j \in \set{0, 1, ..., n+1}$.
 \todo{comparison remark}
+
+\vgap
 
 The core of our analysis is to prove:
 
@@ -111,9 +117,34 @@ For a specific $j \in [n]$, we have
     \sum_{i \in [n]: I_i \cap J_j \ne \emptyset} n_{i,j} \int_{I_i} f(q) dq \nn \\
     \explain{\todo{}}
     &\le&
-    \sum_{i \in [n]: I_i \cap J_j \ne \emptyset} n_{i,j} \int_{I_i} f(q) dq \nn \\
+    \sum_{i \in [n]: I_i \cap J_j \ne \emptyset} n_{i,j} \int_{J_{j-1} \cup J_j \cup J_{j+1}} f(q) dq \nn \\
+    &=&
+    m_j \cdot (p_{j-1} + p_j + p_{j+1}). \nn
+}
+Plugging the above into \eqref{eqn:analysis-core-h3} and then into \eqref{eqn:analysis-core-h2} yields
+\myeqn{
+    \expt_Q [\Delta_S(Q) | S] =
+    \fr{1}{2} \sum_{j=1}^n  m_j \cdot (p_{j-1} + p_j + p_{j+1}) \nn
+}
+which, together with \eqref{eqn:analysis-core-h1}, gives
+\myeqn{
+    \expt_{Q,S} [\Delta_S(Q) | S] = \expt_S [\expt_Q [\Delta_S(Q) | S]] &=&
+    \fr{1}{2} \cdot \expt_S \Big[ \sum_{j=1}^n  m_j \cdot (p_{j-1} + p_j + p_{j+1}) \Big] \nn \\
+    &=&
+    \fr{1}{2} \cdot \sum_{j=1}^n  \expt_S[m_j] \cdot (p_{j-1} + p_j + p_{j+1}) \nn \\
+    &=&
+    \fr{1}{2} \cdot \sum_{j=1}^n  n p_j \cdot (p_{j-1} + p_j + p_{j+1}) \nn \\
+    &=&
+    \fr{n}{2} \cdot \sum_{j=1}^n  p_j p_{j-1} + p_j^2 + p_j p_{j+1}. \label{eqn:analysis-core-h4}
 }
 
+The proof of the next fact is left to you as an exercise:
+
+\begin{proposition}
+    $\sum_{j=1}^n  p_j p_{j-1} = O(\sum_{j=1}^n p_j^2)$ and $\sum_{j=1}^n  p_j p_{j+1} = O(\sum_{j=1}^n p_j^2)$.
+\end{proposition}
+
+Lemma~\ref{lmm:anayslis-core} now follows by combining the above proposition and \eqref{eqn:analysis-core-h4}.
 \bibliographystyle{plain}
 \bibliography{ref}
 
