@@ -147,7 +147,7 @@ Define $f$ as the probability density function of $\D$, namely, $Pr[X = x] = f(x
 \begin{theorem} \label{thm:main}
     The average query time of the algorithm in Section~\ref{sec:query} is
     \myeqn{
-        O\Big(\log \Big(U \cdot \sum_{q \in [U]} (f(q))^2 \Big)\Big). \label{eqn:main}
+        O\Big(\log \Big(U \cdot \sum_{q \in [U]} (f(q))^2 \Big)\Big). \nn %\label{eqn:main}
     }
 \end{theorem}
 
@@ -295,11 +295,16 @@ The average running time of the query algorithm in Section~\ref{sec:query} is bo
     O \Big(
         \expt_{Q,S} \log \Delta_S(q)
     \Big)
-    =
+    \le
     O \Big(
         \log \expt_{Q,S} \Delta_S(q)
     \Big) \nn
 }
+where the inequality is due to Jensen's inequality. The claim in Theorem~\ref{thm:main} now follows from the above and \eqref{eqn:thm-main:h1}.
+
+\section{Remarks}
+
+
 
 \appendix
 
