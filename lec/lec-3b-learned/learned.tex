@@ -1,0 +1,205 @@
+\include{./def/yf-formatting}
+\include{./def/yf-def}
+
+\title{}
+\author{}
+\date{}
+
+
+\def\InvS{\textrm{InvS}}
+\def\deg{\textrm{deg}}
+
+\def\bD{\mathbb{D}}
+\def\bQ{\mathbb{Q}}
+
+\def\A{\mathcal{A}}
+\def\B{\mathcal{B}}
+\def\C{\mathcal{C}}
+\def\Cb{\mathbb{C}}
+\def\E{\mathcal{E}}
+\def\F{\mathcal{F}}
+\def\G{\mathcal{G}}
+\def\I{\mathcal{I}}
+\def\L{\mathcal{L}}
+\def\R{\mathcal{R}}
+\def\T{\mathcal{T}}
+%\def\U{\mathcal{U}}
+%\def\X{\mathcal{X}}
+\def\time{\textsc{Time}}
+
+
+\def\ans{\textsc{Ans}}
+
+\def\extraspacing{\vspace{3mm} \noindent}
+\def\vgap{\vspace{3mm}}
+\def\vslit{\vspace{0.5mm}}
+
+\DeclareMathOperator*{\Log}{Log}
+
+\begin{document}
+
+% \begin{center}
+%     {\bf \large Lecture Notes} \\
+%     {\bf \large Approximate Nearest Neighbor Search 1 : Proximity Graphs} \\[5mm]
+%     {\large Yufei Tao} \\[10mm]
+% \end{center}
+
+\boxminipg{\linewidth}{
+    \begin{center}
+        \vspace{3mm}
+    {\Large
+    (CE7456 Lecture Notes 7) Deferred Data Structuring} \\[1mm]
+    {\Large (a.k.a.\ Database Cracking and Merging)} \\[2mm]
+    {\large Yufei Tao}
+    \vspace{3mm}
+    \end{center}
+}
+
+
+Traditional indexing first creates an index on the whole dataset before starting to answer queries. For example, after building a binary search tree (BST) on an (unsorted) set $S$ of $n$ integers in $O(n \log n)$ time, we can use the tree to answer each predecessor query\footnote{Given a search value $q$, a predecessor query returns the largest element in $S$ that does not exceed $q$.} in $O(\log n)$ time. This paradigm, however, falls short when the dataset $S$ will only be searched a small number of times. In the extreme, if only one query needs to be answered, the best approach is to scan $S$ in full, which requires only $O(n)$ time.
+
+\vgap
+
+{\em Deferred data structuring} (DDS) asks the question: if we are to answer $r$ queries in an {\em online} manner --- that is, the next query is given after the result of the previous query has been output --- what is the smallest total execution time (of $r$ queries)? This question arises in many applications where large volumes of data are collected but only sparingly queried. In those environments, the problem size $n$ is huge such that even sorting is considered expensive and should be avoided as much as possible. Furthermore, it is impossible to predict how many queries --- namely, the integer $r$ mentioned earlier --- will need to be supported. Instead of constructing a complete index right away, a better algorithm is to carry out only a calculated portion of the construction during each query. If $r$ eventually reaches a certain threshold, the index will be created in full, but it is more likely that $r$ will stop at some value significantly lower than that threshold. The challenge is to ensure ``smoothness'': as $r$ grows, the total cost of all the $r$ queries {\em so far} ought to increase as slowly as possible.
+
+\vgap
+
+For a large class of DDS problems (such as predecessor search), it is known \cite{kmr88} that the total time of answering $r$ queries from a non-preprocessed dataset must be $\Omega(n \log (1+r))$ \cite{kmr88} for \uline{\em every} value of $r \in [1, n]$. In today's lecture, we will discuss techniques for matching this lower bound.
+
+\extraspacing {\bf Math Conventions.} For any integer $x \ge 1$, let $[x]$ represent the set $\set{1, 2, ..., x}$. Every logarithm has base 2 by default. Define $\Log(x) = \log(1+x)$ for any $x \ge 1$.
+
+
+\section{Formalization of DDS} \label{sec:intro-prob}
+
+Let $\bD$ be a (possibly infinite) set called the {\em data domain}, whose members are called {\em data elements}. Let $\bQ$ be a (possibly infinite) set called the {\em query domain}, whose members are called {\em queries}. Over a finite $S \subseteq \bD$, each query $q \in \bQ$ returns an {\em answer}, represented as $\ans_q(S)$. In a (data structure) {\em problem} characterized by $(\bD, \bQ)$, the goal is to store a given set $S \subseteq \bD$ --- where $S$ is called the {\em dataset} --- in a data structure that allows us to compute $\ans_q(S)$ efficiently for any $q \in \bQ$.
+
+\vgap
+
+We consider that, for any $q \in \mathbb{Q}$, the answer $\ans_q(S)$ can be represented using $O(1)$ words and can be computed in $O(n)$ time (which essentially means that the query can be answered using a brute-force algorithm such as exhaustive scan).
+
+\vgap
+
+We now formalize the DDS version of the problem parameterized by $(\bD, \bQ)$. Initially, an algorithm $\A$ is given the dataset $S$ in an array, where the elements are arbitrarily permuted. An adversary first chooses a query $q_1 \in \bQ$ and solicits the answer $\ans_{q_1}(S)$ from $\A$. Iteratively, for each $i \in [2, n]$, after the answer of the ($i-1$)-th query has been obtained, the adversary chooses the next query $q_i \in \bQ$ and solicits $\ans_{q_i}(S)$ from $\A$. The adversary is permitted to observe the execution of $\A$ and, thus, capable of selecting a ``bad'' $q_i$ for $\A$.
+
+\vgap
+
+The algorithm $\A$ is said to guarantee {\em running time} $\time(n, r)$ if, for {\em every} $r \in [1, n]$, the first $r$ queries are processed with a total cost at most $\time(n, r)$.
+
+
+\section{The Class of Spectrum-Indexable Problems}
+
+%Next, we will learn a ``universal'' algorithm that can achieve $O(n \Log r)$ time for a class of DDS problems.
+
+A problem parameterized by $(\bD, \bQ)$ is $(B(n),Q(n))$ {\em spectrum indexable} if the following property holds on every dataset $S \subseteq \mathbb{D}$:
+
+\minipg{0.8\linewidth}{
+    For every integer $s \in [|S|]$, it is possible to construct a data structure on $S$ in $O(|S| \cdot B(s))$ time that can answer any query in $O(\fr{|S|}{s} \cdot Q(s))$ time.
+}
+The term ``spectrum indexable'' is chosen to reflect the ability to build a ``good'' index structure --- as far as functions $B(n)$ and $Q(n)$ are concerned --- for the whole spectrum of the parameter $s$.
+
+\vgap
+
+Two observations are in order here:
+\myitems{
+    \item
+    $(B(n),Q(n))$ {\em spectrum indexability} implies that we can build a data structure on any dataset $S \subseteq \mathbb{D}$ in $O(|S| \cdot B(|S|))$ time to answer a query in $O(Q(|S|))$ time (for this purpose, simply set $s = |S|$).
+
+    %\vspace{1mm}
+
+    \item Consider any decomposable problem with the following property: for any dataset $S \subseteq \mathbb{D}$, we can build a data structure $\T$ in $O(|S| \cdot B(|S|))$ time to answer a query in $O(Q(|S|))$ time. Then, the problem must be $(B(n),Q(n))$ spectrum indexable. To see why, given an integer $s \in [|S|]$, divide $S$ arbitrarily into $m = \ceil{|S|/s}$ disjoint subsets $S_1, S_2, ..., S_m$ where all subsets have size $s$ except $S_m$. For each $i \in [m]$, create a structure $\T(S_i)$ in $O(|S_i| \cdot B(s))$ time; the total time to create all the $m$ structures is $O(m \cdot s \cdot B(s)) = O(|S| \cdot B(s))$. To answer a query $q$, simply search every $\T(S_i)$ to obtain $\ans_q(S_i)$ in $O(Q(s)))$ time and then combine $\ans_q(S_1), \ans_q(S_2), ..., \ans_q(S_m)$ into $\ans_q(S)$ using $O(m)$ time. The total query time is therefore $O(m \cdot Q(s))$.
+}
+
+
+
+\section{Merging and Cracking} \label{sec:prelim}
+
+This section will introduce two popular techniques --- named {\em merging} and {\em cracking} --- for tackling DDS problems, using predecessor search as a representative example. In this problem, $S$ is a set of $n$ integers. Each query $q \in \mathbb{Q}$ is an integer; and $\ans_q(S)$ is the largest integer in $S$ at most $q$, or \ttt{null} if all the integers in $S$ are greater than $q$. The problem is $(O(\log n), O(\log n))$ spectrum indexable (think: why?).
+
+\vgap
+
+Next, we will give two proofs --- each based on a different technique --- that the DDS version of the predecessor search problem can be solved in $\time(n,r) = O(n \Log r)$ time.
+
+\extraspacing {\bf Merging.} We assume, w.l.o.g., that $n$ is a power of 2. Let us first describe an algorithm that works under the condition $r \Log r \le n / 2$.
+
+\vgap
+
+At all times, we partition $S$ arbitrarily into disjoint subsets --- referred to as {\em runs} --- each having the same size $s = 2^i$ for some $i \ge 0$. Every run is sorted and stored in an array. Initially, $s = 1$, i.e., a run contains one individual element of $S$. Over time, the run size $s$ increases monotonically. Whenever $s$ needs to go from $2^i$ to $2^j$ for some value $j > i$, an {\em overhaul} is carried out to build the new runs. As a run of size $2^j$ can be obtained by merging $2^{j-i}$ runs of size $2^i$ in $O(2^j \cdot (j-i))$ time, the overhaul can be completed in $O(n \cdot (j-i))$ time. Therefore, if the current run size is $s$, the overall cost of producing all the runs in history is $O(n \Log s)$.
+
+\vgap
+
+A (predecessor) query is answered simply by performing binary search on every run. To control the cost, however, the algorithm makes sure that the current size $s$ is at least $i \Log i$ before processing the $i$-th ($i \ge 1$) query. If the condition is not met, an overhaul is invoked to increase $s$ to the nearest power of 2 at least $i \Log i$. This implies $s \le 2 \cdot i \log i$. Indeed, if $s$ was increased right before answering the $i$-th query, then obviously $s \le 2 \cdot i \log i$, Otherwise, suppose that $s$ was increased to the current value right before answering the $i_{last}$-th query; then $s \le 2 \cdot i_{last} \log i_{last} < 2 i \log i$.
+
+\vgap
+
+We can now assert that the $i$-th query entails a cost of $O(\fr{n}{s} \Log s) = O(\fr{n}{i \Log i} \cdot \log (i \Log i)) = O(n/i)$ time. It thus follows that the total cost of $r$ queries is $O(n \sum_{i=1}^r \fr{1}{i}) = O(n \Log r)$. As the final run size $s$ is at most $2r \Log r$, we can conclude that the algorithm processes $r$ queries in $O(n \Log r)$ time.
+
+\vgap
+
+When $r \Log r \ge n / 2$, it holds that $r = \Omega(n / \log n)$. The algorithm can afford to sort the entire $S$ in $O(n \log n) = O(n \log r)$ time and answer every subsequent query in $O(\log n) = O(\log r)$ time. Thus, the algorithm achieves $\time(n, r) = O(n \Log r)$ for all $r \le n$.
+
+\extraspacing {\bf Cracking.} This approach mimics the following strategy for building a binary search tree (BST) $\T$ on $S$: (i) find the median of $S$, and splits $S$ into $S_1$ and $S_2$ at the median; (ii) store the median as the root's key, and then build the root's left (resp., right) subtree recursively on $S_1$ (resp., $S_2$). Rather than doing a full construction outright, the algorithm builds $\T$ on an ``as-needed'' basis during query processing.
+
+\vgap
+
+In the beginning, only the root exists and it is put in the {\em unexpanded} mode. In general, an unexpanded node $u$ has no children yet, but is associated with the subset $S_u \subseteq S$ of elements that ought to be stored in its subtree. A query is answered in the same manner as in a normal BST, by traversing a root-to-leaf path $\pi$ of $\T$. The main difference is that as the search comes to an unexpanded node $u$ on $\pi$, the algorithm must {\em expand} it first. Expanding $u$ means creating two child nodes for $u$, splitting $S_u$ at the median (the key of $u$), dividing $S_u$ at the median into two parts, and associating each part with a child. After that, $u$ becomes {\em expanded} with its children put in the unexpanded mode. The expansion takes $O(|S_u|)$ time (finding the median of a set takes linear time \cite{bfp+73}).
+
+\vgap
+
+After $r$ queries, the BST $\T$ is partially built because only the nodes on the $r$ root-to-leaf paths traversed during query processing are expanded. The nodes at the first $\Log r$ levels\footnote{The {\em level} of a node is the number of edges on the path from the node to the root.} can incur a total expansion cost of $O(n \Log r)$. For each root-to-leaf path $\pi$, the node $u$ at level $\Log r$ has expansion cost $O(n/r)$, which dominates the total expansion cost of the descendants of $u$ on $\pi$. Therefore, other than the nodes at the first $\Log r$ levels, all the other nodes in $\T$ have an expansion cost of $r \cdot O(\fr{n}{r}) = O(n)$ in total. The algorithm therefore achieves $\time(n, r) = O(n \Log r)$ for all $r \le n$.
+
+\section{A Universal Algorithm for $(\log n, \log n)$ Spectrum Indexable Problems} %\label{sec:reductions:2}
+
+In this section, we will establish:
+
+%\boxminipg{\linewidth}{
+\begin{theorem} \label{thm:main}
+    %Suppose that $B(n)$ and $Q(n)$ are non-decreasing functions such that $B(n) = O(\log n)$ and $Q(n) = O(n^{1-\eps})$ where $\eps > 0$ is an arbitrarily small constant.
+    Every $(\log n, \log n)$ spectrum indexable problem admits a DDS algorithm that can process any $r \in [1, n]$ queries in $O(n \cdot \Log r)$ time.
+\end{theorem}
+%}
+
+
+%\begin{proof}
+    Next, we prove the theorem by explicitly describing a DDS algorithm achieving $\time(n ,r) = O(n \cdot \Log r)$. Assume, w.l.o.g., that $n$ is a power of 2. Define $B(n) = \log n$ and $Q(n) = \log n$.
+
+    \vgap
+
+    Our algorithm executes in {\em epochs}. At the beginning of the $i$-th ($i \ge 1$) epoch, we set
+    \myeqn{
+        s = 2^{2^i} \nn
+    }
+    and create a structure $\T$ --- the structure promised by $(B(n), Q(n))$ spectrum indexability --- on $S$ in $O(n \cdot B(s))$ time. The structure allows us to answer any query  in $O(\fr{n}{s} \cdot Q(s))$ time. The $i$-th epoch finishes after $s$ queries are answered {\em during} the epoch. These queries demand a total cost of
+    \myeqn{
+        s \cdot O\Big(\fr{n}{s} \cdot Q(s) \Big) &=& O(n \cdot Q(s)). \nn
+    }
+
+    It is clear that the total computation time of the $i$-th epoch is $O(n \cdot B(s) + n \cdot Q(s)) = O(n \cdot 2^i)$, i.e., the time to construct $\T$ dominates the time of answering all the queries in the epoch.
+
+    \vgap
+
+    As $n \cdot 2^i$ doubles when $i$ increases by 1, the overall cost of answering $r$ queries is $O(n \cdot 2^{h^*})$, where $h^*$ is the number of epochs needed. Precisely, the value of $h^*$ is the \uline{\em lowest} integer $h \ge 1$ satisfying two conditions:
+    \myitems{
+        \item {\bf C1:} $2^{2^h} \le n$ (the value of $s$ must not exceed $n$);
+        \item {\bf C2:} $
+        \sum_{i=1}^h 2^{2^i} \ge r$ (the number of queries that can be answered by $h$ epochs must be at least $r$).
+    }
+
+    \begin{lemma} \label{lmm:h1}
+        $2^{h^*} = O(\Log r)$.
+    \end{lemma}
+
+    \begin{proof}
+        The condition {\bf C1} states that $2^h \le \log n$. It suffices to prove that the lowest $h$ satisfying {\bf C2} fulfills the condition $2^h = O(\Log r)$. This is obvious because (i) for $r < 4$, {\bf C2} is satisfied by $h = 1$; (ii) for $r \ge 4$, {\bf C2} is satisfied by $h = \log\log r$.
+    \end{proof}
+
+    This completes the proof of Theorem~\ref{thm:main}.
+%\end{proof}
+
+
+\extraspacing {\bf Remark.} Theorem~\ref{thm:main} is a special case of a result in \cite{t25}.
+
+
+\bibliographystyle{plain}
+\bibliography{ref}
+
+\end{document}
