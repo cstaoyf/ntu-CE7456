@@ -120,7 +120,7 @@ Note that when $q > a$, the predecessor of $q$ is $A[\rank_S(q)]$.
 
 \vgap
 
-We answer the query as follows. If $q < a$, return ``absence''. Consider now $q \ge a$. We check whether $A[\hat{r}_S(q)] = q$ --- this takes constant time --- and return $\hat{r}_S(q)$ if so. If $A[\hat{r}_S(q)] < q$, look for $q$ using exponential search in the subarray from $A[1]$ to $A[\hat{r}_S(q)]$ (see Appendix~\ref{app:expo-srch} for an introduction to exponential search); otherwise, look for $q$ using exponential search in the subarray from $A[\hat{r}_S(q)]$ to $A[n]$.
+We answer the query as follows. If $q < a$, return ``absence''. Consider now $q \ge a$. We check whether $A[\hat{r}_S(q)] = q$ --- this takes constant time --- and return $\hat{r}_S(q)$ if so. If $q < A[\hat{r}_S(q)]$, look for $q$ using exponential search in the subarray from $A[1]$ to $A[\hat{r}_S(q)]$ (see Appendix~\ref{app:expo-srch} for an introduction to exponential search); otherwise, look for $q$ using exponential search in the subarray from $A[\hat{r}_S(q)]$ to $A[n]$.
 
 \vgap
 
@@ -145,7 +145,10 @@ The proof is easy and left to you.
 Define $f$ as the probability density function of $\D$, namely, $Pr[X = x] = f(x)$ for a random variable $X$ drawn from $\D$. We will prove:
 
 \begin{theorem} \label{thm:main}
-    The average query time of the algorithm in Section~\ref{sec:query} is $O(U \cdot \sum_{x \in [U]} (f(x))^2)$.
+    The average query time of the algorithm in Section~\ref{sec:query} is
+    \myeqn{
+        O\Big(\log \Big(U \cdot \sum_{q \in [U]} (f(q))^2 \Big)\Big). \label{eqn:main}
+    }
 \end{theorem}
 
 For example, when $\D$ is uniform over $[U]$, we have $f(x) = 1/U$ for all $x \in [U]$, in which case the average query time is $O(U \cdot (U \cdot 1/U^2)) = O(1)$. More generally, the average query complexity is $O(t^2)$ if $f(x) \le t/U$ for all $x \in [U]$ --- for $t = o(\sqrt{\log n})$, the structure strictly improves the BST (in terms of average running time).
@@ -262,6 +265,41 @@ which, together with \eqref{eqn:analysis-core-h1}, gives
 
 The proof is left to you as an exercise. Lemma~\ref{lmm:anayslis-core} now follows by combining the above proposition and \eqref{eqn:analysis-core-h4}.
 
+\subsection{Proof of Theorem~\ref{thm:main}} \label{sec:analysis:thm-main}
+
+%To establish Theorem~\ref{thm:main} using Lemma~\ref{lmm:anayslis-core}, we need
+
+% For each $j \in [n]$, we use $|J_j|$ to represent the number of integers covered by $J_j$. It is clear that $|J_j| \le U/n$.
+
+%\vgap
+
+By the Cauchy-Schwarz inequality\footnote{$(\sum_{i=1}^n x_i y_i)^2 \le \sum_{i=1}^n x_i^2 \cdot \sum_{i=1}^n y_i^2 $.}, we have for each $j \in [n]$:
+\myeqn{
+    p_j^2 = \Big(\sum_{q \in J_j} f(j) \Big)^2
+    \le
+    \Big(\sum_{q \in J_j} 1 \Big)
+    \cdot
+    \Big(\sum_{q \in J_j} (f(j))^2 \Big)
+    \le
+    \fr{U}{n} \cdot \sum_{q \in J_j} (f(j))^2. \nn
+}
+Plugging the above into Lemma~\ref{lmm:anayslis-core} yields:
+\myeqn{
+    \expt_{Q,S} [\Delta_S(Q)] &=& O(n) \cdot \sum_{j=1}^n \fr{U}{n} \cdot \sum_{q \in J_j} (f(j))^2 \nn \\
+    &=& O(U) \cdot  \sum_{j=1}^n \sum_{q \in J_j} (f(j))^2 \nn \\
+    &=& O(U) \cdot  \sum_{q \in [U]} (f(j))^2. \label{eqn:thm-main:h1}
+}
+
+The average running time of the query algorithm in Section~\ref{sec:query} is bounded by
+\myeqn{
+    O \Big(
+        \expt_{Q,S} \log \Delta_S(q)
+    \Big)
+    =
+    O \Big(
+        \log \expt_{Q,S} \Delta_S(q)
+    \Big) \nn
+}
 
 \appendix
 
