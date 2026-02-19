@@ -86,9 +86,9 @@ For each $i \in [n]$, define
 \myeqn{
     n_i &=& |S \cap I_i|. \label{eqn:ni}
 }
-and a function $\hat{r}: [U] \rightarrow [n]$ as:
+and a function $\hat{r}_S: [U] \rightarrow [n]$ as:
 \myeqn{
-    \hat{r}(q)
+    \hat{r}_S(q)
     &=&
     \left\{
     \begin{tabular} {ll}
@@ -100,16 +100,38 @@ and a function $\hat{r}: [U] \rightarrow [n]$ as:
     \right. \label{eqn:approx-r}
 }
 
-Our data structure consists of (i) the values $a, b$ and $n$, (ii) the sorted array $A$, and the function $\hat{r}$. In particular, we store $\hat{r}$ in an array of size $n$ such that, for any $q \in I_i$ with any $i \in [n]$, we can return $\hat{r}(q)$ in constant time. The total space consumption is $O(n)$ in the worst case.
+Our data structure consists of (i) the values $a, b$ and $n$, (ii) the sorted array $A$, and the function $\hat{r}_S$. In particular, we store $\hat{r}_S$ in an array of size $n$ such that, for any $q \in I_i$ with any $i \in [n]$, we can return $\hat{r}_S(q)$ in constant time. The total space consumption is $O(n)$ in the worst case.
 
 \section{Query} \label{sec:query}
 
+Let $q$ be the query value of predecessor search. Define
+\myeqn{
+    \rank_S(q) &=&
+    \left\{
+    \begin{tabular} {ll}
+        0 & if $q < a$ \\
+        the number of elements in $S$ at most $q$ & if $a \le q \le b$ \\
+        $n$ &
+        if $q > b$
+    \end{tabular}
+    \right. \label{eqn:rank}
+}
+Note that when $q > a$, the predecessor of $q$ is $A[\rank_S(q)]$.
+
+\vgap
+
+We answer the query as follows. If $q < a$, return ``absence''. Consider now $q \ge a$. We check whether $A[\hat{r}_S(q)] = q$ --- this takes constant time --- and return $\hat{r}_S(q)$ if so. If $A[\hat{r}_S(q)] < q$, look for $q$ using exponential search in the subarray from $A[1]$ to $A[\hat{r}_S(q)]$ (see Appendix~\ref{app:expo-srch} for an introduction to exponential search); otherwise, look for $q$ using exponential search in the subarray from $A[\hat{r}_S(q)]$ to $A[n]$.
+
+\vgap
+
+If
+\myeqn{
+    \Delta_S(q) &=& |\rank_S(q) - \hat{r}_S(q)| \label{eqn:Delta-S-q}
+}
+the query time is bounded by $O(\log \Delta_S(q))$.
+
 \section{Analysis} \label{sec:analysis}
 
-Define
-\myeqn{
-    \Delta_S(q) &=& |\rank_S(q) - \hat{r}_S(q)|. \nn
-}
 Partition the data domain $[0, U]$ into $n$ intervals of equal length; specifically, for each $j \in [n]$, the $j$-th interval is
 \myeqn{
     J_j &=& [(j-1)/n, j/n]. \label{eqn:analysis-J-j}
@@ -201,7 +223,7 @@ Lemma~\ref{lmm:anayslis-core} now follows by combining the above proposition and
 
 \appendix
 
-\section{Exponential Search}
+\section{Exponential Search} \label{app:expo-srch}
 
 Let $A$ be a sorted array of $n$ elements (in non-decreasing order),
 and let $q$ be a target value. Exponential search decides whether $q$ appears in $A$
