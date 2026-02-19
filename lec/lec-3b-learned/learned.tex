@@ -23,7 +23,8 @@
 \def\T{\mathcal{T}}
 %\def\U{\mathcal{U}}
 %\def\X{\mathcal{X}}
-\def\ans{\rank{rank}}
+\def\rank{\mit{rank}}
+\def\tm{\mit{Time}}
 
 \def\extraspacing{\vspace{3mm} \noindent}
 \def\vgap{\vspace{3mm}}
@@ -32,12 +33,6 @@
 \DeclareMathOperator*{\Log}{Log}
 
 \begin{document}
-
-% \begin{center}
-%     {\bf \large Lecture Notes} \\
-%     {\bf \large Approximate Nearest Neighbor Search 1 : Proximity Graphs} \\[5mm]
-%     {\large Yufei Tao} \\[10mm]
-% \end{center}
 
 \boxminipg{\linewidth}{
     \begin{center}
@@ -50,13 +45,33 @@
     \end{center}
 }
 
+So far all the complexities in our algorithmic analysis are claimed in the {\em worst case}. For example, by saying that the binary search tree (BST) consumes $O(n)$ space and answers a predecessor search in $O(\log n)$ time, we require these complexities to hold on {\em every} set of $n$ integers and {\em every} query. Today, we will switch to a different form of analysis for deriving {\em average complexities}, which hold in expectation when data and query follow specific distributions.
+
+\vgap
+
+We still use predecessor search as the representative example: the input (i.e., the dataset) is a set $S$ of $n$ integers; given an integer $q$, a query returns the the largest element $e \in S$ satisfying $e \le q$, or declares that such an element does not exist. All the integers --- including those in $S$ and the query value $q$ --- are assumed to fall in the domain $[U]$ (for an integer $x > 0$, the notation $[x]$ represents the set $\set{1, 2, ..., x}$) for some (large) integer $U$. W.l.o.g., we consider that $U$ is a multiple of $n$ (if not, increase $U$ to make the property hold).
+
+\vgap
+
+Let $\D$ be a probabilistic distribution over $[U]$. We consider that
+\myitems{
+    \item the $n$ integers of $S$ are drawn independently from $\D$ (namely, $S$ is drawn from $\D^n$);
+    \item the query value $q$ is drawn from $\D$ and is independent from $S$.
+}
+Let $\tm_S(Q)$ be the time of an algorithm $\A$ for answering a query with search value $Q$ on a dataset $S$. Note that both $S$ and $Q$ are random variables and, hence, so is $\tm_S(Q)$. We define the {\em average time complexity} of $\A$ over $\D$ as
+\myeqn{
+    \expt_{Q, S} [\tm_S(Q)]. \nn
+}
+The worst-case $O(\log n)$ guarantee of BST directly implies an average query time of $O(\log n)$. The challenge is to find a data structure with a lower average query time on ``easy'' distributions $\D$.
+
+
 
 
 \section{Analysis} \label{sec:analysis}
 
 Define
 \myeqn{
-    \Delta_S(q) &=& |rank_S(q) - \hat{r}_S(q)|. \nn
+    \Delta_S(q) &=& |\rank_S(q) - \hat{r}_S(q)|. \nn
 }
 Partition the data domain $[0, U]$ into $n$ intervals of equal length; specifically, for each $j \in [n]$, the $j$-th interval is
 \myeqn{
