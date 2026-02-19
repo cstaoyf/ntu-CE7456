@@ -49,7 +49,7 @@ So far all the complexities in our algorithmic analysis are claimed in the {\em 
 
 \vgap
 
-We still use predecessor search as the representative example: the input (i.e., the dataset) is a collection $S$ of $n$ integers; given an integer $q$, a query returns the the largest element $e \in S$ satisfying $e \le q$, or declares that such an element does not exist. All the integers --- including those in $S$ and the query value $q$ --- are assumed to fall in the domain $[U]$ (for an integer $x > 0$, the notation $[x]$ represents the set $\set{1, 2, ..., x}$) for some (large) integer $U$. W.l.o.g., we consider that $U$ is a multiple of $n$ (if not, increase $U$ to make the property hold).
+We still use predecessor search as the representative example: the input (i.e., the dataset) is a collection $S$ of $n$ integers; given an integer $q$, a query returns the the largest element $e \in S$ satisfying $e \le q$, or declares that such an element does not exist. All the integers --- including those in $S$ and the query value $q$ --- are assumed to fall in the domain $[U]$ (for an integer $x > 0$, the notation $[x]$ represents the set $\set{1, 2, ..., x}$) where $U$ is a (large) integer. W.l.o.g., we consider that $U$ is a multiple of $n$ (if not, increase $U$ to make the property hold).
 
 \vgap
 
@@ -58,7 +58,7 @@ Let $\D$ be a probabilistic distribution over $[U]$. We consider that
     \item the $n$ integers of $S$ are drawn independently from $\D$ (namely, $S$ is drawn from $\D^n$);
     \item the query value $q$ is drawn from $\D$ and is independent from $S$.
 }
-Let $\tm_S(Q)$ be the time of an algorithm $\A$ for answering a query with search value $Q$ on a dataset $S$. Note that both $S$ and $Q$ are random variables and, hence, so is $\tm_S(Q)$. We define the {\em average time complexity} of $\A$ over $\D$ as
+Let $\tm_S(Q)$ be the time of an algorithm $\A$ in answering a query with search value $Q$ on a dataset $S$. Note that both $S$ and $Q$ are random variables and, hence, so is $\tm_S(Q)$. We define the {\em average time complexity} of $\A$ over $\D$ as
 \myeqn{
     \expt_{Q, S} [\tm_S(Q)]. \nn
 }
@@ -281,11 +281,11 @@ By the Cauchy-Schwarz inequality\footnote{$(\sum_{i=1}^n x_i y_i)^2 \le \sum_{i=
     \cdot
     \Big(\sum_{q \in J_j} (f(j))^2 \Big)
     \le
-    \fr{U}{n} \cdot \sum_{q \in J_j} (f(j))^2. \nn
+    O\Big( \fr{U}{n} \Big) \cdot \sum_{q \in J_j} (f(j))^2. \nn
 }
 Plugging the above into Lemma~\ref{lmm:anayslis-core} yields:
 \myeqn{
-    \expt_{Q,S} [\Delta_S(Q)] &=& O(n) \cdot \sum_{j=1}^n \fr{U}{n} \cdot \sum_{q \in J_j} (f(j))^2 \nn \\
+    \expt_{Q,S} [\Delta_S(Q)] &=& O(n) \cdot \sum_{j=1}^n O\Big( \fr{U}{n} \Big) \cdot \sum_{q \in J_j} (f(j))^2 \nn \\
     &=& O(U) \cdot  \sum_{j=1}^n \sum_{q \in J_j} (f(j))^2 \nn \\
     &=& O(U) \cdot  \sum_{q \in [U]} (f(j))^2. \label{eqn:thm-main:h1}
 }
@@ -304,7 +304,7 @@ where the inequality is due to Jensen's inequality. The claim in Theorem~\ref{th
 
 \section{Remarks}
 
-
+The structure and analysis were presented in \cite{cyl+25}.
 
 \appendix
 
