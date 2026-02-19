@@ -161,15 +161,27 @@ For each $j \in \set{0, 1, ..., n+1}$, set
     m_j &=& |S \cap J_j|. \label{eqn:analysis-m-j}
 }
 
+Note that each interval $J_j$ ($j \in [n]$) has a length of $U/n$, which is never shorter than that of an interval $I_i$ ($i \in [n]$) defined in \eqref{eqn:Ii}. The proposition below follows immediately:
+
+\begin{proposition} \label{prop:analysis:J-covers-I}
+    Each interval $I_i$ ($i \le [n]$) defined in \eqref{eqn:Ii} is covered by $J_j \cup J_{j+1}$ for some $j \in [n-1]$.
+\end{proposition}
+
+
 \subsection{A Core Lemma} \label{sec:analysis:core}
 
-The core of our analysis is to prove:
+Define for each $j \in [n]$
+\myeqn{
+    p_j = \Pr_{X \sim \D} [X \in J_j].
+    \label{eqn:analysis:pj}
+}
+This section serves as the proof of
 
 \begin{lemma} \label{lmm:anayslis-core}
-    $\expt_{Q, S} [\Delta_S(Q)] = O(n) \cdot \sum_{j=1}^n p_j^2$ where $p_j = \Pr_{X \sim \D} [X \in J_j]$ for each $j \in [n]$.
+    $\expt_{Q, S} [\Delta_S(Q)] = O(n) \cdot \sum_{j=1}^n p_j^2$.
 \end{lemma}
 
-\extraspacing {\bf Proof of Lemma~\ref{lmm:anayslis-core}.} By the total law of expectation, we have:
+The total law of expectation tells us:
 \myeqn{
     \expt_{Q, S}[\Delta_S(Q)] &=& \expt_S \Big[\expt_{Q \mid S} \Big[\Delta_S(Q) | S \Big] \Big] \nn  \\
     \explain{by independence of $Q$ and $S$} &=& \expt_S \Big[\expt_{Q} \Big[\Delta_S(Q) | S \Big] \Big].
