@@ -100,7 +100,7 @@ and a function $\hat{r}_S: [U] \rightarrow [n]$ as:
     \right. \label{eqn:hat-r}
 }
 
-Our data structure consists of (i) the values $a, b$ and $n$, (ii) the sorted array $A$, and the function $\hat{r}_S$. In particular, we store $\hat{r}_S$ in an array of size $n$ such that, for any $q \in I_i$ with any $i \in [n]$, we can return $\hat{r}_S(q)$ in constant time. The total space consumption is $O(n)$ in the worst case.
+Our data structure consists of (i) the values $a, b$ and $n$, (ii) the sorted array $A$, and (iii) the function $\hat{r}_S$. In particular, we store $\hat{r}_S$ in an array of size $n$ such that, for any $q \in I_i$ with $i \in [n]$, we can return $\hat{r}_S(q)$ in constant time. The total space consumption is $O(n)$ in the worst case.
 
 \section{Query} \label{sec:query}
 
@@ -151,7 +151,7 @@ Define $f$ as the probability density function of $\D$, namely, $Pr[X = x] = f(x
     }
 \end{theorem}
 
-For example, when $\D$ is uniform over $[U]$, we have $f(x) = 1/U$ for all $x \in [U]$, in which case the average query time is $O(U \cdot (U \cdot 1/U^2)) = O(1)$. More generally, the average query complexity is $O(t^2)$ if $f(x) \le t/U$ for all $x \in [U]$ --- for $t = o(\sqrt{\log n})$, the structure strictly improves the BST (in terms of average running time).
+For example, when $\D$ is uniform over $[U]$, we have $f(x) = 1/U$ for all $x \in [U]$, in which case the average query time is $O(\log (U \cdot (U \cdot 1/U^2))) = O(1)$. More generally, the average query complexity is $O(\log t)$ if $f(x) \le t/U$ for all $x \in [U]$ --- for $t$ is sub-polynomial in $n$, the structure strictly improves the BST (in terms of average running time).
 
 \subsection{Domain-Partitioning Intervals} \label{sec:analysis}
 
@@ -174,7 +174,7 @@ For each $j \in \set{0, 1, ..., n+1}$, set
     m_j &=& |S \cap J_j|. \label{eqn:analysis:mj}
 }
 
-Each interval $J_j$ ($j \in [n]$) has a length of $U/n$, which is never shorter than that of an interval $I_i$ ($i \in [n]$) defined in \eqref{eqn:Ii}. The proposition below follows immediately:
+Each interval $J_j$ ($j \in [n]$) has a length $(U-1)/n$, which is at least that of an interval $I_i$ ($i \in [n]$) defined in \eqref{eqn:Ii}. The proposition below follows immediately:
 
 \begin{proposition} \label{prop:analysis:J-covers-I}
     Each interval $I_i$ ($i \le [n]$) defined in \eqref{eqn:Ii} is covered by $J_j \cup J_{j+1}$ for some $j \in [n-1]$.
@@ -190,7 +190,7 @@ The proof is easy and left to you.
 
 Define for each $j \in [n]$
 \myeqn{
-    p_j = \Pr_{X \sim \D} [X \in J_j].
+    p_j = \Pr_{X \sim \D} [X \in J_j] = \sum_{q \in J_j} f(q).
     \label{eqn:analysis:pj}
 }
 This section serves as the proof of the lemma below:
@@ -275,19 +275,19 @@ The proof is left to you as an exercise. Lemma~\ref{lmm:anayslis-core} now follo
 
 By the Cauchy-Schwarz inequality\footnote{$(\sum_{i=1}^n x_i y_i)^2 \le \sum_{i=1}^n x_i^2 \cdot \sum_{i=1}^n y_i^2 $.}, we have for each $j \in [n]$:
 \myeqn{
-    p_j^2 = \Big(\sum_{q \in J_j} f(j) \Big)^2
+    p_j^2 = \Big(\sum_{q \in J_j} f(q) \Big)^2
     \le
     \Big(\sum_{q \in J_j} 1 \Big)
     \cdot
-    \Big(\sum_{q \in J_j} (f(j))^2 \Big)
+    \Big(\sum_{q \in J_j} (f(q))^2 \Big)
     \le
-    O\Big( \fr{U}{n} \Big) \cdot \sum_{q \in J_j} (f(j))^2. \nn
+    O\Big( \fr{U}{n} \Big) \cdot \sum_{q \in J_j} (f(q))^2 \nn
 }
-Plugging the above into Lemma~\ref{lmm:anayslis-core} yields:
+where the last step used the fact that $J_j$ contains $O(U/n)$ integers. Plugging the above into Lemma~\ref{lmm:anayslis-core} yields:
 \myeqn{
-    \expt_{Q,S} [\Delta_S(Q)] &=& O(n) \cdot \sum_{j=1}^n O\Big( \fr{U}{n} \Big) \cdot \sum_{q \in J_j} (f(j))^2 \nn \\
-    &=& O(U) \cdot  \sum_{j=1}^n \sum_{q \in J_j} (f(j))^2 \nn \\
-    &=& O(U) \cdot  \sum_{q \in [U]} (f(j))^2. \label{eqn:thm-main:h1}
+    \expt_{Q,S} [\Delta_S(Q)] &=& O(n) \cdot \sum_{j=1}^n O\Big( \fr{U}{n} \Big) \cdot \sum_{q \in J_j} (f(q))^2 \nn \\
+    &=& O(U) \cdot  \sum_{j=1}^n \sum_{q \in J_j} (f(q))^2 \nn \\
+    &=& O(U) \cdot  \sum_{q \in [U]} (f(q))^2. \label{eqn:thm-main:h1}
 }
 
 The average running time of the query algorithm in Section~\ref{sec:query} is bounded by
@@ -304,7 +304,13 @@ where the inequality is due to Jensen's inequality. The claim in Theorem~\ref{th
 
 \section{Remarks}
 
-The structure and analysis were presented in \cite{cyl+25}.
+The structure and analysis presented were developed in \cite{cyl+25}.
+
+
+
+\bibliographystyle{plain}
+\bibliography{ref}
+
 
 \appendix
 
@@ -322,9 +328,5 @@ The value $q$ --- if it exists in $A$ --- must lie in the subarray from $A[\lc h
 \vgap
 
 Let $\Delta$ be the number of elements in $A$ that are at most $q$. Clearly, $h \le 2\Delta$. It is rudimentary to show that the running time is $O(\log \Delta)$.
-
-
-\bibliographystyle{plain}
-\bibliography{ref}
 
 \end{document}
