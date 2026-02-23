@@ -1,0 +1,90 @@
+%\documentclass{...}
+
+\input{./def/yf-formatting}
+
+\usepackage{amsfonts, amsmath, amssymb, amsthm}
+\usepackage{comment}
+\usepackage{graphicx}
+\usepackage{ifthen}
+\usepackage{latexsym}
+%\usepackage{times}
+\usepackage[normalem]{ulem}
+
+\input{./def/yf-def}
+
+\def\dom{\prec}
+\def\T{\mathcal{T}}
+
+\newboolean{solver}\setboolean{solver}{true}
+%\newboolean{solver}\setboolean{solver}{false}
+\ifthenelse{\boolean{solver}}{\includecomment{sol}}{\excludecomment{sol}}
+
+\begin{document}
+
+\section*{CE7456: Exercise List 2}
+Prepared by Yufei Tao \\
+
+% \begin{center}
+%     \uline{Classroom Discussion}
+% \end{center}
+
+\boxminipg{0.95\linewidth}{
+    These exercises are designed to help you practice the techniques taught in class. Attempt them ``at your own risk'' because they are research-oriented and can be rather challenging. Solutions will not be provided in written form. I will be happy to act as a collaborator and sounding board --- I look forward to discussing your creative approaches, refining your key steps, and walking through your attempted solutions with you.
+}
+
+\extraspacing {\bf Problem 1.} This problem is intended to guide you step by step in applying bootstrapping to design an IQS structure.
+
+\vgap
+
+Let $P$ be a set of $n$ points in $\real^2$, each carrying an integer positive weight. Given an axis-parallel rectangle $q$ and an integer $s \ge 1$, an IQS query returns $s$ independent weighted samples from $P \cap q$. Our goal is to design a data structure of linear space $O(n)$ that can answer such queries in $O(n^c + s)$ time, where $c$ can be an arbitrarily small constant.
+
+\myitems{
+    \item (a) Divide $\real^2$ into $\sqrt{n}$ vertical slabs, each containing $\sqrt{n}$ points of $P$. An axis-parallel rectangle $q$ can be partitioned into
+\myitems{
+    \item a number of ``middle rectangles'', each spanning a slab in the x-projection;
+    \item at most two ``boundary rectangles'', each of which has an x-projection contained within that of a slab.
+}
+Describe a data structure of $O(n)$ space such that, for each middle rectangle $q_{mid}$, the total weight of the points in $P \cap q_{mid}$ can be found in $O(\log n)$ time.
+
+    \item (b) Describe a data structure of $O(n)$ space that can answer an IQS query in $O(\sqrt{n} \log n + s)$ time.
+
+    Hint: For each middle rectangle, resort to a 1D IQS structure described in the class. For each boundary rectangle, simply read all the points in the corresponding slab.
+
+    \item (c) Describe a data structure of $O(n)$ space that can answer an IQS query in $O(n^{1/3} \log n + s)$ time.
+
+    Hint: Divide $\real^2$ into $n^{1/3}$ slabs, each containing $n^{2/3}$ points. You can no longer process each boundary rectangle in a brute-force manner. Resort to your structure in (b) instead.
+
+    \item (d) Prove: Suppose that there is a structure of $O(n)$ space that guarantees IQS query time $O(n^{1/c} \log n + s)$ for a constant $c$. Then, there is a structure of $O(n)$ space that guarantees IQS query time $O(n^{1/(c+1)} \log n + s)$.
+
+}
+
+\extraspacing {\bf Problem 2.} Same problem as in Problem 1. Describe a structure of $O(n \polylog n)$ space that can answer an IQS query in $O(\polylog n + s)$ time.
+
+\vgap
+
+Hint: Talk to a LLM about ``the range tree'' and integrate it with the 1D solution given in the class.
+
+\extraspacing {\bf Problem 3.} Let $P$ be a set of $n$ points in $\real^2$. Given an axis-parallel rectangle $q$, a {\em range query} returns $P \cap q$. In $O(n \log n)$ time, we can construct a so-called {\em kd-tree} that uses $O(n)$ space and answers a range query in $O(\sqrt{n} + k)$ time, where $k = |P \cap q|$.
+
+\myitems{
+    \item (a) Prove: there is a semi-dynamic structure of $O(n)$ space that can answer a range query in $O(\sqrt{n} \log n + k)$ time and can support an insertion in $O(\log^2 n)$ amortized time.
+
+    \item (b) Improve your solution to (a) by reducing the query time to $O(\sqrt{n} + k)$
+
+    \vgap
+
+    Hint: Analyze the time of the query algorithm of the logarithmic method more carefully --- you should see a geometric series.
+}
+
+\extraspacing {\bf Problem 4.} Describe how to turn the alias structure into a semi-dynamic structure that uses $O(n)$ space, supports an insertion in $O(\log n)$ amortized time, and can be used to draw a weighted sample in $O(1)$ time.
+
+\vgap
+
+Hint: Note that the update time is $O(\log n)$, rather than $O(\log^2 n)$! Furthermore, the sampling time is constant, rather than $O(\log n)$.
+
+\extraspacing {\bf Problem 5* (Dynamic Set Sampling).} The set sampling problem is a special case of weighted sampling where each element carries the same weight (which can be assumed to be 1, w.l.o.g.). Describe a {\em fully} dynamic structure that uses $O(n)$ space, supports an insertion in $O(\log n)$ amortized time, and can be used to draw a sample in $O(1)$ expected time. You may assume a ``perfect'' hash structure that (i) allows you to decide whether an element belongs to a set in constant time and (ii) supports an insertion in constant time.
+
+\vgap
+
+Hint: The problem is hard! You need to support arbitrary insertions and deletions (rather than just FIFO updates)! For this purpose, you first need to figure out how to support deletions. Start with this problem: design a data structure of $O(n)$ space that supports a deletion in $O(1)$ time.
+\end{document}
