@@ -307,7 +307,7 @@ Henceforth, a fractional edge cover $w$ of $Q$ is said to be {\em half-integral}
 
     \vgap
 
-    We call an edge $\set{u,v} \in G_{\supp(w^*)}$ a {\em pendant edge} if $u$ appears in a cycle $\mycycle$ of $G_{\supp(w^*)}$ but $v$ does not. Let us traverse $\mycycle$ from $u$ and denote by $e_1, e_2, ..., e_k$ the edges seen (in this order); in other words, $e_1$ and $e_k$ are incident on $u$. Note that $k$ is an odd number (because $Q_{\supp(w^*)}$ contains no more even-length cycles). The weight $w^*(e_i)$ must be 1/2 for all $i \in [k]$ (think: why?).
+    We call an edge $\set{u,v} \in Q_{\supp(w^*)}$ a {\em pendant edge} if $u$ appears in a cycle $\mycycle$ of $G_{\supp(w^*)}$ where $v$ does not belong. Let us traverse $\mycycle$ from $u$, and denote by $e_1, e_2, ..., e_k$ the edges encountered (in this order); in other words, $e_1$ and $e_k$ are incident on $u$. Note that $k$ is an odd number (because $Q_{\supp(w^*)}$ contains no more even-length cycles). The weight $w^*(e_i)$ must be 1/2 for all $i \in [k]$ (think: why?).
 
     \vgap
 
@@ -317,11 +317,11 @@ Henceforth, a fractional edge cover $w$ of $Q$ is said to be {\em half-integral}
         \item decrease $w^*(e)$ by 1/2 for $e \in \set{e_1, e_3, ..., e_k}$;
         \item increase $w^*(e)$ by 1/2 for $e \in \set{e_2, e_4, ..., e_{k-1}}$.
     }
-    It is easy to verify that after modification $w^*$ remains as a half-integral optimal edge cover of $Q$ but fewer edges in $\supp(w^*)$. By repeating the process, we obtain a half-integral optimal fractional edge cover $w^*$ such that $Q_{\supp(w^*)}$ has no even-length cycles and no pendent edges.
+    After modification, $w^*$ remains as a half-integral optimal edge cover of $Q$ but has fewer edges in $\supp(w^*)$. By repeating the process, we obtain a half-integral optimal fractional edge cover $w^*$ such that $Q_{\supp(w^*)}$ has no even-length cycles and no pendent edges.
 
     \vgap
 
-    At this time, $Q_{\supp(w^*)}$ is a collection of odd-length cycles $\mycycle_1, ..., \mycycle_\alpha$ ($\alpha \ge 0$) and a forest $\T$ such that $\mycycle_1, ..., \mycycle_\alpha$ and $\T$ are vertex disjoint. Using the procedure in the proof of Lemma~\ref{lmm:proof-h2}, we can further modify $w^*$ by adjusting the weights on the edges of $\T$ so that
+    At this time, $Q_{\supp(w^*)}$ is a collection of odd-length cycles $\mycycle_1, ..., \mycycle_\alpha$ ($\alpha \ge 0$) and a forest $\T$ such that $\mycycle_1, ..., \mycycle_\alpha$ and $\T$ are vertex disjoint. Using the procedure in the proof of Lemma~\ref{lmm:proof-h2}, we can further modify $w^*$ by adjusting only the weights on the edges of $\T$ so that
     \myitems{
         \item $w^*$ as a half-integral optimal fractional edge cover;
         \item $Q_{\supp(w^*)}$ is a collection of $\mycycle_1, ..., \mycycle_\alpha$ and stars $\mystar_1, ..., \mystar_\beta$ such that
