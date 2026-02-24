@@ -38,295 +38,48 @@
     \begin{center}
         \vspace{3mm}
     {\Large
-    (CE7456 Lecture Notes 8) Distribution-Aware Data Structuring} \\[1mm]
-    {\Large (a.k.a.\ Learned Indexes)} \\[2mm]
+    (CE7456 Lecture Notes 9) Subgraph Enumeration} \\[2mm]
     {\large Yufei Tao}
     \vspace{3mm}
     \end{center}
 }
 
-So far all the complexities in our algorithmic analysis are claimed in the {\em worst case}. For example, by saying that the binary search tree (BST) consumes $O(n)$ space and answers a predecessor search in $O(\log n)$ time, we require these complexities to hold on {\em every} set of $n$ integers and {\em every} query. Today, we will switch to a different form of analysis for deriving {\em average complexities}, which hold in expectation when data and query follow specific distributions.
+Today, we will discuss the {\em subgraph enumeration} problem. Let $G = (V, E)$ be an undirected graph called the {\em data graph}. A graph $G' = (V', E')$ is a {\em subgraph} of $G$ if $V' \subseteq V$ and $E' \subseteq E$. Let $Q = (V_Q, E_Q)$ be another undirected graph called the {\em pattern graph}. A subgraph $G' = (V', E')$ of $G$ is {\em isomorphic} to $Q$ if there is a bijection function $f: V_Q \rightarrow V'$ such that, for any distinct vertices $u, v \in V'$, the pattern graph $Q$ has an edge $\set{u, v}$ if and only if the edge $\set{f(u), f(v)}$ exists in $G'$. The goal of subgraph enumeration is to report all the subgraphs of $G$ that are isomorphic to $Q$. These subgraphs are called the {\em occurrences} of $Q$.
 
 \vgap
 
-We still use predecessor search as the representative example: the input (i.e., the dataset) is a collection $S$ of $n$ integers; given an integer $q$, a query returns the the largest element $e \in S$ satisfying $e \le q$, or declares that such an element does not exist. All the integers --- including those in $S$ and the query value $q$ --- are assumed to fall in the domain $[U]$ (for an integer $x > 0$, the notation $[x]$ represents the set $\set{1, 2, ..., x}$) where $U$ is a (large) integer. W.l.o.g., we consider that $U$ is a multiple of $n$ (if not, increase $U$ to make the property hold).
+We assume that $Q$ has a constant size, i.e., the number $|V_Q|$ of its vertices can be regarded as a constant (and, hence, so can the number $|E_Q|$ of its edges). This is necessary; otherwise, the problem is known to be NP-hard: finding whether $G$ has a clique is NP-hard.
+
+\section{Fractional Edge Cover Number} \label{sec:frac-edge-cover-num}
+
+A function $w: E_Q \rightarrow [0, 1]$ is said to be a {\em fractional edge cover} of $Q = (V_Q, E_Q)$ if, for every vertex $u \in V_Q$, it holds that
+\myeqn{
+    \sum_{e \in E_Q: u \in e} w(e) &\ge& 1. \label{eqn:frac-edge-cover}
+}
+The {\em total weight} of $w$ is defined as
+\myeqn{
+    \sum_{e \in E_Q} w(e). \nn
+}
+The {\em fractional edge cover number} of $Q$ --- denoted as $\rho(Q)$ --- is defined as the smallest total weight of all fractional edge covers of $Q$.
 
 \vgap
 
-Let $\D$ be a probabilistic distribution over $[U]$. We consider that
-\myitems{
-    \item the $n$ integers of $S$ are drawn independently from $\D$ (namely, $S$ is drawn from $\D^n$);
-    \item the query value $q$ is drawn from $\D$ and is independent from $S$.
-}
-Let $\tm_S(Q)$ be the time of an algorithm $\A$ in answering a query with search value $Q$ on a dataset $S$. Note that both $S$ and $Q$ are random variables and, hence, so is $\tm_S(Q)$. We define the {\em average time complexity} of $\A$ over $\D$ as
-\myeqn{
-    \expt_{Q, S} [\tm_S(Q)]. \nn
-}
-The worst-case $O(\log n)$ guarantee of BST directly implies an average query time of $O(\log n)$. The challenge is to find a data structure with a lower average query time on ``easy'' distributions $\D$.
-
-\section{Structure} \label{sec:str}
-
-Define
-\myeqn{
-    a &=& \min_{e \in S} e \nn \\
-    b &=& \max_{e \in S} e. \nn
-}
-We consider $a < b$ (the problem is trivial otherwise; think: why?).
-Use an array $A$ to store the elements of $S$ in ascending order. Divide the range $[a, b]$ into $n$ intervals with equal length; specifically, the $i$-th interval ($i \in [n]$) is
-\myeqn{
-    I_i &=& \left\{
-    \begin{tabular}{ll}
-        $\Big[a + (b-a) \cdot \fr{i-1}{n}, a + (b-a) \cdot \fr{i}{n} \Big)$ & if $i < n$  \\[2mm]
-        $\Big[a + (b-a) \cdot \fr{i-1}{n}, a + (b-a) \cdot \fr{i}{n} \Big]$ & if $i = n$.
-    \end{tabular}
-    \right.
-    \label{eqn:Ii}
-}
-For each $i \in [n]$, define
-\myeqn{
-    n_i &=& |S \cap I_i|. \label{eqn:ni}
-}
-and a function $\hat{r}_S: [U] \rightarrow [n]$ as:
-\myeqn{
-    \hat{r}_S(q)
-    &=&
-    \left\{
-    \begin{tabular} {ll}
-        0 & if $q < a$ \\
-        $\fr{n_i}{2} + \sum_{k=1}^{i-1} n_i$ & if $q \in I_i$ for some $i \in [n]$ \\
-        $n$ &
-        if $q > b$
-    \end{tabular}
-    \right. \label{eqn:hat-r}
-}
-
-Our data structure consists of (i) the values $a, b$ and $n$, (ii) the sorted array $A$, and (iii) the function $\hat{r}_S$. In particular, we store $\hat{r}_S$ in an array of size $n$ such that, for any $q \in I_i$ with $i \in [n]$, we can return $\hat{r}_S(q)$ in constant time. The total space consumption is $O(n)$ in the worst case.
-
-\section{Query} \label{sec:query}
-
-Let $q$ be the query value of predecessor search. Define
-\myeqn{
-    \rank_S(q) &=&
-    \left\{
-    \begin{tabular} {ll}
-        0 & if $q < a$ \\
-        the number of elements in $S$ at most $q$ & if $a \le q \le b$ \\
-        $n$ &
-        if $q > b$
-    \end{tabular}
-    \right. \label{eqn:rank}
-}
-Note that when $q > a$, the predecessor of $q$ is $A[\rank_S(q)]$.
+For example, if $Q$ is a $k$-cycle (i.e., a cycle with $k$ edges), then $\rho(Q) = k/2$; if $Q$ is a $k$-star (i.e., a graph with $k + 1$ vertices $u, v_1, ..., v_k$, and $k$ edges $\set{u, v_1}, \set{u, v_2}, ..., \set{u, v_k}$), then $\rho(Q) = k$.
 
 \vgap
 
-We answer the query as follows. If $q < a$, return ``absence''. Consider now $q \ge a$. We check whether $A[\hat{r}_S(q)] = q$ --- this takes constant time --- and return $\hat{r}_S(q)$ if so. If $q < A[\hat{r}_S(q)]$, look for $q$ using exponential search in the subarray from $A[1]$ to $A[\hat{r}_S(q)]$ (see Appendix~\ref{app:expo-srch} for an introduction to exponential search); otherwise, look for $q$ using exponential search in the subarray from $A[\hat{r}_S(q)]$ to $A[n]$.
+The following is known as the {\em AGM bound}:
 
-\vgap
-
-If
-\myeqn{
-    \Delta_S(q) &=& |\rank_S(q) - \hat{r}_S(q)| \label{eqn:Delta-S-q}
-}
-the query time is bounded by $O(\log \Delta_S(q))$.
-
-\vgap
-
-We mention a proposition here that will be useful later:
-
-\begin{proposition} \label{prop:bound-on-delta-Sq}
-    If $q \in I_i$ (for some $i \in [n]$), then $\Delta_S(q) \le n_i/2$.
-\end{proposition}
-
-The proof is easy and left to you.
-
-\section{Analysis} \label{sec:analysis}
-
-Define $f$ as the probability density function of $\D$, namely, $Pr[X = x] = f(x)$ for a random variable $X$ drawn from $\D$. We will prove:
-
-\begin{theorem} \label{thm:main}
-    The average query time of the algorithm in Section~\ref{sec:query} is
-    \myeqn{
-        O\Big(\log \Big(U \cdot \sum_{q \in [U]} (f(q))^2 \Big)\Big). \nn %\label{eqn:main}
-    }
+\begin{theorem} \label{thm:agm}
+    If the data graph $G$ has $m$ edges and the pattern graph $Q$ has a constant size, then $G$ can have $O(m^{\rho(Q)})$ occurrences of $Q$.
 \end{theorem}
 
-For example, when $\D$ is uniform over $[U]$, we have $f(x) = 1/U$ for all $x \in [U]$, in which case the average query time is $O(\log (U \cdot (U \cdot 1/U^2))) = O(1)$. More generally, the average query complexity is $O(\log t)$ if $f(x) \le t/U$ for all $x \in [U]$ --- for $t$ is sub-polynomial in $n$, the structure strictly improves the BST (in terms of average running time).
+The AGM bound is tight:
 
-\subsection{Domain-Partitioning Intervals} \label{sec:analysis}
+\begin{theorem} \label{thm:agm}
+    Fix any integer $m \ge 1$ and any pattern graph $Q$ with a constant size. There is a data graph $G$ with at most $m$ edges that has $\Omega(m^{\rho(Q)})$ occurrences of $Q$.
+\end{theorem}
 
-To facilitate our analysis, we partition the domain $[U]$ into $n$ intervals of equal length; specifically, for each $j \in [n]$, the $j$-th interval is
-\myeqn{
-    J_j &=& \left\{
-    \begin{tabular}{ll}
-        $\Big[1 + (U-1) \cdot \fr{j-1}{n}, 1 + (U-1) \cdot \fr{j}{n} \Big)$ & if $j < n$  \\[2mm]
-        $\Big[1 + (U-1) \cdot \fr{j-1}{n}, 1 + (U-1) \cdot \fr{j}{n} \Big]$ & if $j = n$.
-    \end{tabular}
-    \right.
-    \label{eqn:Jj}
-}
-Specially, define
-\myeqn{
-    J_0 = J_{n+1} = \emptyset. \nn
-}
-For each $j \in \set{0, 1, ..., n+1}$, set
-\myeqn{
-    m_j &=& |S \cap J_j|. \label{eqn:analysis:mj}
-}
-
-Each interval $J_j$ ($j \in [n]$) has a length $(U-1)/n$, which is at least that of an interval $I_i$ ($i \in [n]$) defined in \eqref{eqn:Ii}. The proposition below follows immediately:
-
-\begin{proposition} \label{prop:analysis:J-covers-I}
-    Each interval $I_i$ ($i \le [n]$) defined in \eqref{eqn:Ii} is covered by $J_j \cup J_{j+1}$ for some $j \in [n-1]$.
-\end{proposition}
-
-\begin{corollary} \label{crl:analysis:J-covers-I}
-    Fix an arbitrary $j \in [n]$. If an interval $I_i$ ($i \le [n]$) intersects with $J_j$, then $I_i$ is covered by $J_{j-1} \cup J_j \cup J_{j+1}$.
-\end{corollary}
-
-The proof is easy and left to you.
-
-\subsection{A Core Lemma} \label{sec:analysis:core}
-
-Define for each $j \in [n]$
-\myeqn{
-    p_j = \Pr_{X \sim \D} [X \in J_j] = \sum_{q \in J_j} f(q).
-    \label{eqn:analysis:pj}
-}
-This section serves as the proof of the lemma below:
-
-\begin{lemma} \label{lmm:anayslis-core}
-    $\expt_{Q, S} [\Delta_S(Q)] = O(n) \cdot \sum_{j=1}^n p_j^2$.
-\end{lemma}
-
-
-\extraspacing {\bf Proof of Lemma~\ref{lmm:anayslis-core}.} The total law of expectation tells us:
-\myeqn{
-    \expt_{Q, S}[\Delta_S(Q)] &=& \expt_S \Big[\expt_{Q \mid S} \Big[\Delta_S(Q) | S \Big] \Big] \nn  \\
-    \explain{by independence of $Q$ and $S$} &=& \expt_S \Big[\expt_{Q} \Big[\Delta_S(Q) | S \Big] \Big].
-    \label{eqn:analysis-core-h1}
-}
-Regarding $\expt_Q [\Delta_S(Q) | S]$, we can derive:
-\myeqn{
-    \expt_Q [\Delta_S(Q) | S]
-    &=&
-    \sum_{q \in [U]} \Delta_S(q) \cdot f(q) \nn \\
-    &=&
-    \sum_{i \in [n]} \sum_{q \in I_i} \Delta_S(q) \cdot f(q) \nn \\
-    \explain{by Proposition~\ref{prop:bound-on-delta-Sq}}
-    &\le&
-    \sum_{i=1}^n \fr{n_i}{2} \sum_{q \in I_i} f(q). \label{eqn:analysis-core-h2}
-}
-
-Define for each $i, j \in [n]$:
-\myeqn{
-    n_{i,j} = |S \cap I_i \cap J_j|. \label{eqn:analysis-n-ij} \nn
-}
-Thus
-\myeqn{
-    \eqref{eqn:analysis-core-h2} =
-    \fr{1}{2} \sum_{i=1}^n \sum_{j=1}^n n_{i,j} \sum_{q \in I_i} f(q)
-    =
-    \fr{1}{2} \sum_{j=1}^n \sum_{i=1}^n n_{i,j} \sum_{q \in I_i} f(q).
-    \label{eqn:analysis-core-h3}
-}
-For a specific $j \in [n]$, we have
-\myeqn{
-    \sum_{i=1}^n n_{i,j} \sum_{q \in I_i} f(q)
-    &=&
-    \sum_{i \in [n]: I_i \cap J_j \ne \emptyset} n_{i,j} \sum_{q \in I_i} f(q) \nn \\
-    \explain{by Corollary~\ref{crl:analysis:J-covers-I}}
-    &\le&
-    \sum_{i \in [n]: I_i \cap J_j \ne \emptyset} n_{i,j} \sum_{q \in J_{j-1} \cup J_j \cup J_{j+1}} f(q) \nn \\
-    &=&
-    m_j \cdot (p_{j-1} + p_j + p_{j+1}). \nn
-}
-where $m_j$ and $p_j$ are defined in \eqref{eqn:analysis:mj} and \eqref{eqn:analysis:pj}, respectively. Plugging the above into \eqref{eqn:analysis-core-h3} and then into \eqref{eqn:analysis-core-h2} yields
-\myeqn{
-    \expt_Q [\Delta_S(Q) | S] =
-    \fr{1}{2} \sum_{j=1}^n  m_j \cdot (p_{j-1} + p_j + p_{j+1}) \nn
-}
-which, together with \eqref{eqn:analysis-core-h1}, gives
-\myeqn{
-    \expt_{Q,S} [\Delta_S(Q) | S] = \expt_S [\expt_Q [\Delta_S(Q) | S]] &=&
-    \fr{1}{2} \cdot \expt_S \Big[ \sum_{j=1}^n  m_j \cdot (p_{j-1} + p_j + p_{j+1}) \Big] \nn \\
-    &=&
-    \fr{1}{2} \cdot \sum_{j=1}^n  \expt_S[m_j] \cdot (p_{j-1} + p_j + p_{j+1}) \nn \\
-    &=&
-    \fr{1}{2} \cdot \sum_{j=1}^n  n p_j \cdot (p_{j-1} + p_j + p_{j+1}) \nn \\
-    &=&
-    \fr{n}{2} \cdot \sum_{j=1}^n  p_j p_{j-1} + p_j^2 + p_j p_{j+1}. \label{eqn:analysis-core-h4}
-}
-
-
-\begin{proposition}
-    $\sum_{j=1}^n  p_j p_{j-1} = O(\sum_{j=1}^n p_j^2)$ and $\sum_{j=1}^n  p_j p_{j+1} = O(\sum_{j=1}^n p_j^2)$.
-\end{proposition}
-
-The proof is left to you as an exercise. Lemma~\ref{lmm:anayslis-core} now follows by combining the above proposition and \eqref{eqn:analysis-core-h4}.
-
-\subsection{Proof of Theorem~\ref{thm:main}} \label{sec:analysis:thm-main}
-
-%To establish Theorem~\ref{thm:main} using Lemma~\ref{lmm:anayslis-core}, we need
-
-% For each $j \in [n]$, we use $|J_j|$ to represent the number of integers covered by $J_j$. It is clear that $|J_j| \le U/n$.
-
-%\vgap
-
-By the Cauchy-Schwarz inequality\footnote{$(\sum_{i=1}^n x_i y_i)^2 \le \sum_{i=1}^n x_i^2 \cdot \sum_{i=1}^n y_i^2 $.}, we have for each $j \in [n]$:
-\myeqn{
-    p_j^2 = \Big(\sum_{q \in J_j} f(q) \Big)^2
-    \le
-    \Big(\sum_{q \in J_j} 1 \Big)
-    \cdot
-    \Big(\sum_{q \in J_j} (f(q))^2 \Big)
-    \le
-    O\Big( \fr{U}{n} \Big) \cdot \sum_{q \in J_j} (f(q))^2 \nn
-}
-where the last step used the fact that $J_j$ contains $O(U/n)$ integers. Plugging the above into Lemma~\ref{lmm:anayslis-core} yields:
-\myeqn{
-    \expt_{Q,S} [\Delta_S(Q)] &=& O(n) \cdot \sum_{j=1}^n O\Big( \fr{U}{n} \Big) \cdot \sum_{q \in J_j} (f(q))^2 \nn \\
-    &=& O(U) \cdot  \sum_{j=1}^n \sum_{q \in J_j} (f(q))^2 \nn \\
-    &=& O(U) \cdot  \sum_{q \in [U]} (f(q))^2. \label{eqn:thm-main:h1}
-}
-
-The average running time of the query algorithm in Section~\ref{sec:query} is bounded by
-\myeqn{
-    O \Big(
-        \expt_{Q,S} \log \Delta_S(q)
-    \Big)
-    \le
-    O \Big(
-        \log \expt_{Q,S} \Delta_S(q)
-    \Big) \nn
-}
-where the inequality is due to Jensen's inequality. The claim in Theorem~\ref{thm:main} now follows from the above and \eqref{eqn:thm-main:h1}.
-
-\section{Remarks}
-
-The structure and analysis presented were developed in \cite{cyl+25}.
-
-
-
-\bibliographystyle{plain}
-\bibliography{ref}
-
-
-\appendix
-
-\section{Exponential Search} \label{app:expo-srch}
-
-Let $A$ be a sorted array of $n$ elements (in non-decreasing order),
-and let $q$ be a target value. Exponential search decides whether $q$ appears in $A$
---- if so, return its index --- as follows. If $q < A[1]$, return ``absence''. Otherwise, identify the smallest $h \in [n]$ such that
-\myitems{
-    \item $h$ is a power of 2 or $h = n$, and
-    \item $A[n] \ge q$
-}
-The value $q$ --- if it exists in $A$ --- must lie in the subarray from $A[\lc h/2 \rc]$ to $A[h]$. We then perform binary search to look for $q$ in the subarray.
-
-\vgap
-
-Let $\Delta$ be the number of elements in $A$ that are at most $q$. Clearly, $h \le 2\Delta$. It is rudimentary to show that the running time is $O(\log \Delta)$.
+We will prove both theorems in this lecture.
 
 \end{document}
