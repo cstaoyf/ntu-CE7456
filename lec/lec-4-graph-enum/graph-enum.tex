@@ -173,7 +173,7 @@ As a side product, we have given a constructive proof of the AGM bound in Theore
 We will prove the theorem through a series of lemmas about fractional edge covers. If $w$ is a fractional edge cover of $Q  = (V_Q, E_Q)$, we use $Q_{\supp(w)}$ to denote the subgraph of $Q$ induced by $\supp(w)$.
 
 \begin{lemma} \label{lmm:proof-h1}
-   Suppose that $w^*$ is an optimal fractional edge cover of $Q$ such that $Q_{\supp(w^*)}$ is a star. Then, $w^*$ maps each edge of the star to 1 and every other edge of $E_Q$ to 0.
+   Suppose that $w^*$ is an optimal fractional edge cover of $Q$ such that $Q_{\supp(w^*)}$ is a collection of vertex-disjoint stars. Then, $w^*$ maps each edge of $Q_{\supp(w^*)}$ to 1 and every other edge of $E_Q$ to 0.
 \end{lemma}
 
 \begin{proof}
@@ -192,24 +192,27 @@ Henceforth, a fractional edge cover $w$ of $Q$ is said to be {\em integral} if $
 \end{lemma}
 
 \begin{proof}
-    Let $\T$ be the forest induced by $\supp(w^*)$. If $\T$ is a collection of stars, the claim follows immediately from Lemma~\ref{lmm:proof-h1}. Next, we assume that $\T$ is not a collection of stars.
+    %Let $\T$ be the forest induced by $\supp(w^*)$.
+
+    If $Q_{\supp(w^*)}$ is a collection of vertex-disjoint stars, the claim follows immediately from Lemma~\ref{lmm:proof-h1}. Next, we assume that this is not true.
 
     \vgap
 
-    We prove the lemma by induction on $|\supp(w^*)|$. The base case where $|\supp(w^*)| = 1$ holds because in that case $\T$ is a star. Next, assuming that the lemma holds when $|\supp(w^*)| = t$, we will prove the claim for $|\supp(w^*)| = t+1$.
+    %We prove the lemma by induction on $|\supp(w^*)|$. The base case where $|\supp(w^*)| = 1$ holds because in that case $\T$ is a star. Next, assuming that the lemma holds when $|\supp(w^*)| = t$, we will prove the claim for $|\supp(w^*)| = t+1$.
 
-    \vgap
+    %\vgap
 
-    Root $\T$ at an arbitrary degree-1 node. Let $z$ be a deepest leaf of $\T$ (i.e., its distance from the root is the largest among all leaves). Let $u_1$ be its parent. The value of $w^*(\set{z, u_1})$ must be 1.
-
-    \vgap
-
-    Let $u_2$ be the parent of $u_1$, and $u_3$ be the parent of $u_2$ (think: why can't $u_1$ and $u_2$ be the root?). We modify $w^*$ as follows:
+    Let $\T$ be an arbitrary tree in the forest $Q_{\supp(w^*)}$ such that $\T$ is not a star. Root $\T$ at an arbitrary degree-1 node. Let $z$ be a deepest leaf of $\T$ (i.e., its distance from the root is the largest among all leaves). Let $u_1$ be its parent. The value of $w^*(\set{z, u_1})$ must be 1. Let $u_2$ be the parent of $u_1$, and $u_3$ be the parent of $u_2$ (think: why can't $u_1$ and $u_2$ be the root?). We modify $w^*$ as follows:
     \myitems{
         \item increase $w^*(\set{u_2, u_3})$ by $w^*(\set{u_1, u_2})$;
         \item set $w^*(\set{u_1, u_2})$ to 0.
     }
-    The new $w^*$ is an optimal fractional edge cover of $Q$ such that $|\supp(w^*)| = t$ (because $\set{u_1, u_2}$ is no longer in $\supp(w^*)$), and $\supp(w^*)$ induces a forest. The claim now follows from our inductive assumption.
+    The new $w^*$ is an optimal fractional edge cover of $Q$
+    with one less edge in $\supp(w^*)$ --- because $\set{u_1, u_2}$ is no longer in $\supp(w^*)$ --- and $\supp(w^*)$ still induces a forest.
+
+    \vgap
+
+    By repeating the process, we eventually obtain an optimal fractional edge cover $w^*$ such that $Q_{\supp(w^*)}$ is a collection of vertex-disjoint stars.
 \end{proof}
 
 
