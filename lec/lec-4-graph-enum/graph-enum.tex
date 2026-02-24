@@ -237,7 +237,11 @@ We will prove the theorem through a series of lemmas that reveal non-trivial pro
 
    \vgap
 
-   By Lemma~\ref{lmm:proof-h3}, $Q'$ has an optimal fractional edge cover $w^*$ such that $w^*(e) \in \set{0, 1}$ for every $e \in E_{Q'}$. Define a function $w: E_Q \rightarrow \real_{\ge 0}$ by setting, for each $e \in E_Q$, $w(e) = \fr{1}{2}(w^*(e_L) + w^*(e_R))$. We claim that $w$ is a fractional edge cover of $Q$. Indeed, for any vertex $u \in V_Q$, we have
+   By Lemma~\ref{lmm:proof-h3}, $Q'$ has an optimal fractional edge cover $w^*$ such that $w^*(e) \in \set{0, 1}$ for every $e \in E_{Q'}$. Define a function $w: E_Q \rightarrow \real_{\ge 0}$ by setting, for each $e \in E_Q$, $w(e) = \fr{1}{2}(w^*(e_L) + w^*(e_R))$. Note that $w(e) \in \set{0, 1/2, 1}$.
+
+   \vgap
+
+   We claim that $w$ is a fractional edge cover of $Q$. Indeed, for any vertex $u \in V_Q$, we have
    \myeqn{
         && \sum_{v \in V_Q: \set{u, v} \in E_{Q}} w(\set{u, v}) \nn \\
         &=&
@@ -258,6 +262,14 @@ We will prove the theorem through a series of lemmas that reveal non-trivial pro
         1 \nn
    }
    where the last step used the fact that $w^*$ is a fractional edge cover of $Q'$.
+
+   \vgap
+
+   The total weight of $w$ equals half of the total weight of $w^*$. We argue that $w$ must be an optimal fractional edge cover of $Q$. Otherwise, let $w_0$ be an optimal fractional edge cover of $Q$ with a lower total weight. Construct a function $w^*_0: E_{Q'} \rightarrow \real_{\ge 0}$ by setting, for each $\set{u, v} \in E_Q$:
+   \myeqn{
+        w^*_0(\set{u_L, v_R}) = w^*_0(\set{u_R, v_L}) = w_0(\set{u, v}). \nn
+   }
+   It is easy to check that $w^*_0$ is a fractional edge cover of $Q'$ whose total weight is twice the total weight of $w_0$ and, hence, is less than the total weight of $w^*$, giving a contradiction.
 \end{proof}
 
 
