@@ -235,15 +235,15 @@ Henceforth, a fractional edge cover $w$ of $Q$ is said to be {\em integral} if $
 \end{lemma}
 
 \begin{proof}
-   Let us build a bipartite graph $Q' = (V_{Q'}, E_{Q'})$ as follows. Each vertex $u \in V_Q$ defines two vertices $u_L$ and $u_R$ to $V_{Q'}$ --- refer to them as the {\em left copy} and {\em right copy} of $u$, respectively. For each edge $\set{u, v} \in E_Q$, add two edges $\set{u_L, v_R}$ and $\set{v_L, u_R}$ to $E_{Q'}$, where the subscripts indicate whether a vertex is a left or right copy.
+   Let us build a graph $Q' = (V_{Q'}, E_{Q'})$ as follows. Each vertex $u \in V_Q$ defines two vertices $u_L$ and $u_R$ to $V_{Q'}$ --- refer to them as the {\em left copy} and {\em right copy} of $u$, respectively. For each edge $\set{u, v} \in E_Q$, add two edges $\set{u_L, v_R}$ and $\set{v_L, u_R}$ to $E_{Q'}$. As each edge of $E_{Q'}$ connects a left-copy vertex to a right-copy vertex, $Q'$ is bipartite. By Lemma~\ref{lmm:proof-h3}, $Q'$ has an integral optimal fractional edge cover $w^*$.
 
    \vgap
 
-   By Lemma~\ref{lmm:proof-h3}, $Q'$ has an integral optimal fractional edge cover $w^*$. Define a function $w: E_Q \rightarrow \real_{\ge 0}$ by setting, for each $\set{u, v} \in E_Q$, $w(\set{u,v}) = \fr{1}{2}(w^*(\set{u_L, v_R}) + w^*(\set{v_L, u_R}))$. Note that $w(\set{u, v}) \in \set{0, 1/2, 1}$.
-
-   \vgap
-
-   We claim that $w$ is a fractional edge cover of $Q$. Indeed, for any vertex $u \in V_Q$, we have
+   Define a function $w: E_Q \rightarrow \real_{\ge 0}$ by setting, for each $\set{u, v} \in E_Q$:
+   \myeqn{
+        w(\set{u,v}) = \fr{1}{2}(w^*(\set{u_L, v_R}) + w^*(\set{v_L, u_R})). \nn
+   }
+   Note that $w(\set{u, v}) \in \set{0, 1/2, 1}$.   We claim that $w$ is a fractional edge cover of $Q$. Indeed, for any vertex $u \in V_Q$, it holds that
    \myeqn{
         && \sum_{v \in V_Q: \set{u, v} \in E_{Q}} w(\set{u, v}) \nn \\
         &=&
