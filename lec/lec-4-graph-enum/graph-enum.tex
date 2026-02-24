@@ -212,7 +212,7 @@ Henceforth, a fractional edge cover $w$ of $Q$ is said to be {\em integral} if $
 
     \vgap
 
-    By repeating the process, we eventually obtain an optimal fractional edge cover $w^*$ such that $Q_{\supp(w^*)}$ is a collection of vertex-disjoint stars.
+    If $Q_{\supp(w^*)}$ is still not a collection of vertex-disjoint stars, we can repeat the process to reduce $|\supp(w^*)|$ further. Eventually, we obtain an optimal fractional edge cover $w^*$ such that $Q_{\supp(w^*)}$ is a collection of vertex-disjoint stars.
 \end{proof}
 
 
@@ -221,12 +221,16 @@ Henceforth, a fractional edge cover $w$ of $Q$ is said to be {\em integral} if $
 \end{lemma}
 
 \begin{proof}
-    By Lemma~\ref{lmm:proof-h2}, it suffices to prove that $Q$ has an optimal fractional edge cover $w^*$ whose $\supp(w^*)$ induces a forest. If this is not true, then the subgraph of $Q$ induced by $\supp(w^*)$ must contain a cycle $\mycycle$. As $Q$ is bipartite, $\mycycle$ must have an even number of edges, which we denote by $e_1, e_2, ..., e_k$ in some traversal order. W.l.o.g., suppose that $e_1$ has the smallest weight under $w^*$ among $e_1, e_2, ..., e_k$. Set $\Delta = w^*(e_1)$. We now modify $w^*$ by
+    By Lemma~\ref{lmm:proof-h2}, it suffices to prove that $Q$ has an optimal fractional edge cover $w^*$ whose $Q_{\supp(w^*)}$ is a forest. If this is not true, then $Q_{\supp(w^*)}$ must contain a cycle $\mycycle$. As $Q$ is bipartite, $\mycycle$ must have an even number of edges, which we denote by $e_1, e_2, ..., e_k$ in some traversal order.
+
+    \vgap
+
+    W.l.o.g., suppose that $e_1$ has the smallest weight under $w^*$ among $e_1, e_2, ..., e_k$. Set $\Delta = w^*(e_1)$. We now modify $w^*$ by
     \myitems{
         \item decreasing the weights of $e_1, e_3, ..., e_{k-1}$ by $\Delta$;
         \item increasing the weights of $e_2, e_4, ..., e_{k}$ by $\Delta$.
     }
-    The new $w^*$ is an optimal fractional edge cover of $Q$ whose $\supp(w^*)$ has one less edge (because $e_1$ is no longer in $\supp(w^*)$).
+    The new $w^*$ is an optimal fractional edge cover of $Q$ whose $\supp(w^*)$ has at least one less edge (because $e_1$ is no longer in $\supp(w^*)$).
 
     \vgap
 
