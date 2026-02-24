@@ -81,11 +81,11 @@ The following is known as the {\em AGM bound}:
 
 The AGM bound is tight:
 
-\begin{theorem} \label{thm:agm}
+\begin{theorem} \label{thm:agm-lb}
     Fix any integer $m \ge 1$ and any pattern graph $Q$ with a constant size. There is a data graph $G$ with at most $m$ edges that has $\Omega(m^{\rho(Q)})$ occurrences of $Q$.
 \end{theorem}
 
-We will prove both theorems in this lecture.
+We will prove Theorem~\ref{thm:agm} in this lecture and Theorem~\ref{thm:agm-lb} in a future lecture of this course.
 
 \section{Enumerating Odd-Length Cycles} \label{alg:cycle}
 
@@ -142,6 +142,18 @@ We will prove the theorem in the next section. For an illustration, Figure~\ref{
     \label{fig:fish}
     \figcapdown
 \end{figure}
+
+\vgap
+
+Theorem~\ref{thm:decomp} implies the following algorithm to find the occurrences of $Q$ in a data graph $G = (V, E)$:
+\myitems{
+    \item For each $i \in [\alpha]$, find the set $M_i^{\mycycle}$ of occurrences of $\mycycle_i$. We consider $M_i^{\mycycle}$ to be a set of functions, each mapping the vertex set of $\mycycle_i$ to $V$.
+
+    \item For each $i \in [\beta]$, find the set $M_i^{\mystar}$ of occurrences of $\mystar_i$. We consider $M_i^{\mystar}$ to be a set of functions, each mapping the vertex set of $\mystar_i$ to $V$.
+
+    \item For each $(f_1^{\mycycle}, ..., f_\alpha^{\mycycle}, f_1^{\mystar}, ..., f_\beta^{\mystar}) \in (M_1^{\mycycle}, ..., M_\alpha^{\mycycle}, M_1^{\mystar}, ..., M_\beta^{\mystar})$, check in constant time whether $(f_1^{\mycycle}, ..., f_\alpha^{\mycycle}, f_1^{\mystar}, ..., f_\beta^{\mystar})$ induces an occurrence of $Q$.
+}
+
 
 
 \end{document}
