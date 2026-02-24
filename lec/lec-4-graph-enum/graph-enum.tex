@@ -112,24 +112,24 @@ There are $O(m^{1.5})$ choices to satisfy conditions 1 and 2 (think: why?) and $
 
 \section{Enumerating Stars} \label{sec:star}
 
-Let $Q$ be a $k$-star where $k$ is a constant integer at least 1. It is rudimentary to find all its occurrences in a data graph $G$ of $m$ edges in $O(m^{\rho(Q)})$ time where $\rho(Q) = k$. The details are left to you as an exercise.
+Let $Q$ be a $k$-star where $k$ is a constant integer at least 1. It is rudimentary to find all its occurrences in a data graph $G$ of $m$ edges in $O(m^{\rho(Q)})$ time where $\rho(Q) = k$. The details are left to you.
 
 \section{Enumerating Arbitrary Subgraphs} \label{sec:enum-gen}
 
-Let $Q = (V_Q, E_Q)$ be a pattern graph with a constant size. Given a fractional edge cover $w$ of $Q$, we define the {\em support of $w$} as
+Let $Q = (V_Q, E_Q)$ be a pattern graph with a constant size. Given a fractional edge cover $w$ of $Q$, we define
 \myeqn{
     \supp(w) &=&
     \{
         e \in E_Q \mid w(e) > 0
     \}. \label{eqn:supp-w}
 }
-Note that, for each vertex $u \in V_Q$, at least one edge in $\supp(w)$ is incident on $u$.
+For each vertex $u \in V_Q$, at least one edge in $\supp(w)$ is incident on $u$ (think: why?).
 
 \begin{theorem} \label{thm:decomp}
    Every pattern graph $Q$ admits an optimal fractional edge cover $w^*$ whose $\supp(w^*)$ induces a collection of vertex-disjoint odd-length cycles $\mycycle_1, ..., \mycycle_\alpha$ ($\alpha \ge 0$) and stars $\mystar_1, ..., \mystar_\beta$ ($\beta \ge 0$) such that $\rho(Q) = \sum_{i=1}^\alpha \rho(\mycycle_i) + \sum_{i=1}^\beta \rho(\mystar_i)$.
 \end{theorem}
 
-We will prove the theorem in the next section. For an illustration, Figure~\ref{fig:fish}(a) shows a pattern graph $Q$ with $\rho(Q) = 5.5$, while Figure~\ref{fig:fish}(b) shows the promised collection, which has $\alpha = 1$ odd-length cycle and $\beta = 2$ stars. It is easy to verify that the sum of the fractional edge cover numbers of the cycle and stars is precisely 5.5.
+We will prove the theorem in the next section. For an illustration, Figure~\ref{fig:fish}(a) shows a pattern graph $Q$ with $\rho(Q) = 5.5$, while Figure~\ref{fig:fish}(b) shows the promised collection, which has $\alpha = 1$ odd-length cycle and $\beta = 2$ stars. It is easy to verify that the fractional edge cover numbers of the cycle and stars sum up to 5.5.
 
 \begin{figure}
     \centering
@@ -147,7 +147,7 @@ We will prove the theorem in the next section. For an illustration, Figure~\ref{
 
 \vgap
 
-Theorem~\ref{thm:decomp} implies the following algorithm to find the occurrences of $Q$ in a data graph $G = (V, E)$:
+Theorem~\ref{thm:decomp} implies the following algorithm to find the occurrences of $Q$ in $G = (V, E)$:
 \myitems{
     \item For each $i \in [\alpha]$, find the set $M_i^{\mycycle}$ of occurrences of $\mycycle_i$. We consider $M_i^{\mycycle}$ to be a set of functions, each mapping the vertex set of $\mycycle_i$ to $V$.
 
@@ -166,7 +166,7 @@ which is $O(m^{\rho(Q)})$ by Theorem~\ref{thm:decomp}.
 
 \vgap
 
-As a side product, we have given a constructive proof of the AGM bound in Theorem~\ref{thm:agm}. The algorithm is worst-case optimal because by Theorem~\ref{thm:agm-lb} even just outputting the result takes $\Omega(m^{\rho(Q)})$ time.
+As a side product, we have given a constructive proof of the AGM bound in Theorem~\ref{thm:agm}. The algorithm is worst-case optimal because even just outputting the result takes $\Omega(m^{\rho(Q)})$ time by Theorem~\ref{thm:agm-lb}.
 
 \section{Proof of Theorem~\ref{thm:decomp}} \label{sec:proof-thm-decomp}
 
@@ -180,7 +180,7 @@ We will prove the theorem through a series of lemmas about fractional edge cover
    Trivial and omitted.
 \end{proof}
 
-Henceforth, a fractional edge cover $w$ of $Q$ is said to be {\em integral} if $w(e)$ is either 0 or 1 for each $e \in E_Q$.
+Henceforth, a fractional edge cover $w$ of $Q$ is said to be {\em integral} if $w(e) \in \set{0, 1}$ for each $e \in E_Q$.
 
 
 \begin{lemma} \label{lmm:proof-h2}
@@ -192,7 +192,7 @@ Henceforth, a fractional edge cover $w$ of $Q$ is said to be {\em integral} if $
 \end{lemma}
 
 \begin{proof}
-    Let $\T$ be the forest induced by $\supp(w^*)$. If $\T$ is a star, the claim follows immediately from Lemma~\ref{lmm:proof-h1}. Next, we assume that $\T$ is not a star.
+    Let $\T$ be the forest induced by $\supp(w^*)$. If $\T$ is a collection of stars, the claim follows immediately from Lemma~\ref{lmm:proof-h1}. Next, we assume that $\T$ is not a collection of stars.
 
     \vgap
 
