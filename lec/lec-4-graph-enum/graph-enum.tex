@@ -44,11 +44,13 @@
     \end{center}
 }
 
-Today, we will discuss the {\em subgraph enumeration} problem. Let $G = (V, E)$ be an undirected graph called the {\em data graph}. A graph $G' = (V', E')$ is a {\em subgraph} of $G$ if $V' \subseteq V$ and $E' \subseteq E$. Let $Q = (V_Q, E_Q)$ be another undirected graph called the {\em pattern graph}. A subgraph $G' = (V', E')$ of $G$ is {\em isomorphic} to $Q$ if there is a bijection function $f: V_Q \rightarrow V'$ such that, for any distinct vertices $u, v \in V'$, the pattern graph $Q$ has an edge $\set{u, v}$ if and only if the edge $\set{f(u), f(v)}$ exists in $G'$. The goal of subgraph enumeration is to report all the subgraphs of $G$ that are isomorphic to $Q$. These subgraphs are called the {\em occurrences} of $Q$.
+Today, we will discuss the {\em subgraph enumeration} problem (also known a {\em subgraph listing}). Let $G = (V, E)$ be an undirected graph called the {\em data graph}. A graph $G' = (V', E')$ is a {\em subgraph} of $G$ if $V' \subseteq V$ and $E' \subseteq E$. Let $Q = (V_Q, E_Q)$ be another undirected graph called the {\em pattern graph}. A subgraph $G' = (V', E')$ of $G$ is {\em isomorphic} to $Q$ if there is a bijection function $f: V_Q \rightarrow V'$ such that, for any distinct vertices $u, v \in V'$, the pattern graph $Q$ has an edge $\set{u, v}$ if and only if the edge $\set{f(u), f(v)}$ exists in $G'$. The goal of subgraph enumeration is to report all the subgraphs of $G$ that are isomorphic to $Q$. These subgraphs are called the {\em occurrences} of $Q$.
 
 \vgap
 
 We assume that $Q$ has a constant size, i.e., the number $|V_Q|$ of its vertices can be regarded as a constant (and, hence, so can the number $|E_Q|$ of its edges). This is necessary; otherwise, the problem is known to be NP-hard: finding whether $G$ has a clique is NP-hard.
+
+\extraspacing {\bf Math Conventions.} For an integer $x \ge 1$, the notation $[x]$ represents the set $\set{1, 2, ..., x}$.
 
 \section{Fractional Edge Cover Number} \label{sec:frac-edge-cover-num}
 
@@ -81,5 +83,27 @@ The AGM bound is tight:
 \end{theorem}
 
 We will prove both theorems in this lecture.
+
+\section{Enumerating Odd-Length Cycles} \label{alg:cycle}
+
+Let $Q$ be a $k$-cycle with an odd number $k$. In this section, we will give an algorithm to find all its occurrences in a data graph $G$ of $m$ edges in $O(m^{k/2})$ time.
+
+\vgap
+
+Call a vertex $u$ of $G$ {\em heavy}, if the degree of $u$ is at least $\sqrt{m}$, or {\em light}, otherwise. The number of heavy vertices of $G$ is at most $2 \sqrt{m}$ (otherwise, $G$ would have more than $m$ edges, giving a contradiction).
+
+\vgap
+
+Let us denote the vertices in $Q$ as $q_1, q_2, ..., q_k$, respectively. To find an occurrence of $Q$, we need to map each $q_i$ ($i \in [k]$) to a distinct vertex in $G$. We consider two types of mappings:
+
+\extraspacing {\bf Type 1: All Vertices of $Q$ Mapped to Heavy Vertices.} There are only $O((\sqrt{m})^k) = O(m^{k/2})$ such mappings because the number of heavy vertices is bounded by $O(\sqrt{m})$. For each mapping, we can check in constant time whether the subgraph of $G$ induced by the mapping is indeed an occurrence of $Q$. The time of finding all such occurrences is therefore $O(m^{k/2})$.
+
+\extraspacing {\bf Type 2: At least One Vertex of $Q$ Is Mapped to a Light Vertex.} W.l.o.g., assume that $q_1$ must be mapped to a light vertex. We consider all such mappings $f: V_Q \rightarrow V$ satisfying three conditions:
+\myenums{
+    \item $f(q_1)$ is a light vertex;
+    \item $\set{f(q_1), f(q_2)}$ and $\set{f(q_1), f(q_k)}$ are edges in $G$;
+    \item for each $i \in \set{2, 3, ..., (k-1)/2}$, $\set{f(q_{2i-1}), f(q_{2i})}$ is an edge in $G$.
+}
+There are $O(m^{1.5})$ choices to satisfy conditions 1 and 2 (think: why?), while there are $O(m^{\fr{k-1}{2}-1})$ choices to satisfy condition 3. Hence, the total number of such mappings is bounded by $O(m^{k/2})$. For each mapping, we can check whether it induces an occurrence of $Q$ in constant time. The time of finding all such occurrences is therefore $O(m^{k/2})$.
 
 \end{document}
