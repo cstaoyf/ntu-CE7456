@@ -305,12 +305,22 @@ Henceforth, a fractional edge cover $w$ of $Q$ is said to be {\em half-integral}
         \item decrease $w^*(e)$ by 1/2 for $e \in \set{e_1, e_3, ..., e_k}$;
         \item increase $w^*(e)$ by 1/2 for $e \in \set{e_2, e_4, ..., e_{k-1}}$.
     }
-    It is easy to verify that after modification $w^*$ remains as an optimal edge cover of $Q$ but fewer edges in $\supp(w^*)$. By repeating the process, we obtain a half-integral optimal fractional edge cover $w^*$ such that $Q_{\supp(w^*)}$ has no even-length cycles and no pendent edges.
+    It is easy to verify that after modification $w^*$ remains as a half-integral optimal edge cover of $Q$ but fewer edges in $\supp(w^*)$. By repeating the process, we obtain a half-integral optimal fractional edge cover $w^*$ such that $Q_{\supp(w^*)}$ has no even-length cycles and no pendent edges.
 
     \vgap
 
-    At this time, $Q_{\supp(w^*)}$ is collection of odd-length cycles $\mycycle_1, ..., \mycycle_\alpha$ ($\alpha \ge 0$) and a forest $\T$ such that $\mycycle_1, ..., \mycycle_\alpha$ and $\T$ are vertex disjoint. Using the procedure in the proof of Lemma~\ref{lmm:proof-h2}, we can
+    At this time, $Q_{\supp(w^*)}$ is a collection of odd-length cycles $\mycycle_1, ..., \mycycle_\alpha$ ($\alpha \ge 0$) and a forest $\T$ such that $\mycycle_1, ..., \mycycle_\alpha$ and $\T$ are vertex disjoint. Using the procedure in the proof of Lemma~\ref{lmm:proof-h2}, we can further modify $w^*$ by adjusting the weights on the edges of $\T$ so that
+    \myitems{
+        \item $w^*$ as a half-integral optimal fractional edge cover;
+        \item $Q_{\supp(w^*)}$ is a collection of $\mycycle_1, ..., \mycycle_\alpha$ and stars $\mystar_1, ..., \mystar_\beta$ such that
+        \myitems{
+            \item $\mycycle_1, ..., \mycycle_\alpha$, $\mystar_1, ..., \mystar_\beta$ are vertex disjoint;
+            \item the union of the vertices in $\mystar_1, ..., \mystar_\beta$ is the vertex set of $\T$.
+        }
+    }
+    This $w^*$ satisfies the requirements of Lemma~\ref{lmm:proof-h5}.
 \end{proof}
 
+Theorem~\ref{thm:decomp} is a corollary of Lemma~\ref{lmm:proof-h5}.
 
 \end{document}
