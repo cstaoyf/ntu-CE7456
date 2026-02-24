@@ -1,5 +1,8 @@
+
 \include{./def/yf-formatting}
 \include{./def/yf-def}
+
+\usepackage{wasysym}
 
 \title{}
 \author{}
@@ -23,14 +26,14 @@
 \def\T{\mathcal{T}}
 %\def\U{\mathcal{U}}
 %\def\X{\mathcal{X}}
-\def\rank{\mit{rank}}
-\def\tm{\mit{Time}}
+
+\def\mycycle{\pentagon}
+\def\mystar{\star}
+\def\supp{\textsc{supp}}
 
 \def\extraspacing{\vspace{3mm} \noindent}
 \def\vgap{\vspace{3mm}}
 \def\vslit{\vspace{0.5mm}}
-
-\DeclareMathOperator*{\Log}{Log}
 
 \begin{document}
 
@@ -62,7 +65,7 @@ The {\em total weight} of $w$ is defined as
 \myeqn{
     \sum_{e \in E_Q} w(e). \nn
 }
-The {\em fractional edge cover number} of $Q$ --- denoted as $\rho(Q)$ --- is defined as the smallest total weight of all fractional edge covers of $Q$.
+The {\em fractional edge cover number} of $Q$ --- denoted as $\rho(Q)$ --- is defined as the smallest total weight of all fractional edge covers of $Q$. A fractional edge cover is said to be {\em optimal} if its total weight is $\rho(Q)$.
 
 \vgap
 
@@ -86,7 +89,7 @@ We will prove both theorems in this lecture.
 
 \section{Enumerating Odd-Length Cycles} \label{alg:cycle}
 
-Let $Q$ be a $k$-cycle with an odd number $k$. In this section, we will give an algorithm to find all its occurrences in a data graph $G$ of $m$ edges in $O(m^{k/2})$ time.
+Let $Q$ be a $k$-cycle with an odd number $k = O(1)$. In this section, we will give an algorithm to find all its occurrences in a data graph $G$ of $m$ edges in $O(m^{k/2})$ time.
 
 \vgap
 
@@ -104,6 +107,41 @@ Let us denote the vertices in $Q$ as $q_1, q_2, ..., q_k$, respectively. To find
     \item $\set{f(q_1), f(q_2)}$ and $\set{f(q_1), f(q_k)}$ are edges in $G$;
     \item for each $i \in \set{2, 3, ..., (k-1)/2}$, $\set{f(q_{2i-1}), f(q_{2i})}$ is an edge in $G$.
 }
-There are $O(m^{1.5})$ choices to satisfy conditions 1 and 2 (think: why?), while there are $O(m^{\fr{k-1}{2}-1})$ choices to satisfy condition 3. Hence, the total number of such mappings is bounded by $O(m^{k/2})$. For each mapping, we can check whether it induces an occurrence of $Q$ in constant time. The time of finding all such occurrences is therefore $O(m^{k/2})$.
+There are $O(m^{1.5})$ choices to satisfy conditions 1 and 2 (think: why?), while there are $O(m^{\fr{k-1}{2}-1})$ choices to satisfy condition 3. Hence, the total number of such mappings is bounded by $O(m^{k/2})$. For each mapping, we can check in constant time whether it induces an occurrence of $Q$. The time of finding all such occurrences is therefore $O(m^{k/2})$.
+
+\section{Enumerating Stars} \label{alg:star}
+
+Let $Q$ be a $k$-star where $k$ is a constant integer at least 1. It is rudimentary to find all its occurrences in a data graph $G$ of $m$ edges in $O(m^k)$ time. The details are left to you as an exercise.
+
+\section{Enumerating Arbitrary Subgraphs} \label{alg:enum-gen}
+
+Let $Q = (V_Q, E_Q)$ be a pattern graph with a constant size. Given a fractional edge cover $w$ of $Q$, we define the {\em support of $w$} as
+\myeqn{
+    \supp(w) &=&
+    \{
+        e \in E_Q \mid w(e) > 0
+    \}. \label{eqn:supp-w}
+}
+
+\begin{theorem} \label{thm:decomp}
+   Every pattern graph $Q$ admits an optimal fractional edge cover $w^*$ whose $\supp(w^*)$ induces a collection of vertex-disjoint odd-length cycles $\mycycle_1, ..., \mycycle_\alpha$ ($\alpha \ge 0$) and stars $\mystar_1, ..., \mystar_\beta$ ($\beta \ge 0$) such that $\rho(Q) = \sum_{i=1}^\alpha \rho(\mycycle_i) + \sum_{i=1}^\beta \rho(\mystar_i)$.
+\end{theorem}
+
+We will prove the theorem in the next section. For an illustration, Figure~\ref{fig:fish}(a) shows a pattern graph $Q$ with $\rho(Q) = 5.5$; the graph can be decomposed into $\alpha = 1$ odd-length cycle and $\beta = 2$ stars, as shown in Figure~\ref{fig:fish}(b). It is easy to verify that the sum of the fractional edge cover numbers of the cycle and stars is precisely 5.5.
+
+\begin{figure}
+    \centering
+    \begin{tabular}{cc}
+        \includegraphics[height=22mm]{./artwork/fish} &
+        \hspace{5mm}\includegraphics[height=22mm]{./artwork/fish-decomp} \\
+        (a) The ``fish'' graph &
+        (b) The decomposition
+    \end{tabular}
+    \figcapup
+    \caption{Illustration of the decomposition in Theorem~\ref{thm:decomp}}
+    \label{fig:fish}
+    \figcapdown
+\end{figure}
+
 
 \end{document}
