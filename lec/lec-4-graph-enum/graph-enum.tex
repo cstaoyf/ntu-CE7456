@@ -53,14 +53,15 @@ Today, we will discuss the {\em subgraph enumeration} problem (also known a {\em
 
 We assume that $Q$ has a constant size, i.e., the number $|V_Q|$ of its vertices can be regarded as a constant (and, hence, so can the number $|E_Q|$ of its edges). This is necessary; otherwise, the problem is known to be NP-hard: finding whether $G$ has a clique is NP-hard.
 
-\extraspacing {\bf Math Conventions.} For an integer $x \ge 1$, the notation $[x]$ represents the set $\set{1, 2, ..., x}$.
+\extraspacing {\bf Math Conventions.} For an integer $x \ge 1$, the notation $[x]$ represents the set $\set{1, 2, ..., x}$. The notation $\real_{\ge 0}$ represents the set of non-negative real numbers.
 
 \section{Fractional Edge Cover Number} \label{sec:frac-edge-cover-num}
 
-A function $w: E_Q \rightarrow [0, 1]$ is said to be a {\em fractional edge cover} of $Q = (V_Q, E_Q)$ if, for every vertex $u \in V_Q$, it holds that
+A function $w: E_Q \rightarrow \real_{\ge 0}$ is said to be a {\em fractional edge cover} of $Q = (V_Q, E_Q)$ if, for every vertex $u \in V_Q$, it holds that
 \myeqn{
     \sum_{e \in E_Q: u \in e} w(e) &\ge& 1. \label{eqn:frac-edge-cover}
 }
+We refer to $w(e)$ as the {\em weight} of $e$ under $w$.
 The {\em total weight} of $w$ is defined as
 \myeqn{
     \sum_{e \in E_Q} w(e). \nn
@@ -122,6 +123,7 @@ Let $Q = (V_Q, E_Q)$ be a pattern graph with a constant size. Given a fractional
         e \in E_Q \mid w(e) > 0
     \}. \label{eqn:supp-w}
 }
+Note that, for each vertex $u \in V_Q$, at least one edge in $\supp(w)$ is incident on $u$.
 
 \begin{theorem} \label{thm:decomp}
    Every pattern graph $Q$ admits an optimal fractional edge cover $w^*$ whose $\supp(w^*)$ induces a collection of vertex-disjoint odd-length cycles $\mycycle_1, ..., \mycycle_\alpha$ ($\alpha \ge 0$) and stars $\mystar_1, ..., \mystar_\beta$ ($\beta \ge 0$) such that $\rho(Q) = \sum_{i=1}^\alpha \rho(\mycycle_i) + \sum_{i=1}^\beta \rho(\mystar_i)$.
@@ -167,5 +169,64 @@ which is $O(m^{\rho(Q)})$ by Theorem~\ref{thm:decomp}.
 As a side product, we have given a constructive proof of the AGM bound in Theorem~\ref{thm:agm}.
 
 \section{Proof of Theorem~\ref{thm:decomp}} \label{sec:proof-thm-decomp}
+
+We will prove the theorem through a series of lemmas that reveal non-trivial properties of fractional edge covers.
+
+\begin{lemma} \label{lmm:proof-h1}
+   Suppose that $Q = (V_Q, E_Q)$ has an optimal fractional edge cover $w^*$ whose $\supp(w^*)$ induces a star. Then, $w^*$ maps each edge of the star to 1 and every other edge of $E_Q$ to 0.
+\end{lemma}
+
+\begin{proof}
+   Trivial and omitted.
+\end{proof}
+
+
+\begin{lemma} \label{lmm:proof-h2}
+   Suppose that $Q = (V_Q, E_Q)$ has an optimal fractional edge cover $w^*$ whose $\supp(w^*)$ induces a forest. Then, $Q$ has an optimal fractional edge cover $w$ such that
+   \myitems{
+        \item $\supp(w)$ induces a collection of stars.
+        \item $w(e) = 1$ for each $e \in \supp(w)$.
+   }
+\end{lemma}
+
+\begin{proof}
+    Let $\T$ be the forest induced by $\supp(w^*)$. If $\T$ is a star, the claim follows immediately from Lemma~\ref{lmm:proof-h1}. Next, we assume that $\T$ is not a star.
+
+    \vgap
+
+    We prove the lemma by induction on $|\supp(w^*)|$. The base case where $|\supp(w^*)| = 1$ holds because in that case $\T$ is a star. Next, assuming that the lemma holds when $|\supp(w^*)| = t$, we will prove the claim for $|\supp(w^*)| = t+1$.
+
+    \vgap
+
+    Root $\T$ at an arbitrary degree-1 node. Let $z$ be a deepest leaf of $\T$ (i.e., its distance from the root is the largest among all leaves). Take an arbitrary leaf $z$ of $\T$, and let $u_1$ be its parent. The value of $w^*(\set{z, u_1})$ must be 1.
+
+    \vgap
+
+    Let $u_2$ be the parent of $u_1$, and $u_3$ be the parent of $u_2$ (think: why can't $u_1$ and $u_2$ be the root?). We modify $w^*$ as follows:
+    \myitems{
+        \item increase $w^*(\set{u_2, u_3})$ by $w^*(\set{u_1, u_2})$;
+        \item set $w^*(\set{u_1, u_2})$ to 0.
+    }
+    The new $w^*$ is an optimal fractional edge cover of $Q$ with $|\supp(w^*)| = t$ (because $\set{u_1, u_2}$ is no longer in $\supp(w^*)$). The claim now follows from our inductive assumption.
+\end{proof}
+
+
+\begin{lemma} \label{lmm:proof-h3}
+   If $Q = (V_Q, E_Q)$ is a bipartite graph. It has an optimal fractional edge cover $w^*$ such that $w^*(e)$ is either 0 or 1 for each $e \in E_Q$.
+\end{lemma}
+
+\begin{proof}
+    By Lemma~\ref{lmm:proof-h2}, it suffices to prove that $Q$ has an optimal fractional edge cover $w^*$ whose $\supp(w^*)$ induces a forest. If this is not true, then the subgraph of $Q$ induced by $\supp(w^*)$ must contain a cycle $\mycycle$. As $Q$ is bipartite, $\mycycle$ must have an even number of edges, which we denote by $e_1, e_2, ..., e_k$ in some traversal order. W.l.o.g., suppose that $e_1$ has the smallest weight under $w^*$ among $e_1, e_2, ..., e_k$. Set $\Delta = w^*(e_1)$. We now modify $w^*$ by
+    \myitems{
+        \item decreasing the weights of $e_1, e_3, ..., e_{k-1}$ by $\Delta$;
+        \item increasing the weights of $e_2, e_4, ..., e_{k}$ by $\Delta$.
+    }
+    The new $w^*$ is an optimal fractional edge cover of $Q$ whose $\supp(w^*)$ has one less edge (because $e_1$ is no longer in $\supp(w^*)$).
+
+    \vgap
+
+    If the subgraph induced by $\supp(w^*)$ still has a cycle, we repeat the above process by further reducing $\supp(w^*)$. This eventually gives a an optimal fractional edge cover $w^*$ of $Q$ whose $\supp(w^*)$ induces a forest.
+\end{proof}
+
 
 \end{document}
