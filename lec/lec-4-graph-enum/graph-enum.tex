@@ -94,21 +94,21 @@ Let $Q$ be a $k$-cycle with an odd number $k = O(1)$. In this section, we will g
 
 \vgap
 
-Call a vertex $u$ of $G$ {\em heavy}, if the degree of $u$ is at least $\sqrt{m}$, or {\em light}, otherwise. The number of heavy vertices of $G$ is at most $2 \sqrt{m}$ (otherwise, $G$ would have more than $m$ edges, giving a contradiction).
+Call a vertex $u$ of $G$ {\em heavy} if the degree of $u$ is at least $\sqrt{m}$, or {\em light} otherwise. The number of heavy vertices of $G$ is at most $2 \sqrt{m}$ (otherwise, $G$ would have more than $m$ edges).
 
 \vgap
 
-Let us denote the vertices in $Q$ as $q_1, q_2, ..., q_k$, respectively. To find an occurrence of $Q$, we need to map each $q_i$ ($i \in [k]$) to a distinct vertex in $G$. We consider two types of mappings:
+Let us denote the vertices in $Q$ as $q_1, q_2, ..., q_k$, respectively. To find an occurrence of $Q$, we need to map each $q_i$ ($i \in [k]$) to a distinct vertex in $G$. We consider two types of mappings.
 
 \extraspacing {\bf Type 1: All Vertices of $Q$ Mapped to Heavy Vertices.} There are only $O((\sqrt{m})^k) = O(m^{k/2})$ such mappings because the number of heavy vertices is bounded by $O(\sqrt{m})$. For each mapping, we can check in constant time whether the subgraph of $G$ induced by the mapping is indeed an occurrence of $Q$. The time of finding all such occurrences is therefore $O(m^{k/2})$.
 
-\extraspacing {\bf Type 2: At least One Vertex of $Q$ Is Mapped to a Light Vertex.} W.l.o.g., assume that $q_1$ must be mapped to a light vertex. We consider all such mappings $f: V_Q \rightarrow V$ satisfying three conditions:
+\extraspacing {\bf Type 2: At least One Vertex of $Q$ Is Mapped to a Light Vertex.} W.l.o.g., assume that $q_1$ must be mapped to a light vertex. We consider the mappings $f: V_Q \rightarrow V$ satisfying three conditions:
 \myenums{
     \item $f(q_1)$ is a light vertex;
     \item $\set{f(q_1), f(q_2)}$ and $\set{f(q_1), f(q_k)}$ are edges in $G$;
     \item for each $i \in \set{2, 3, ..., (k-1)/2}$, $\set{f(q_{2i-1}), f(q_{2i})}$ is an edge in $G$.
 }
-There are $O(m^{1.5})$ choices to satisfy conditions 1 and 2 (think: why?), while there are $O(m^{\fr{k-1}{2}-1})$ choices to satisfy condition 3. Hence, the total number of such mappings is bounded by $O(m^{k/2})$. For each mapping, we can check in constant time whether it induces an occurrence of $Q$. The time of finding all such occurrences is therefore $O(m^{k/2})$.
+There are $O(m^{1.5})$ choices to satisfy conditions 1 and 2 (think: why?) and $O(m^{\fr{k-1}{2}-1})$ choices to satisfy condition 3. Hence, the total number of such mappings is bounded by $O(m^{k/2})$. For each mapping, we can check in constant time whether it induces an occurrence of $Q$. The time of finding all such occurrences is therefore $O(m^{k/2})$.
 
 \section{Enumerating Stars} \label{sec:star}
 
