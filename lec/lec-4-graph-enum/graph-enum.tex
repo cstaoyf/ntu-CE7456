@@ -89,7 +89,7 @@ We will prove Theorem~\ref{thm:agm} in this lecture and Theorem~\ref{thm:agm-lb}
 
 \section{Enumerating Odd-Length Cycles} \label{alg:cycle}
 
-Let $Q$ be a $k$-cycle with an odd number $k = O(1)$. In this section, we will give an algorithm to find all its occurrences in a data graph $G$ of $m$ edges in $O(m^{k/2})$ time.
+Let $Q$ be a $k$-cycle with an odd number $k = O(1)$. In this section, we will give an algorithm to find all its occurrences in a data graph $G$ of $m$ edges in $O(m^{\rho(Q)})$ time where $\rho(Q) = k/2$.
 
 \vgap
 
@@ -111,7 +111,7 @@ There are $O(m^{1.5})$ choices to satisfy conditions 1 and 2 (think: why?), whil
 
 \section{Enumerating Stars} \label{alg:star}
 
-Let $Q$ be a $k$-star where $k$ is a constant integer at least 1. It is rudimentary to find all its occurrences in a data graph $G$ of $m$ edges in $O(m^k)$ time. The details are left to you as an exercise.
+Let $Q$ be a $k$-star where $k$ is a constant integer at least 1. It is rudimentary to find all its occurrences in a data graph $G$ of $m$ edges in $O(m^{\rho(Q)})$ time where $\rho(Q) = k$. The details are left to you as an exercise.
 
 \section{Enumerating Arbitrary Subgraphs} \label{alg:enum-gen}
 
