@@ -180,12 +180,14 @@ We will prove the theorem through a series of lemmas that reveal non-trivial pro
    Trivial and omitted.
 \end{proof}
 
+Henceforth, a fractional edge cover $w$ of $Q$ is said to be {\em integral} if $w(e)$ is either 0 or 1 for each $e \in E_Q$.
+
 
 \begin{lemma} \label{lmm:proof-h2}
    Suppose that $Q = (V_Q, E_Q)$ has an optimal fractional edge cover $w^*$ whose $\supp(w^*)$ induces a forest. Then, $Q$ has an optimal fractional edge cover $w$ such that
    \myitems{
-        \item $\supp(w)$ induces a collection of stars.
-        \item $w(e) = 1$ for each $e \in \supp(w)$.
+        \item $w$ is integral;
+        \item $\supp(w)$ induces a collection of vertex-disjoint stars.
    }
 \end{lemma}
 
@@ -207,12 +209,12 @@ We will prove the theorem through a series of lemmas that reveal non-trivial pro
         \item increase $w^*(\set{u_2, u_3})$ by $w^*(\set{u_1, u_2})$;
         \item set $w^*(\set{u_1, u_2})$ to 0.
     }
-    The new $w^*$ is an optimal fractional edge cover of $Q$ with $|\supp(w^*)| = t$ (because $\set{u_1, u_2}$ is no longer in $\supp(w^*)$). The claim now follows from our inductive assumption.
+    The new $w^*$ is an optimal fractional edge cover of $Q$ such that $|\supp(w^*)| = t$ (because $\set{u_1, u_2}$ is no longer in $\supp(w^*)$), and $\supp(w^*)$ induces a forest. The claim now follows from our inductive assumption.
 \end{proof}
 
 
 \begin{lemma} \label{lmm:proof-h3}
-   If $Q = (V_Q, E_Q)$ is a bipartite graph. It has an optimal fractional edge cover $w^*$ such that $w^*(e)$ is either 0 or 1 for each $e \in E_Q$.
+   If $Q = (V_Q, E_Q)$ is a bipartite graph. It has an integral optimal fractional edge cover $w^*$.
 \end{lemma}
 
 \begin{proof}
@@ -237,7 +239,7 @@ We will prove the theorem through a series of lemmas that reveal non-trivial pro
 
    \vgap
 
-   By Lemma~\ref{lmm:proof-h3}, $Q'$ has an optimal fractional edge cover $w^*$ such that $w^*(e) \in \set{0, 1}$ for every $e \in E_{Q'}$. Define a function $w: E_Q \rightarrow \real_{\ge 0}$ by setting, for each $e \in E_Q$, $w(e) = \fr{1}{2}(w^*(e_L) + w^*(e_R))$. Note that $w(e) \in \set{0, 1/2, 1}$.
+   By Lemma~\ref{lmm:proof-h3}, $Q'$ has an integral optimal fractional edge cover $w^*$. Define a function $w: E_Q \rightarrow \real_{\ge 0}$ by setting, for each $e \in E_Q$, $w(e) = \fr{1}{2}(w^*(e_L) + w^*(e_R))$. Note that $w(e) \in \set{0, 1/2, 1}$.
 
    \vgap
 
@@ -270,6 +272,35 @@ We will prove the theorem through a series of lemmas that reveal non-trivial pro
         w^*_0(\set{u_L, v_R}) = w^*_0(\set{u_R, v_L}) = w_0(\set{u, v}). \nn
    }
    It is easy to check that $w^*_0$ is a fractional edge cover of $Q'$ whose total weight is twice the total weight of $w_0$ and, hence, is less than the total weight of $w^*$, giving a contradiction.
+\end{proof}
+
+
+Henceforth, a fractional edge cover $w$ of $Q$ is said to be {\em half-integral} if $w(e) \in \set{0, 1/2, 1}$ for each $e \in E_Q$.
+
+\begin{lemma} \label{lmm:proof-h5}
+   Any pattern graph $Q = (V_Q, E_Q)$ has an optimal fractional edge cover $w^*$ such that
+   \myitems{
+        \item $w^*$ is half-integral;
+        \item $\supp(w^*)$ induces a collection of vertex-disjoint odd-length cycles and stars;
+   }
+\end{lemma}
+
+\begin{proof}
+    Let $w^*$ be a half-integral optimal fractional edge cover promised by Lemma~\ref{lmm:proof-h4}. Suppose that the subgraph induced by $\supp(w^*)$ contains an even-length cycle $\mycycle$. Let us denote its edges by $e_1, e_2, ..., e_k$ in some traversal order. The value $w^*(e_i)$ must be 1/2 for all $i \in [k]$ (think: why?). We now modify $w^*$ by
+    \myitems{
+        \item decreasing the weights of $e_1, e_3, ..., e_{k-1}$ by $1/2$;
+        \item increasing the weights of $e_2, e_4, ..., e_{k}$ by $1/2$.
+    }
+    This creates another half-integral optimal fractional edge cover but with fewer edges in $\supp(w^*)$. By repeating the process, we obtain a half-integral optimal fractional edge cover $w^*$ such that the subgraph induced by $\supp(w^*)$ has no even-length cycles. Denote this subgraph by $Q_{\supp(w^*)}$.
+
+    \vgap
+
+    If $Q_{\supp(w^*)}$ has no odd-length cycles, it is a forest. The claim in the lemma then follows from Lemma~\ref{lmm:proof-h2}.
+
+    \vgap
+
+    Otherwise,
+    consider any vertex $u \in V_Q$ that appears in an odd-length cycle $\mycycle$ of $Q_{\supp(w^*)}$. We claim that the only edges in $Q_{\supp(w^*)}$ incident on $u$ are the two edges in $\mycycle$ incident on $u$.
 \end{proof}
 
 
