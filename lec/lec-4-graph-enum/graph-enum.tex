@@ -87,7 +87,7 @@ The AGM bound is tight:
 
 We will prove Theorem~\ref{thm:agm} in this lecture and Theorem~\ref{thm:agm-lb} in a future lecture of this course.
 
-\section{Enumerating Odd-Length Cycles} \label{alg:cycle}
+\section{Enumerating Odd-Length Cycles} \label{sec:cycle}
 
 Let $Q$ be a $k$-cycle with an odd number $k = O(1)$. In this section, we will give an algorithm to find all its occurrences in a data graph $G$ of $m$ edges in $O(m^{\rho(Q)})$ time where $\rho(Q) = k/2$.
 
@@ -109,11 +109,11 @@ Let us denote the vertices in $Q$ as $q_1, q_2, ..., q_k$, respectively. To find
 }
 There are $O(m^{1.5})$ choices to satisfy conditions 1 and 2 (think: why?), while there are $O(m^{\fr{k-1}{2}-1})$ choices to satisfy condition 3. Hence, the total number of such mappings is bounded by $O(m^{k/2})$. For each mapping, we can check in constant time whether it induces an occurrence of $Q$. The time of finding all such occurrences is therefore $O(m^{k/2})$.
 
-\section{Enumerating Stars} \label{alg:star}
+\section{Enumerating Stars} \label{sec:star}
 
 Let $Q$ be a $k$-star where $k$ is a constant integer at least 1. It is rudimentary to find all its occurrences in a data graph $G$ of $m$ edges in $O(m^{\rho(Q)})$ time where $\rho(Q) = k$. The details are left to you as an exercise.
 
-\section{Enumerating Arbitrary Subgraphs} \label{alg:enum-gen}
+\section{Enumerating Arbitrary Subgraphs} \label{sec:enum-gen}
 
 Let $Q = (V_Q, E_Q)$ be a pattern graph with a constant size. Given a fractional edge cover $w$ of $Q$, we define the {\em support of $w$} as
 \myeqn{
@@ -127,7 +127,7 @@ Let $Q = (V_Q, E_Q)$ be a pattern graph with a constant size. Given a fractional
    Every pattern graph $Q$ admits an optimal fractional edge cover $w^*$ whose $\supp(w^*)$ induces a collection of vertex-disjoint odd-length cycles $\mycycle_1, ..., \mycycle_\alpha$ ($\alpha \ge 0$) and stars $\mystar_1, ..., \mystar_\beta$ ($\beta \ge 0$) such that $\rho(Q) = \sum_{i=1}^\alpha \rho(\mycycle_i) + \sum_{i=1}^\beta \rho(\mystar_i)$.
 \end{theorem}
 
-We will prove the theorem in the next section. For an illustration, Figure~\ref{fig:fish}(a) shows a pattern graph $Q$ with $\rho(Q) = 5.5$; the graph can be decomposed into $\alpha = 1$ odd-length cycle and $\beta = 2$ stars, as shown in Figure~\ref{fig:fish}(b). It is easy to verify that the sum of the fractional edge cover numbers of the cycle and stars is precisely 5.5.
+We will prove the theorem in the next section. For an illustration, Figure~\ref{fig:fish}(a) shows a pattern graph $Q$ with $\rho(Q) = 5.5$, while Figure~\ref{fig:fish}(b) shows the promised collection, which has $\alpha = 1$ odd-length cycle and $\beta = 2$ stars. It is easy to verify that the sum of the fractional edge cover numbers of the cycle and stars is precisely 5.5.
 
 \begin{figure}
     \centering
@@ -153,7 +153,19 @@ Theorem~\ref{thm:decomp} implies the following algorithm to find the occurrences
 
     \item For each $(f_1^{\mycycle}, ..., f_\alpha^{\mycycle}, f_1^{\mystar}, ..., f_\beta^{\mystar}) \in (M_1^{\mycycle}, ..., M_\alpha^{\mycycle}, M_1^{\mystar}, ..., M_\beta^{\mystar})$, check in constant time whether $(f_1^{\mycycle}, ..., f_\alpha^{\mycycle}, f_1^{\mystar}, ..., f_\beta^{\mystar})$ induces an occurrence of $Q$.
 }
+By the discussion in Sections~\ref{sec:cycle} and \ref{sec:star}, the running time is at the order of
+\myeqn{
+    \prod_{i=1}^\alpha m^{\rho(\mycycle_i)}
+    \cdot
+    \prod_{i=1}^\beta m^{\rho(\mystar_i)}
+    \nn
+}
+which is $O(m^{\rho(Q)})$ by Theorem~\ref{thm:decomp}.
 
+\vgap
 
+As a side product, we have given a constructive proof of the AGM bound in Theorem~\ref{thm:agm}.
+
+\section{Proof of Theorem~\ref{thm:decomp}} \label{sec:proof-thm-decomp}
 
 \end{document}
