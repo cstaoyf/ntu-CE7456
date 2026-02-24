@@ -170,10 +170,10 @@ As a side product, we have given a constructive proof of the AGM bound in Theore
 
 \section{Proof of Theorem~\ref{thm:decomp}} \label{sec:proof-thm-decomp}
 
-We will prove the theorem through a series of lemmas about fractional edge covers.
+We will prove the theorem through a series of lemmas about fractional edge covers. If $w$ is a fractional edge cover of $Q  = (V_Q, E_Q)$, we use $Q_{\supp(w)}$ to denote the subgraph of $Q$ induced by $\supp(w)$.
 
 \begin{lemma} \label{lmm:proof-h1}
-   Suppose that $Q = (V_Q, E_Q)$ has an optimal fractional edge cover $w^*$ whose $\supp(w^*)$ induces a star. Then, $w^*$ maps each edge of the star to 1 and every other edge of $E_Q$ to 0.
+   Suppose that $w^*$ is an optimal fractional edge cover of $Q$ such that $Q_{\supp(w^*)}$ is a star. Then, $w^*$ maps each edge of the star to 1 and every other edge of $E_Q$ to 0.
 \end{lemma}
 
 \begin{proof}
@@ -184,10 +184,10 @@ Henceforth, a fractional edge cover $w$ of $Q$ is said to be {\em integral} if $
 
 
 \begin{lemma} \label{lmm:proof-h2}
-   Suppose that $Q = (V_Q, E_Q)$ has an optimal fractional edge cover $w^*$ whose $\supp(w^*)$ induces a forest. Then, $Q$ has an optimal fractional edge cover $w$ such that
+   Suppose that $Q = (V_Q, E_Q)$ has an optimal fractional edge cover $w^*$ such that $Q_{\supp(w^*)}$ is a forest. Then, $Q$ has an optimal fractional edge cover $w$ such that
    \myitems{
         \item $w$ is integral;
-        \item $\supp(w)$ induces a collection of vertex-disjoint stars.
+        \item $Q_{\supp(w)}$ induces a collection of vertex-disjoint stars.
    }
 \end{lemma}
 
@@ -286,21 +286,30 @@ Henceforth, a fractional edge cover $w$ of $Q$ is said to be {\em half-integral}
 \end{lemma}
 
 \begin{proof}
-    Let $w^*$ be a half-integral optimal fractional edge cover promised by Lemma~\ref{lmm:proof-h4}. Suppose that the subgraph induced by $\supp(w^*)$ contains an even-length cycle $\mycycle$. Let us denote its edges by $e_1, e_2, ..., e_k$ in some traversal order. The value $w^*(e_i)$ must be 1/2 for all $i \in [k]$ (think: why?). We now modify $w^*$ by
+    Let $w^*$ be a half-integral optimal fractional edge cover promised by Lemma~\ref{lmm:proof-h4}. Suppose that $Q_{\supp(w^*)}$ contains an even-length cycle $\mycycle$. Let us denote its edges by $e_1, e_2, ..., e_k$ in some traversal order. The weight $w^*(e_i)$ must be 1/2 for all $i \in [k]$ (think: why?). We now modify $w^*$ by
     \myitems{
         \item decreasing the weights of $e_1, e_3, ..., e_{k-1}$ by $1/2$;
         \item increasing the weights of $e_2, e_4, ..., e_{k}$ by $1/2$.
     }
-    This creates another half-integral optimal fractional edge cover but with fewer edges in $\supp(w^*)$. By repeating the process, we obtain a half-integral optimal fractional edge cover $w^*$ such that the subgraph induced by $\supp(w^*)$ has no even-length cycles. Denote this subgraph by $Q_{\supp(w^*)}$.
+    This creates another half-integral optimal fractional edge cover but with fewer edges in $\supp(w^*)$. By repeating the process, we obtain a half-integral optimal fractional edge cover $w^*$ such that $Q_{\supp(w^*)}$ has no even-length cycles.
 
     \vgap
 
-    If $Q_{\supp(w^*)}$ has no odd-length cycles, it is a forest. The claim in the lemma then follows from Lemma~\ref{lmm:proof-h2}.
+    We call an edge $\set{u,v} \in G_{\supp(w^*)}$ a {\em pendant edge} if $u$ appears in a cycle $\mycycle$ of $G_{\supp(w^*)}$ but $v$ does not. Let us traverse $\mycycle$ from $u$ and denote by $e_1, e_2, ..., e_k$ the edges seen (in this order); in other words, $e_1$ and $e_k$ are incident on $u$. Note that $k$ is an odd number (because $Q_{\supp(w^*)}$ contains no more even-length cycles). The weight $w^*(e_i)$ must be 1/2 for all $i \in [k]$ (think: why?).
 
     \vgap
 
-    Otherwise,
-    consider any vertex $u \in V_Q$ that appears in an odd-length cycle $\mycycle$ of $Q_{\supp(w^*)}$. We claim that the only edges in $Q_{\supp(w^*)}$ incident on $u$ are the two edges in $\mycycle$ incident on $u$.
+    We modify $w^*$ as follows:
+    \myitems{
+        \item increase $w^*(\set{u, v})$ by 1/2;
+        \item decrease $w^*(e)$ by 1/2 for $e \in \set{e_1, e_3, ..., e_k}$;
+        \item increase $w^*(e)$ by 1/2 for $e \in \set{e_2, e_4, ..., e_{k-1}}$.
+    }
+    It is easy to verify that after modification $w^*$ remains as an optimal edge cover of $Q$ but fewer edges in $\supp(w^*)$. By repeating the process, we obtain a half-integral optimal fractional edge cover $w^*$ such that $Q_{\supp(w^*)}$ has no even-length cycles and no pendent edges.
+
+    \vgap
+
+    At this time, $Q_{\supp(w^*)}$ is collection of odd-length cycles $\mycycle_1, ..., \mycycle_\alpha$ ($\alpha \ge 0$) and a forest $\T$ such that $\mycycle_1, ..., \mycycle_\alpha$ and $\T$ are vertex disjoint. Using the procedure in the proof of Lemma~\ref{lmm:proof-h2}, we can
 \end{proof}
 
 
