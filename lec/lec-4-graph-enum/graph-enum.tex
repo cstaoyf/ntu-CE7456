@@ -47,11 +47,11 @@
     \end{center}
 }
 
-Today, we will discuss the {\em subgraph enumeration} problem (also known a {\em subgraph listing}). Let $G = (V, E)$ be an undirected graph called the {\em data graph}. A graph $G' = (V', E')$ is a {\em subgraph} of $G$ if $V' \subseteq V$ and $E' \subseteq E$. Let $Q = (V_Q, E_Q)$ be another undirected graph called the {\em pattern graph}. A subgraph $G' = (V', E')$ of $G$ is {\em isomorphic} to $Q$ if there is a bijection function $f: V_Q \rightarrow V'$ such that, for any distinct vertices $u, v \in V_Q$, the pattern graph $Q$ has an edge $\set{u, v}$ if and only if the edge $\set{f(u), f(v)}$ exists in $G'$. The goal of subgraph enumeration is to report all the subgraphs of $G$ that are isomorphic to $Q$. Those subgraphs are called the {\em occurrences} of $Q$.
+Today, we discuss the {\em subgraph enumeration} problem (also known a {\em subgraph listing}). Let $G = (V, E)$ be an undirected graph called the {\em data graph}. A graph $G' = (V', E')$ is a {\em subgraph} of $G$ if $V' \subseteq V$ and $E' \subseteq E$. Let $Q = (V_Q, E_Q)$ be another undirected graph called the {\em pattern graph}. A subgraph $G' = (V', E')$ of $G$ is {\em isomorphic} to $Q$ if there is a bijection function $f: V_Q \rightarrow V'$ such that, for any distinct vertices $u, v \in V_Q$, the pattern graph $Q$ has an edge $\set{u, v}$ if and only if the edge $\set{f(u), f(v)}$ exists in $G'$. The goal of subgraph enumeration is to report all the subgraphs of $G$ that are isomorphic to $Q$. Those subgraphs are called the {\em occurrences} of $Q$.
 
 \vgap
 
-We assume that $Q$ has a constant size, i.e., the number $|V_Q|$ can be regarded as a constant (and, hence, so can the number $|E_Q|$). Without this assumption, the problem is NP-hard because deciding whether $G$ has a clique is NP-hard.
+We assume that $Q$ has a constant size, i.e., the number $|V_Q|$ can be regarded as a constant (and so can the number $|E_Q|$). Without this assumption, the problem is NP-hard because deciding whether $G$ has a clique is NP-hard.
 
 \extraspacing {\bf Math Conventions.} For an integer $x \ge 1$, the notation $[x]$ represents the set $\set{1, 2, ..., x}$. The notation $\real_{\ge 0}$ represents the set of non-negative real numbers.
 
@@ -90,7 +90,7 @@ We will prove Theorem~\ref{thm:agm} in this lecture and Theorem~\ref{thm:agm-lb}
 
 \section{Enumerating Odd-Length Cycles} \label{sec:cycle}
 
-Let $Q$ be a $k$-cycle with an odd number $k = O(1)$. In this section, we will give an algorithm to find all its occurrences in a data graph $G$ of $m$ edges in $O(m^{\rho(Q)})$ time where $\rho(Q) = k/2$.
+Let $Q$ be a $k$-cycle with an odd number $k = O(1)$. In this section, we give an algorithm to find all its occurrences in a data graph $G$ of $m$ edges in $O(m^{\rho(Q)})$ time where $\rho(Q) = k/2$.
 
 \vgap
 
