@@ -313,11 +313,20 @@ Henceforth, a fractional edge cover $w$ of $Q$ is said to be {\em half-integral}
 
     \vgap
 
-    We modify $w^*$ as follows:
+    We argue that the weight of $\set{u,v}$ under $w^*$ must be 1/2. Otherwise, its weight must be 1 (because $w^*$ is half-integral). In that case, we can construct another fractional edge cover of $Q$ with a {\em smaller} total weight, which contradicts the optimality of $w^*$. For this purpose, we modify $w^*$ as follows to reduce its total weight:
+    \myitems{
+        \item decrease $w^*(e)$ by 1/2 for $e \in \set{e_1, e_3, ..., e_k}$ --- after which, $w^*(e) = 0$;
+        \item increase $w^*(e)$ by 1/2 for $e \in \set{e_2, e_4, ..., e_{k-1}}$ --- after which, $w^*(e) = 1$.
+    }
+    The resulting $w^*$ is still a fractional edge cover of $Q$, but its total weight has decreased by $1/2$.
+
+    \vgap
+
+    Now that we know $w^*(\set{u, v}) = 1/2$, we proceed to modify $w^*$ as follows:
     \myitems{
         \item increase $w^*(\set{u, v})$ by 1/2;
-        \item decrease $w^*(e)$ by 1/2 for $e \in \set{e_1, e_3, ..., e_k}$;
-        \item increase $w^*(e)$ by 1/2 for $e \in \set{e_2, e_4, ..., e_{k-1}}$.
+        \item decrease $w^*(e)$ by 1/2 for $e \in \set{e_1, e_3, ..., e_k}$ --- after which, $w^*(e) = 0$;
+        \item increase $w^*(e)$ by 1/2 for $e \in \set{e_2, e_4, ..., e_{k-1}}$ --- after which, $w^*(e) = 1$.
     }
     After modification, $w^*$ remains as a half-integral optimal edge cover of $Q$ but has fewer edges in $\supp(w^*)$. By repeating the process, we obtain a half-integral optimal fractional edge cover $w^*$ such that $Q_{\supp(w^*)}$ has no even-length cycles and no pendent edges.
 
