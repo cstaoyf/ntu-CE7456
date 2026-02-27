@@ -102,7 +102,7 @@ Let us denote the vertices in $Q$ as $q_1, q_2, ..., q_k$, respectively. To find
 
 \extraspacing {\bf Type 1: All Vertices of $Q$ Mapped to Heavy Vertices.} There are only $O((\sqrt{m})^k) = O(m^{k/2})$ such mappings because the number of heavy vertices is bounded by $O(\sqrt{m})$. For each mapping, we can check in constant time whether the subgraph of $G$ induced by the mapping is indeed an occurrence of $Q$. The time of finding all such occurrences is therefore $O(m^{k/2})$.
 
-\extraspacing {\bf Type 2: At least One Vertex of $Q$ Is Mapped to a Light Vertex.} W.l.o.g., assume that $q_1$ must be mapped to a light vertex. We consider the mappings $f: V_Q \rightarrow V$ satisfying three conditions:
+\extraspacing {\bf Type 2: At least One Vertex of $Q$ Mapped to a Light Vertex.} W.l.o.g., assume that $q_1$ must be mapped to a light vertex. We consider mappings $f: V_Q \rightarrow V$ satisfying three conditions:
 \myenums{
     \item $f(q_1)$ is a light vertex;
     \item $\set{f(q_1), f(q_2)}$ and $\set{f(q_1), f(q_k)}$ are edges in $G$;
@@ -149,11 +149,13 @@ We will prove the theorem in the next section. For an illustration, Figure~\ref{
 
 Theorem~\ref{thm:decomp} implies the following algorithm to find the occurrences of $Q$ in $G = (V, E)$:
 \myitems{
-    \item For each $i \in [\alpha]$, find the set $M_i^{\mycycle}$ of occurrences of $\mycycle_i$. We consider $M_i^{\mycycle}$ to be a set of functions, each mapping the vertex set of $\mycycle_i$ to $V$.
+    \item For each $i \in [\alpha]$, find the set $M_i^{\mycycle}$ of occurrences of $\mycycle_i$.
+    %We consider $M_i^{\mycycle}$ to be a set of functions, each mapping the vertex set of $\mycycle_i$ to $V$.
 
-    \item For each $i \in [\beta]$, find the set $M_i^{\mystar}$ of occurrences of $\mystar_i$. We consider $M_i^{\mystar}$ to be a set of functions, each mapping the vertex set of $\mystar_i$ to $V$.
+    \item For each $i \in [\beta]$, find the set $M_i^{\mystar}$ of occurrences of $\mystar_i$.
+    %We consider $M_i^{\mystar}$ to be a set of functions, each mapping the vertex set of $\mystar_i$ to $V$.
 
-    \item For each $(f_1^{\mycycle}, ..., f_\alpha^{\mycycle}, f_1^{\mystar}, ..., f_\beta^{\mystar}) \in (M_1^{\mycycle}, ..., M_\alpha^{\mycycle}, M_1^{\mystar}, ..., M_\beta^{\mystar})$, check in constant time whether $(f_1^{\mycycle}, ..., f_\alpha^{\mycycle}, f_1^{\mystar}, ..., f_\beta^{\mystar})$ induces an occurrence of $Q$.
+    \item For each $(G_1^{\mycycle}, ..., G_\alpha^{\mycycle}, G_1^{\mystar}, ..., G_\beta^{\mystar}) \in M_1^{\mycycle} \times ... \times M_\alpha^{\mycycle} \times M_1^{\mystar} \times ... \times M_\beta^{\mystar}$, check in constant time whether the subgraphs $G_1^{\mycycle}, ..., G_\alpha^{\mycycle}, G_1^{\mystar}, ...,$ and $G_\beta^{\mystar}$ induce an occurrence of $Q$.
 }
 By the discussion in Sections~\ref{sec:cycle} and \ref{sec:star}, the running time is at the order of
 \myeqn{
