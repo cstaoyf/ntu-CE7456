@@ -1,0 +1,356 @@
+
+\include{./def/yf-formatting}
+\include{./def/yf-def}
+
+\usepackage{wasysym}
+
+\title{}
+\author{}
+\date{}
+
+
+
+\def\bD{\mathbb{D}}
+\def\bQ{\mathbb{Q}}
+
+\def\A{\mathcal{A}}
+\def\B{\mathcal{B}}
+\def\C{\mathcal{C}}
+\def\D{\mathcal{D}}
+\def\E{\mathcal{E}}
+\def\F{\mathcal{F}}
+\def\G{\mathcal{G}}
+\def\I{\mathcal{I}}
+\def\L{\mathcal{L}}
+\def\R{\mathcal{R}}
+\def\T{\mathcal{T}}
+%\def\U{\mathcal{U}}
+%\def\X{\mathcal{X}}
+
+\def\mycycle{\pentagon}
+\def\mystar{\star}
+\def\supp{\textsc{supp}}
+
+\def\extraspacing{\vspace{3mm} \noindent}
+\def\vgap{\vspace{3mm}}
+\def\vslit{\vspace{0.5mm}}
+
+\begin{document}
+
+\boxminipg{\linewidth}{
+    \begin{center}
+        \vspace{3mm}
+    {\Large
+    (CE7456 Lecture Notes 9) Subgraph Enumeration} \\[2mm]
+    {\large Yufei Tao}
+    \vspace{3mm}
+    \end{center}
+}
+
+Today, we discuss the {\em subgraph enumeration} problem (also known a {\em subgraph listing}). Let $G = (V, E)$ be an undirected graph called the {\em data graph}. A graph $G' = (V', E')$ is a {\em subgraph} of $G$ if $V' \subseteq V$ and $E' \subseteq E$. Let $Q = (V_Q, E_Q)$ be another undirected graph called the {\em pattern graph}. A subgraph $G' = (V', E')$ of $G$ is {\em isomorphic} to $Q$ if there is a bijection function $f: V_Q \rightarrow V'$ such that, for any distinct vertices $u, v \in V_Q$, the pattern graph $Q$ has an edge $\set{u, v}$ if and only if the edge $\set{f(u), f(v)}$ exists in $G'$. The goal of subgraph enumeration is to report all the subgraphs of $G$ that are isomorphic to $Q$. Those subgraphs are called the {\em occurrences} of $Q$.
+
+\vgap
+
+We assume that $Q$ has a constant size, i.e., the number $|V_Q|$ can be regarded as a constant (and so can the number $|E_Q|$). Without this assumption, the problem is NP-hard because deciding whether $G$ has a clique is NP-hard.
+
+\extraspacing {\bf Math Conventions.} For an integer $x \ge 1$, the notation $[x]$ represents the set $\set{1, 2, ..., x}$. The notation $\real_{\ge 0}$ represents the set of non-negative real numbers.
+
+\section{Fractional Edge Cover Number} \label{sec:frac-edge-cover-num}
+
+A function $w: E_Q \rightarrow \real_{\ge 0}$ is said to be a {\em fractional edge cover} of $Q = (V_Q, E_Q)$ if, for every vertex $u \in V_Q$, it holds that
+\myeqn{
+    \sum_{e \in E_Q: u \in e} w(e) &\ge& 1. \label{eqn:frac-edge-cover}
+}
+We refer to $w(e)$ as the {\em weight} of $e$ under $w$.
+The {\em total weight} of $w$ is defined as
+\myeqn{
+    \sum_{e \in E_Q} w(e). \nn
+}
+The {\em fractional edge cover number} of $Q$ --- denoted as $\rho(Q)$ --- is the smallest total weight of all fractional edge covers of $Q$. A fractional edge cover is {\em optimal} if its total weight is $\rho(Q)$.
+
+\vgap
+
+For example, if $Q$ is a $k$-cycle (i.e., a cycle with $k$ edges), then $\rho(Q) = k/2$; if $Q$ is a $k$-star (i.e., a graph with $k + 1$ vertices $u, v_1, ..., v_k$, and $k$ edges $\set{u, v_1}, \set{u, v_2}, ..., \set{u, v_k}$), then $\rho(Q) = k$.
+
+\vgap
+
+The following is known as the {\em AGM bound}:
+
+\begin{theorem} \label{thm:agm}
+    If the data graph $G$ has $m$ edges and the pattern graph $Q$ has a constant size, then $G$ can have $O(m^{\rho(Q)})$ occurrences of $Q$.
+\end{theorem}
+
+The AGM bound is tight:
+
+\begin{theorem} \label{thm:agm-lb}
+    Fix any integer $m \ge 1$ and any pattern graph $Q$ with a constant size. There is a data graph $G$ with at most $m$ edges that has $\Omega(m^{\rho(Q)})$ occurrences of $Q$.
+\end{theorem}
+
+We will prove Theorem~\ref{thm:agm} in this lecture and Theorem~\ref{thm:agm-lb} in a future lecture of this course.
+
+\section{Enumerating Odd-Length Cycles} \label{sec:cycle}
+
+Let $Q$ be a $k$-cycle with an odd number $k = O(1)$. In this section, we give an algorithm to find all its occurrences in a data graph $G$ of $m$ edges in $O(m^{\rho(Q)})$ time where $\rho(Q) = k/2$.
+
+\vgap
+
+Call a vertex $u$ of $G$ {\em heavy} if the degree of $u$ is at least $\sqrt{m}$, or {\em light} otherwise. The number of heavy vertices of $G$ is at most $2 \sqrt{m}$ (otherwise, $G$ would have more than $m$ edges).
+
+\vgap
+
+Let us denote the vertices in $Q$ as $q_1, q_2, ..., q_k$, respectively. To find an occurrence of $Q$, we need to map each $q_i$ ($i \in [k]$) to a distinct vertex in $G$. We consider two types of mappings.
+
+\extraspacing {\bf Type 1: All Vertices of $Q$ Mapped to Heavy Vertices.} There are only $O((\sqrt{m})^k) = O(m^{k/2})$ such mappings because the number of heavy vertices is bounded by $O(\sqrt{m})$. For each mapping, we can check in constant time whether the subgraph of $G$ induced by the mapping is indeed an occurrence of $Q$. The time of finding all such occurrences is therefore $O(m^{k/2})$.
+
+\extraspacing {\bf Type 2: At least One Vertex of $Q$ Mapped to a Light Vertex.} W.l.o.g., assume that $q_1$ must be mapped to a light vertex. We consider mappings $f: V_Q \rightarrow V$ satisfying three conditions:
+\myenums{
+    \item $f(q_1)$ is a light vertex;
+    \item $\set{f(q_1), f(q_2)}$ and $\set{f(q_1), f(q_k)}$ are edges in $G$;
+    \item for each $i \in \set{2, 3, ..., (k-1)/2}$, $\set{f(q_{2i-1}), f(q_{2i})}$ is an edge in $G$.
+}
+There are $O(m^{1.5})$ choices to satisfy conditions 1 and 2 (think: why?) and $O(m^{\fr{k-1}{2}-1})$ choices to satisfy condition 3. Hence, the total number of such mappings is bounded by $O(m^{k/2})$. For each mapping, we can check in constant time whether it induces an occurrence of $Q$. The time of finding all such occurrences is therefore $O(m^{k/2})$.
+
+\section{Enumerating Stars} \label{sec:star}
+
+Let $Q$ be a $k$-star where $k$ is a constant integer at least 1. It is rudimentary to find all its occurrences in a data graph $G$ of $m$ edges in $O(m^{\rho(Q)})$ time where $\rho(Q) = k$. The details are left to you.
+
+\section{Enumerating Arbitrary Subgraphs} \label{sec:enum-gen}
+
+Let $Q = (V_Q, E_Q)$ be a pattern graph with a constant size. Given a fractional edge cover $w$ of $Q$, we define
+\myeqn{
+    \supp(w) &=&
+    \{
+        e \in E_Q \mid w(e) > 0
+    \}. \label{eqn:supp-w}
+}
+For each vertex $u \in V_Q$, at least one edge in $\supp(w)$ is incident on $u$ (think: why?).
+
+\begin{theorem} \label{thm:decomp}
+   Every pattern graph $Q$ admits an optimal fractional edge cover $w^*$ whose $\supp(w^*)$ induces a collection of vertex-disjoint odd-length cycles $\mycycle_1, ..., \mycycle_\alpha$ ($\alpha \ge 0$) and stars $\mystar_1, ..., \mystar_\beta$ ($\beta \ge 0$) such that $\rho(Q) = \sum_{i=1}^\alpha \rho(\mycycle_i) + \sum_{i=1}^\beta \rho(\mystar_i)$.
+\end{theorem}
+
+We will prove the theorem in the next section. For an illustration, Figure~\ref{fig:fish}(a) shows a pattern graph $Q$ with $\rho(Q) = 5.5$, while Figure~\ref{fig:fish}(b) shows the promised collection, which has $\alpha = 1$ odd-length cycle and $\beta = 2$ stars. It is easy to verify that the fractional edge cover numbers of the cycle and stars sum up to 5.5.
+
+\begin{figure}
+    \centering
+    \begin{tabular}{cc}
+        \includegraphics[height=22mm]{./artwork/fish} &
+        \hspace{5mm}\includegraphics[height=22mm]{./artwork/fish-decomp} \\
+        (a) The ``fish'' graph &
+        (b) The decomposition
+    \end{tabular}
+    \figcapup
+    \caption{Illustration of Theorem~\ref{thm:decomp}}
+    \label{fig:fish}
+    \figcapdown
+\end{figure}
+
+\vgap
+
+Theorem~\ref{thm:decomp} implies the following algorithm to find the occurrences of $Q$ in $G = (V, E)$:
+\myitems{
+    \item For each $i \in [\alpha]$, find the set $M_i^{\mycycle}$ of occurrences of $\mycycle_i$.
+    %We consider $M_i^{\mycycle}$ to be a set of functions, each mapping the vertex set of $\mycycle_i$ to $V$.
+
+    \item For each $i \in [\beta]$, find the set $M_i^{\mystar}$ of occurrences of $\mystar_i$.
+    %We consider $M_i^{\mystar}$ to be a set of functions, each mapping the vertex set of $\mystar_i$ to $V$.
+
+    \item For each $(G_1^{\mycycle}, ..., G_\alpha^{\mycycle}, G_1^{\mystar}, ..., G_\beta^{\mystar}) \in M_1^{\mycycle} \times ... \times M_\alpha^{\mycycle} \times M_1^{\mystar} \times ... \times M_\beta^{\mystar}$, check in constant time whether the subgraphs $G_1^{\mycycle}, ..., G_\alpha^{\mycycle}, G_1^{\mystar}, ...,$ and $G_\beta^{\mystar}$ induce an occurrence of $Q$.
+}
+By the discussion in Sections~\ref{sec:cycle} and \ref{sec:star}, the running time is at the order of
+\myeqn{
+    \prod_{i=1}^\alpha m^{\rho(\mycycle_i)}
+    \cdot
+    \prod_{i=1}^\beta m^{\rho(\mystar_i)}
+    \nn
+}
+which is $O(m^{\rho(Q)})$ by Theorem~\ref{thm:decomp}.
+
+\vgap
+
+As a side product, we have given a constructive proof of the AGM bound in Theorem~\ref{thm:agm}. The algorithm is worst-case optimal because even just outputting the result takes $\Omega(m^{\rho(Q)})$ time by Theorem~\ref{thm:agm-lb}.
+
+\section{Proof of Theorem~\ref{thm:decomp}} \label{sec:proof-thm-decomp}
+
+We will prove the theorem through a series of lemmas about fractional edge covers. If $w$ is a fractional edge cover of $Q  = (V_Q, E_Q)$, we use $Q_{\supp(w)}$ to denote the subgraph of $Q$ induced by $\supp(w)$.
+
+\begin{lemma} \label{lmm:proof-h1}
+   Suppose that $w^*$ is an optimal fractional edge cover of $Q$ such that $Q_{\supp(w^*)}$ is a collection of vertex-disjoint stars. Then, $w^*$ maps each edge of $Q_{\supp(w^*)}$ to 1 and every other edge of $E_Q$ to 0.
+\end{lemma}
+
+\begin{proof}
+   Trivial and omitted.
+\end{proof}
+
+Henceforth, a fractional edge cover $w$ of $Q$ is said to be {\em integral} if $w(e) \in \set{0, 1}$ for each $e \in E_Q$.
+
+
+\begin{lemma} \label{lmm:proof-h2}
+   Suppose that $Q = (V_Q, E_Q)$ has an optimal fractional edge cover $w^*$ such that $Q_{\supp(w^*)}$ is a forest. Then, $Q$ has an optimal fractional edge cover $w$ such that
+   \myitems{
+        \item $w$ is integral;
+        \item $Q_{\supp(w)}$ induces a collection of vertex-disjoint stars.
+   }
+\end{lemma}
+
+\begin{proof}
+    %Let $\T$ be the forest induced by $\supp(w^*)$.
+
+    If $Q_{\supp(w^*)}$ is a collection of vertex-disjoint stars, the claim follows immediately from Lemma~\ref{lmm:proof-h1}. Next, we assume that this is not true.
+
+    \vgap
+
+    %We prove the lemma by induction on $|\supp(w^*)|$. The base case where $|\supp(w^*)| = 1$ holds because in that case $\T$ is a star. Next, assuming that the lemma holds when $|\supp(w^*)| = t$, we will prove the claim for $|\supp(w^*)| = t+1$.
+
+    %\vgap
+
+    Let $\T$ be an arbitrary tree in the forest $Q_{\supp(w^*)}$ such that $\T$ is not a star. Root $\T$ at an arbitrary degree-1 node. Let $z$ be a deepest leaf of $\T$ (i.e., its distance from the root is the largest among all leaves). Let $u_1$ be its parent. The value of $w^*(\set{z, u_1})$ must be 1. Let $u_2$ be the parent of $u_1$, and $u_3$ be the parent of $u_2$ (think: why can't $u_1$ and $u_2$ be the root?). We modify $w^*$ as follows:
+    \myitems{
+        \item increase $w^*(\set{u_2, u_3})$ by $w^*(\set{u_1, u_2})$;
+        \item set $w^*(\set{u_1, u_2})$ to 0.
+    }
+    The new $w^*$ is an optimal fractional edge cover of $Q$
+    with one less edge in $\supp(w^*)$ --- because $\set{u_1, u_2}$ is no longer in $\supp(w^*)$ --- and $\supp(w^*)$ still induces a forest.
+
+    \vgap
+
+    If any tree in the forest $Q_{\supp(w^*)}$ is still not a star, we can repeat the process to reduce $|\supp(w^*)|$ further. Eventually, we obtain an optimal fractional edge cover $w^*$ such that $Q_{\supp(w^*)}$ is a collection of vertex-disjoint stars.
+\end{proof}
+
+
+\begin{lemma} \label{lmm:proof-h3}
+   Every bipartite $Q = (V_Q, E_Q)$ has an integral optimal fractional edge cover $w^*$.
+\end{lemma}
+
+\begin{proof}
+    By Lemma~\ref{lmm:proof-h2}, it suffices to prove that $Q$ has an optimal fractional edge cover $w^*$ whose $Q_{\supp(w^*)}$ is a forest. If this is not true, then $Q_{\supp(w^*)}$ must contain a cycle $\mycycle$. As $Q$ is bipartite, $\mycycle$ must have an even number of edges, which we denote by $e_1, e_2, ..., e_k$ in some traversal order.
+
+    \vgap
+
+    W.l.o.g., suppose that $e_1$ has the smallest weight under $w^*$ among $e_1, e_2, ..., e_k$. Set $\Delta = w^*(e_1)$. We now modify $w^*$ by
+    \myitems{
+        \item decreasing the weights of $e_1, e_3, ..., e_{k-1}$ by $\Delta$;
+        \item increasing the weights of $e_2, e_4, ..., e_{k}$ by $\Delta$.
+    }
+    The new $w^*$ is an optimal fractional edge cover of $Q$ whose $\supp(w^*)$ has at least one less edge (because $e_1$ is no longer in $\supp(w^*)$).
+
+    \vgap
+
+    If the subgraph induced by $\supp(w^*)$ still has a cycle, repeat the above process by further reducing $\supp(w^*)$. This eventually gives a an optimal fractional edge cover $w^*$ of $Q$ whose $\supp(w^*)$ induces a forest.
+\end{proof}
+
+\begin{lemma} \label{lmm:proof-h4}
+   Every pattern graph $Q = (V_Q, E_Q)$ has an optimal fractional edge cover $w^*$ such that $w^*(e) \in \set{0, 1/2, 1}$ for each $e \in E_Q$.
+\end{lemma}
+
+\begin{proof}
+   Build a graph $Q' = (V_{Q'}, E_{Q'})$ as follows. Each vertex $u \in V_Q$ defines two vertices $u_L$ and $u_R$ to $V_{Q'}$ --- refer to them as the {\em left copy} and {\em right copy} of $u$, respectively. Each edge $\set{u, v} \in E_Q$ defines two edges $\set{u_L, v_R}$ and $\set{v_L, u_R}$ to $E_{Q'}$. As every edge of $E_{Q'}$ connects a left-copy vertex to a right-copy vertex, $Q'$ is bipartite. By Lemma~\ref{lmm:proof-h3}, $Q'$ has an integral optimal fractional edge cover $w^*$.
+
+   \vgap
+
+   Define a function $w: E_Q \rightarrow \real_{\ge 0}$ where
+   \myeqn{
+        w(\set{u,v}) = \fr{1}{2}(w^*(\set{u_L, v_R}) + w^*(\set{v_L, u_R})) \nn
+   }
+   for each $\set{u, v} \in E_Q$.
+   Note that $w(\set{u, v}) \in \set{0, 1/2, 1}$.
+
+   \vgap
+
+   We claim that $w$ is a fractional edge cover of $Q$. Indeed, for any vertex $u \in V_Q$, it holds that
+   \myeqn{
+        && \sum_{v \in V_Q: \set{u, v} \in E_{Q}} w(\set{u, v}) \nn \\
+        &=&
+        \fr{1}{2}
+        \sum_{v \in V_Q: \set{u, v} \in E_{Q}}
+        w^*(\set{u_L, v_R}) +
+        w^*(\set{v_L, u_R}) \nn \\
+        &=&
+        \fr{1}{2}
+        \sum_{v_R \in V_{Q'}: \set{u_L, v_R} \in E_{Q'}}
+        w^*(\set{u_L, v_R})
+        +
+        \fr{1}{2}
+        \sum_{v_L \in V_{Q'}: \set{v_L, u_R} \in E_{Q'}}
+        w^*(\set{v_L, u_R})
+        \nn \\
+        &\ge&
+        1 \nn
+   }
+   where the last step used the fact that $w^*$ is a fractional edge cover of $Q'$.
+
+   \vgap
+
+   The total weight of $w$ equals half of the total weight of $w^*$. We argue that $w$ must be an optimal fractional edge cover of $Q$. Otherwise, let $w_0$ be an optimal fractional edge cover of $Q$ with a lower total weight. Construct a function $w^*_0: E_{Q'} \rightarrow \real_{\ge 0}$ by setting, for each $\set{u, v} \in E_Q$:
+   \myeqn{
+        w^*_0(\set{u_L, v_R}) = w^*_0(\set{u_R, v_L}) = w_0(\set{u, v}). \nn
+   }
+   It is easy to check that $w^*_0$ is a fractional edge cover of $Q'$ whose total weight is twice the total weight of $w_0$ and, hence, is less than the total weight of $w^*$, giving a contradiction.
+\end{proof}
+
+
+Henceforth, a fractional edge cover $w$ of $Q$ is said to be {\em half-integral} if $w(e) \in \set{0, 1/2, 1}$ for each $e \in E_Q$.
+
+\begin{lemma} \label{lmm:proof-h5}
+   Any pattern graph $Q = (V_Q, E_Q)$ has an optimal fractional edge cover $w^*$ such that
+   \myitems{
+        \item $w^*$ is half-integral;
+        \item $Q_{\supp(w^*)}$ is a collection of vertex-disjoint odd-length cycles and stars.
+   }
+\end{lemma}
+
+\begin{proof}
+    Let $w^*$ be a half-integral optimal fractional edge cover promised by Lemma~\ref{lmm:proof-h4}. Suppose that $Q_{\supp(w^*)}$ contains an even-length cycle $\mycycle$. Let us denote its edges by $e_1, e_2, ..., e_k$ in some traversal order. The weight $w^*(e_i)$ must be 1/2 for all $i \in [k]$ (think: why?). We now modify $w^*$ by
+    \myitems{
+        \item decreasing the weights of $e_1, e_3, ..., e_{k-1}$ by $1/2$;
+        \item increasing the weights of $e_2, e_4, ..., e_{k}$ by $1/2$.
+    }
+    This creates another half-integral optimal fractional edge cover but with fewer edges in $\supp(w^*)$. By repeating the process, we obtain a half-integral optimal fractional edge cover $w^*$ such that $Q_{\supp(w^*)}$ has no even-length cycles.
+
+    \vgap
+
+    We call an edge $\set{u,v} \in Q_{\supp(w^*)}$ a {\em pendant edge} if $u$ appears in a cycle $\mycycle$ of $G_{\supp(w^*)}$ where $v$ does not belong. Let us traverse $\mycycle$ from $u$, and denote by $e_1, e_2, ..., e_k$ the edges encountered (in this order); in other words, $e_1$ and $e_k$ are incident on $u$. Note that $k$ is an odd number (because $Q_{\supp(w^*)}$ contains no more even-length cycles). The weight $w^*(e_i)$ must be 1/2 for all $i \in [k]$ (think: why?).
+
+    \vgap
+
+    We argue that the weight of $\set{u,v}$ under $w^*$ must be 1/2. Otherwise, its weight must be 1 (because $w^*$ is half-integral). In that case, we can construct another fractional edge cover of $Q$ with a {\em smaller} total weight, which contradicts the optimality of $w^*$. For this purpose, we modify $w^*$ as follows to reduce its total weight:
+    \myitems{
+        \item decrease $w^*(e)$ by 1/2 for $e \in \set{e_1, e_3, ..., e_k}$ --- after which, $w^*(e) = 0$;
+        \item increase $w^*(e)$ by 1/2 for $e \in \set{e_2, e_4, ..., e_{k-1}}$ --- after which, $w^*(e) = 1$.
+    }
+    The resulting $w^*$ is still a fractional edge cover of $Q$, but its total weight has decreased by $1/2$.
+
+    \vgap
+
+    Now that we know $w^*(\set{u, v}) = 1/2$, we proceed to modify $w^*$ as follows:
+    \myitems{
+        \item increase $w^*(\set{u, v})$ by 1/2;
+        \item decrease $w^*(e)$ by 1/2 for $e \in \set{e_1, e_3, ..., e_k}$ --- after which, $w^*(e) = 0$;
+        \item increase $w^*(e)$ by 1/2 for $e \in \set{e_2, e_4, ..., e_{k-1}}$ --- after which, $w^*(e) = 1$.
+    }
+    After modification, $w^*$ remains as a half-integral optimal edge cover of $Q$ but has fewer edges in $\supp(w^*)$. By repeating the process, we obtain a half-integral optimal fractional edge cover $w^*$ such that $Q_{\supp(w^*)}$ has no even-length cycles and no pendent edges.
+
+    \vgap
+
+    At this time, $Q_{\supp(w^*)}$ is a collection of odd-length cycles $\mycycle_1, ..., \mycycle_\alpha$ ($\alpha \ge 0$) and a forest $\T$ such that $\mycycle_1, ..., \mycycle_\alpha$ and $\T$ are vertex disjoint. Using the procedure in the proof of Lemma~\ref{lmm:proof-h2}, we can further modify $w^*$ by adjusting only the weights on the edges of $\T$ so that
+    \myitems{
+        \item $w^*$ as a half-integral optimal fractional edge cover;
+        \item $Q_{\supp(w^*)}$ is a collection of $\mycycle_1, ..., \mycycle_\alpha$ and stars $\mystar_1, ..., \mystar_\beta$ such that
+        \myitems{
+            \item $\mycycle_1, ..., \mycycle_\alpha$, $\mystar_1, ..., \mystar_\beta$ are vertex disjoint;
+            \item the union of the vertices in $\mystar_1, ..., \mystar_\beta$ is the vertex set of $\T$.
+        }
+    }
+    This $w^*$ satisfies the requirements of Lemma~\ref{lmm:proof-h5}.
+\end{proof}
+
+Theorem~\ref{thm:decomp} is a corollary of Lemma~\ref{lmm:proof-h5}.
+
+\section{Remarks}
+
+Theorem~\ref{thm:agm} is a special case of a result presented in \cite{agm13}. The proof of Theorem~\ref{thm:decomp} was adapted from an argument in \cite{akk19}.
+
+\bibliographystyle{plainurl}% the mandatory bibstyle
+\bibliography{ref}
+
+\end{document}

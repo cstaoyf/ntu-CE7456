@@ -1,0 +1,15 @@
+\begin{thebibliography}{1}
+
+\bibitem{akk19}
+Sepehr Assadi, Michael Kapralov, and Sanjeev Khanna.
+\newblock A simple sublinear-time algorithm for counting arbitrary subgraphs
+  via edge sampling.
+\newblock In {\em Innovations in Theoretical Computer Science ({ITCS})}, pages
+  6:1--6:20, 2019.
+
+\bibitem{agm13}
+Albert Atserias, Martin Grohe, and Daniel Marx.
+\newblock Size bounds and query plans for relational joins.
+\newblock {\em SIAM Journal on Computing}, 42(4):1737--1767, 2013.
+
+\end{thebibliography}
