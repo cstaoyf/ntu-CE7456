@@ -1,0 +1,22 @@
+\begin{thebibliography}{1}
+
+\bibitem{bfp+73}
+Manuel Blum, Robert~W. Floyd, Vaughan~R. Pratt, Ronald~L. Rivest, and
+  Robert~Endre Tarjan.
+\newblock Time bounds for selection.
+\newblock {\em Journal of Computer and System Sciences ({JCSS})},
+  7(4):448--461, 1973.
+
+\bibitem{kmr88}
+Richard~M. Karp, Rajeev Motwani, and Prabhakar Raghavan.
+\newblock Deferred data structuring.
+\newblock {\em SIAM Journal on Computing}, 17(5):883--902, 1988.
+
+\bibitem{t25}
+Yufei Tao.
+\newblock Maximizing the optimality streak of deferred data structuring (a.k.a.
+  database cracking).
+\newblock In {\em Proceedings of International Conference on Database Theory
+  ({ICDT})}, pages 10:1--10:18, 2025.
+
+\end{thebibliography}

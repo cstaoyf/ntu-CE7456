@@ -1,0 +1,11 @@
+\begin{thebibliography}{1}
+
+\bibitem{cyl+25}
+Luis~Alberto Croquevielle, Guang Yang, Liang Liang, Ali Hadian, and Thomas
+  Heinis.
+\newblock Beyond logarithmic bounds: Querying in constant expected time with
+  learned indexes.
+\newblock In {\em Proceedings of International Conference on Database Theory
+  ({ICDT})}, pages 19:1--19:21, 2025.
+
+\end{thebibliography}

@@ -1,0 +1,13 @@
+\begin{thebibliography}{1}
+
+\bibitem{clrs09}
+Thomas~H. Cormen, Charles~E. Leiserson, Ronald~L. Rivest, and Clifford Stein.
+\newblock {\em Introduction to Algorithms, Third Edition}.
+\newblock The MIT Press, 2009.
+
+\bibitem{hqt14}
+Xiaocheng Hu, Miao Qiao, and Yufei Tao.
+\newblock Independent range sampling.
+\newblock In {\em {PODS}}, pages 246--255, 2014.
+
+\end{thebibliography}
