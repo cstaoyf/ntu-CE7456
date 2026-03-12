@@ -150,7 +150,7 @@ Given a tuple $\bm{u}$ over a subset $U \subseteq \E$, we define a {\em residual
 \vslit
 
 \begin{lemma} \label{lmm:agm-proof:residual}
-    Fix an arbitrary order of the attributes in $\V$: $X_1, X_2, ..., X_d$ where $d = |\V|$. Let $t \in [0, d - 1]$ be an integer, and $\bm{u}$ a tuple over $U = \set{X_1, ..., X_t}$. We have
+    Fix an arbitrary order of the attributes in $\V$: $X_1, X_2, ..., X_d$ where $d = |\V|$. Let $t \in [0, d]$ be an integer, and $\bm{u}$ a tuple over $U = \set{X_1, ..., X_t}$ such that $R(\bm{u}) \ne \emptyset$ for every $R \in \Q$. We have
     \myeqn{
         |\join(\Q(\bm{u}))|
         &\le&
@@ -160,7 +160,7 @@ Given a tuple $\bm{u}$ over a subset $U \subseteq \E$, we define a {\em residual
 
 \vgap
 
-Specially, if $t = 1$, then $U = \emptyset$ and $\Q = \Q(\bm{u})$ (because $R(\bm{u}) = R$ for all $R \in \Q$). Hence, Theorem~\ref{thm:agm} is a corollary of the above lemma with $U = \emptyset$.
+Specially, if $t = 0$, then $U = \emptyset$ and $\Q = \Q(\bm{u})$ (because $R(\bm{u}) = R$ for all $R \in \Q$). Hence, Theorem~\ref{thm:agm} is a corollary of the above lemma with $U = \emptyset$.
 
 \extraspacing {\bf Proof of Lemma~\ref{lmm:agm-proof:residual}.} In general, given a relation $R$ and an attribute $X$ in its schema, we define
 \myeqn{
@@ -170,38 +170,42 @@ This is the {\em projection} operator in relational algebra.
 
 \vgap
 
-We prove the lemma by induction. As the base case, consider $t = d-1$. Because $\W$ is a fractional edge cover of $\H = (\V, \E)$, it holds that
-\myeqn{
-    \sum_{e \in \E : X_d \in e} \W_e &\ge& 1.
-    \label{eqn:agm-proof:residual-goal:1}
-}
-If a relation $R \in \Q$ does not include $X_d$ in its schema, the residual relation $R(\bm{u})$ has at most one tuple. Otherwise, the tuples of $R(\bm{u})$ differ only in their values on $X_d$. If $\bm{v}$ is a tuple in $\join(\Q(\bm{u}))$,  we must have
-\myeqn{
-    \bm{v}(X_d) &\in&
-        \bigcap_{e \in \E: X_d \in e} \pi_{X_d}(R_e(\bm{u})). \label{eqn:agm-proof:residual-goal:intersection-base}
-}
-Hence:
-\myeqn{
-    |\join(\Q(\bm{u}))|
-    &\le&
-    \min_{e \in \E : X_d \in e} |R_e(\bm{u})| \nn \\
-    \explain{by \eqref{eqn:agm-proof:residual-goal:1}}
-    &\le&
-    \Big(
-        \min_{e \in \E : X_d \in e} |R_e(\bm{u})|
-    \Big)^{\sum_{e \in \E : X_d \in e} \W_e} \nn \\
-    &=&
-    \prod_{e \in \E : X_d \in e}
-    \Big(
-        \min_{e \in \E : X_d \in e} |R_e(\bm{u})|
-    \Big)^{\W_e} \nn \\
-    &\le&
-    \prod_{e \in \E : X_d \in e} |R_e(\bm{u})|^{\W_e}. \nn
-}
+We prove the lemma by induction. As the base case, consider $t = d$. For each $R \in \Q$, the residual relation $R(\bm{u})$ has exactly one tuple. Thus, $|\join(\Q(\bm{u}))| \le 1$, and \eqref{eqn:agm-proof:residual-goal} holds.
 
-\vslit
+\vgap
 
-Inductively, assuming that the lemma holds for $t = i$ (where $i \in [d]$), next we prove its correctness for $t = i - 1$. Because $\W$ is a fractional edge cover of $\H = (\V, \E)$, it holds that
+% Because $\W$ is a fractional edge cover of $\H = (\V, \E)$, it holds that
+% \myeqn{
+%     \sum_{e \in \E : X_d \in e} \W_e &\ge& 1.
+%     \label{eqn:agm-proof:residual-goal:1}
+% }
+% If a relation $R \in \Q$ does not include $X_d$ in its schema, the residual relation $R(\bm{u})$ has at most one tuple. Otherwise, the tuples of $R(\bm{u})$ differ only in their values on $X_d$. If $\bm{v}$ is a tuple in $\join(\Q(\bm{u}))$,  we must have
+% \myeqn{
+%     \bm{v}(X_d) &\in&
+%         \bigcap_{e \in \E: X_d \in e} \pi_{X_d}(R_e(\bm{u})). \label{eqn:agm-proof:residual-goal:intersection-base}
+% }
+% Hence:
+% \myeqn{
+%     |\join(\Q(\bm{u}))|
+%     &\le&
+%     \min_{e \in \E : X_d \in e} |R_e(\bm{u})| \nn \\
+%     \explain{by \eqref{eqn:agm-proof:residual-goal:1}}
+%     &\le&
+%     \Big(
+%         \min_{e \in \E : X_d \in e} |R_e(\bm{u})|
+%     \Big)^{\sum_{e \in \E : X_d \in e} \W_e} \nn \\
+%     &=&
+%     \prod_{e \in \E : X_d \in e}
+%     \Big(
+%         \min_{e \in \E : X_d \in e} |R_e(\bm{u})|
+%     \Big)^{\W_e} \nn \\
+%     &\le&
+%     \prod_{e \in \E : X_d \in e} |R_e(\bm{u})|^{\W_e}. \nn
+% }
+%
+% \vslit
+
+Inductively, assuming that the lemma holds for $t = i$ (where $i \in [d]$), next we prove its correctness for $t = i - 1$. Because $\W$ is a fractional edge cover of $\H = (\V, \E)$, we know
 \myeqn{
     \sum_{e \in \E: X_i \in e} &\ge& 1.
     \label{eqn:agm-proof:residual-goal:3}
@@ -218,14 +222,24 @@ For each value $x \in \I$, we construct a tuple $\bm{v}$ over $\set{X_1, ..., X_
         \text{$x \in \I$}
     }. \label{eqn:agm-proof:S_ext}
 }
+
+\vslit
+
+Consider the residual join $\Q(\bm{v})$ where $\bm{v} \in S_\ext$. We argue that no relation of $\Q(\bm{v})$ is empty. Indeed, for each $e \in \E$:
+\myitems{
+    \item if $X_i \notin e$, then $R_e(\bm{v}) = R_e(\bm{u})$, which is not empty;
+
+    \item otherwise, since $\bm{v}(X_i)$ belongs to the set $\I$ in \eqref{eqn:agm-proof:intersection}, we can assert $R_e(\bm(v)) \ne \emptyset$.
+}
+
+\vslit
+
 It is clear that
 \myeqn{
     \join(\Q(\bm{u}))
     &=&
-    \bigcup_{\bm{v} \in S_\ext} \join(\Q(\bm{v})). \nn
-}
-With the above, we derive
-\myeqn{
+    \bigcup_{\bm{v} \in S_\ext} \join(\Q(\bm{v})) \nn \\
+    \Rightarrow
     |\join(\Q(\bm{u}))|
     &=&
     \sum_{\bm{v} \in S_\ext} |\join(\Q(\bm{v}))| \nn \\
@@ -243,12 +257,7 @@ With the above, we derive
     \Big(
     \prod_{e \in \E : X_i \notin e}
     |R_e(\bm{v})|^{\W_e}
-    \Big)
-    \label{eqn:agm-proof:1}
-}
-If an edge $e \in \E$ does not contain $X_i$, we have $R_e(\bm{v}) = R_e(\bm{u})$. Therefore:
-\myeqn{
-    \eqref{eqn:agm-proof:1}
+    \Big) \nn \\
     &=&
     \sum_{\bm{v} \in S_\ext}
     \Big(
@@ -302,18 +311,14 @@ Let $\Q$ be a join with schema graph $\H = (\V, \E)$. Remarkably, the proof of t
 \vslit
 
 \minipg{0.9\linewidth}{
-    Let $t \in [0, d-1]$ be an integer. Given a tuple $\bm{u}$ over $U = \set{X_1, ..., X_{t}}$ such that $R(\bm{u}) \ne \emptyset$ for each $R \in \Q$, compute the result of the residual join $\Q(\bm{u})$ defined in \eqref{eqn:alg-proof:residual-join}.
+    Let $t \in [0, d]$ be an integer. Given a tuple $\bm{u}$ over $U = \set{X_1, ..., X_t}$ such that $R(\bm{u}) \ne \emptyset$ for each $R \in \Q$, compute the result of the residual join $\Q(\bm{u})$ defined in \eqref{eqn:alg-proof:residual-join}.
 }
 
 \vslit
 
 \noindent Computing $\join(\Q)$ is equivalent to solving the above problem with $t = 0$ (and hence $U = \emptyset$).
 
-\extraspacing {\bf Algorithm.} For the base case, consider $t = d - 1$. Find the intersection on the right hand side of \eqref{eqn:agm-proof:residual-goal:intersection-base} and, for every value $x$ in the intersection, output a tuple $\bm{v}$ by concatenating $\bm{u}$ with $x$; namely: $\bm{v}(X_i) = \bm{u}(X_i)$ for all $i \in [d-1]$ and $\bm{v}(X_d) = x$.
-
-\vgap
-
-Inductively, suppose that we can solve the problem for $t = i$ for some $i \in [d]$. We solve the problem for $t = i-1$ as follows:
+\extraspacing {\bf Algorithm.} The base case $t = d$ can be trivially settled in $O(1)$ time. Inductively, suppose that we can solve the problem for $t = i$ for some $i \in [d]$. We solve the problem for $t = i-1$ as follows:
 \myitems{
     \item Find the set $\I$ in \eqref{eqn:agm-proof:intersection} and construct the set $S_\ext$ in \eqref{eqn:agm-proof:S_ext}.
 
