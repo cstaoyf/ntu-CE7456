@@ -9,30 +9,36 @@
 \date{}
 
 
-
-\def\bD{\mathbb{D}}
-\def\bQ{\mathbb{Q}}
-
-\def\A{\mathcal{A}}
-\def\B{\mathcal{B}}
+%\def\A{\mathcal{A}}
+%\def\B{\mathcal{B}}
 \def\C{\mathcal{C}}
-\def\D{\mathcal{D}}
+%\def\D{\mathcal{D}}
 \def\E{\mathcal{E}}
-\def\F{\mathcal{F}}
+\def\FF{\EuScript{F}}
 \def\G{\mathcal{G}}
+\def\GG{\EuScript{G}}
+\def\H{\mathcal{H}}
 \def\I{\mathcal{I}}
+\def\J{\mathcal{J}}
 \def\L{\mathcal{L}}
-\def\R{\mathcal{R}}
+\def\Q{\mathcal{Q}}
+\def\S{\mathcal{S}}
 \def\T{\mathcal{T}}
-%\def\U{\mathcal{U}}
-%\def\X{\mathcal{X}}
+\def\V{\mathcal{V}}
+%\def\W{\EuScript{W}}
+\def\W{\mathscr{W}}
+\def\X{\mathcal{X}}
+\def\Y{\mathcal{Y}}
+\def\Z{\mathcal{Z}}
+\def\att{\mit{diffatt}}
+\def\boldatt{\mathbf{att}}
+\def\ext{\mathit{ext}}
+\def\join{\mathit{join}}
+\def\schema{\mathit{schema}}
 
-\def\mycycle{\pentagon}
-\def\mystar{\star}
-\def\supp{\textsc{supp}}
 
-\def\extraspacing{\vspace{3mm} \noindent}
-\def\vgap{\vspace{3mm}}
+\def\extraspacing{\vspace{4mm} \noindent}
+\def\vgap{\vspace{2mm}}
 \def\vslit{\vspace{0.5mm}}
 
 \begin{document}
@@ -41,314 +47,225 @@
     \begin{center}
         \vspace{3mm}
     {\Large
-    (CE7456 Lecture Notes 9) Subgraph Enumeration} \\[2mm]
+    (CE7456 Lecture Notes 10) Natural Joins} \\[2mm]
     {\large Yufei Tao}
     \vspace{3mm}
     \end{center}
 }
 
-Today, we discuss the {\em subgraph enumeration} problem (also known a {\em subgraph listing}). Let $G = (V, E)$ be an undirected graph called the {\em data graph}. A graph $G' = (V', E')$ is a {\em subgraph} of $G$ if $V' \subseteq V$ and $E' \subseteq E$. Let $Q = (V_Q, E_Q)$ be another undirected graph called the {\em pattern graph}. A subgraph $G' = (V', E')$ of $G$ is {\em isomorphic} to $Q$ if there is a bijection function $f: V_Q \rightarrow V'$ such that, for any distinct vertices $u, v \in V_Q$, the pattern graph $Q$ has an edge $\set{u, v}$ if and only if the edge $\set{f(u), f(v)}$ exists in $G'$. The goal of subgraph enumeration is to report all the subgraphs of $G$ that are isomorphic to $Q$. Those subgraphs are called the {\em occurrences} of $Q$.
+Today, we discuss the {\em natural join} problem, which generalizes the subgraph enumeration problem in the previous lecture and is a problem at the core of database theory.
 
 \vgap
 
-We assume that $Q$ has a constant size, i.e., the number $|V_Q|$ can be regarded as a constant (and so can the number $|E_Q|$). Without this assumption, the problem is NP-hard because deciding whether $G$ has a clique is NP-hard.
+Let $\boldatt$ be a finite set, where each element is called an {\em attribute}. For a non-empty set $\X \subseteq \boldatt$ of attributes, a {\em tuple} over $\X$ is a function $\bm{u}: \X \rightarrow \intdom$ (where $\intdom$ represents the set of integers). For any non-empty subset $\Y \subseteq \X$, we define $\bm{u}[\Y]$ --- called the {\em projection} of $\bm{u}$ on $\Y$ --- as the tuple $\bm{v}$ over $\Y$ satisfying $\bm{v}(Y) = \bm{u}(Y)$ for every attribute $Y \in \Y$. A {\em relation} $R$ is a set of tuples over the same set $\Z$ of attributes; we refer to $\Z$ as the {\em schema} of $R$ and represent it as $\schema(R)$.
 
-\extraspacing {\bf Math Conventions.} For an integer $x \ge 1$, the notation $[x]$ represents the set $\set{1, 2, ..., x}$. The notation $\real_{\ge 0}$ represents the set of non-negative real numbers.
+\vgap
 
-\section{Fractional Edge Cover Number} \label{sec:frac-edge-cover-num}
-
-A function $w: E_Q \rightarrow \real_{\ge 0}$ is said to be a {\em fractional edge cover} of $Q = (V_Q, E_Q)$ if, for every vertex $u \in V_Q$, it holds that
+We define a {\em join} as a set $\Q$ of relations. Let $\schema(\Q) = \bigcup_{R \in Q} \schema(R)$. The result of $\Q$ is a relation over $\schema(\Q)$ formalized as:
 \myeqn{
-    \sum_{e \in E_Q: u \in e} w(e) &\ge& 1. \label{eqn:frac-edge-cover}
+    \join(\Q) &=& \{\textrm{tuple $\bm{u}$ over $\schema(\Q)$} \mid \forall R \in \Q: \bm{u}[\schema(R)] \in R\}. \label{eqn:join-rslt}
 }
-We refer to $w(e)$ as the {\em weight} of $e$ under $w$.
-The {\em total weight} of $w$ is defined as
+We consider that $\schema(\Q)$ has a constant size.
+
+\extraspacing {\bf Math Conventions.} For an integer $x \ge 1$, the notation $[x]$ denotes the set $\{1, 2, ..., x\}$. Every logarithm $\log(\cdot)$ has base $2$.
+
+%The notation $\tO(.)$ hides a factor logarithmic to $\sum_{R \in \Q} |R|$.
+
+\section{Schema Graphs and Fractional Edge Covers} \label{sec:schema}
+
+Given a join $\Q$, we use $\H$ to denote the hypergraph $(\V, \E)$ --- called the {\em schema graph} of $\Q$ --- where
 \myeqn{
-    \sum_{e \in E_Q} w(e). \nn
+    \V &=& \schema(\Q) \nn \\
+    \E &=& \set{\schema(R) \mid R \in \Q}. \nn
 }
-The {\em fractional edge cover number} of $Q$ --- denoted as $\rho(Q)$ --- is the smallest total weight of all fractional edge covers of $Q$. A fractional edge cover is {\em optimal} if its total weight is $\rho(Q)$.
+Note that there is one-one correspondence between the relations in $\Q$ and the hyperedges in $\E$. For each hyperedge $e \in \E$, let $R_e$ represent the corresponding relation $R \in \Q$.
 
 \vgap
 
-For example, if $Q$ is a $k$-cycle (i.e., a cycle with $k$ edges), then $\rho(Q) = k/2$; if $Q$ is a $k$-star (i.e., a graph with $k + 1$ vertices $u, v_1, ..., v_k$, and $k$ edges $\set{u, v_1}, \set{u, v_2}, ..., \set{u, v_k}$), then $\rho(Q) = k$.
+Next, we regard $\E$ as a ``space'' and define vectors over it. Every such vector $\W$ has a real-valued component $\W_e$ on each hyperedge $e \in \E$. The vector $\W$ is said to be a {\em fractional edge cover} of $\H$ if it satisfies two conditions:
+\myitems{
+    \item $0 \le \W_e \le 1$ for every $e \in \E$.
+    \item $\sum_{e \in \E : X \in e} \W_e \ge 1$ for every $X \in \V$.
+}
 
-\vgap
+\section{AGM Bound} \label{sec:agm}
 
-The following is known as the {\em AGM bound}:
+Let $\Q$ be a join with schema graph $\H = (\V, \E)$. Every fractional edge cover $\W$ of $\H$ is associated with an {\em AGM value} defined as
+\myeqn{
+    \mit{AGM}_\W &=& \prod_{e \in \E} |R_e|^{\W_e}. \label{eqn:agm}
+}
+
+%We will prove later:
 
 \begin{theorem} \label{thm:agm}
-    If the data graph $G$ has $m$ edges and the pattern graph $Q$ has a constant size, then $G$ can have $O(m^{\rho(Q)})$ occurrences of $Q$.
+   For any fractional edge cover $\W$ of $\H$., it holds that $|\join(\Q)| \le \mit{AGM}_\W$.
 \end{theorem}
 
-The AGM bound is tight:
+An {\em optimal fractional edge cover} of $\H$ is a fractional edge cover $\W^*$ minimizing \eqref{eqn:agm}. The {\em AGM bound} of $\Q$ is defined as the AGM value of $\W^*$. The AGM bound is tight:
 
-\begin{theorem} \label{thm:agm-lb}
-    Fix any integer $m \ge 1$ and any pattern graph $Q$ with a constant size. There is a data graph $G$ with at most $m$ edges that has $\Omega(m^{\rho(Q)})$ occurrences of $Q$.
+\begin{theorem} \label{thm:agm-tight}
+   Fix an arbitrary hypergraph $\H = (\V, \E)$ and an arbitrary integer vector $N$ over $\E$ (i.e., for each $e \in \E$, $N$ has a component $N_e$, which is a positive integer). There exists a join $\Q$ satisfying
+   \myitems{
+        \item the schema graph of $\Q$ is $\H$;
+        \item for each $e \in \E$, $|R_e| = N_e$;
+        \item $|\join(\Q)|$ is at least the AGM bound of $\Q$ up to a constant factor.
+   }
 \end{theorem}
 
-We will prove Theorem~\ref{thm:agm} in this lecture and Theorem~\ref{thm:agm-lb} in a future lecture of this course.
+We prove Theorem~\ref{thm:agm} in this lecture and Theorem~\ref{thm:agm-tight} in the next lecture.
 
-\section{Enumerating Odd-Length Cycles} \label{sec:cycle}
+\section{Proof of Theorem~\ref{thm:agm}} \label{sec:agm-proof}
 
-Let $Q$ be a $k$-cycle with an odd number $k = O(1)$. In this section, we give an algorithm to find all its occurrences in a data graph $G$ of $m$ edges in $O(m^{\rho(Q)})$ time where $\rho(Q) = k/2$.
+%\noindent {\bf Fundamental Definitions.}
 
-\vgap
+% In general, given a relation $R$ and an attribute $X$ in its schema, we define
+% \myeqn{
+%     \pi_X (R) &=& \set{\bm{u}(X) \mid \bm{u} \in R}. \label{eqn:agm-proof:proj}
+% }
+% This is known as the {\em projection} operator in relational algebra.
+%
+% \vgap
+%
+% Set
+% \myeqn{
+%     d = |\V|. \label{eqn:alg:d}
+% }
 
-Call a vertex $u$ of $G$ {\em heavy} if the degree of $u$ is at least $\sqrt{m}$, or {\em light} otherwise. The number of heavy vertices of $G$ is at most $2 \sqrt{m}$ (otherwise, $G$ would have more than $m$ edges).
-
-\vgap
-
-Let us denote the vertices in $Q$ as $q_1, q_2, ..., q_k$, respectively. To find an occurrence of $Q$, we need to map each $q_i$ ($i \in [k]$) to a distinct vertex in $G$. We consider two types of mappings.
-
-\extraspacing {\bf Type 1: All Vertices of $Q$ Mapped to Heavy Vertices.} There are only $O((\sqrt{m})^k) = O(m^{k/2})$ such mappings because the number of heavy vertices is bounded by $O(\sqrt{m})$. For each mapping, we can check in constant time whether the subgraph of $G$ induced by the mapping is indeed an occurrence of $Q$. The time of finding all such occurrences is therefore $O(m^{k/2})$.
-
-\extraspacing {\bf Type 2: At least One Vertex of $Q$ Mapped to a Light Vertex.} W.l.o.g., assume that $q_1$ must be mapped to a light vertex. We consider mappings $f: V_Q \rightarrow V$ satisfying three conditions:
-\myenums{
-    \item $f(q_1)$ is a light vertex;
-    \item $\set{f(q_1), f(q_2)}$ and $\set{f(q_1), f(q_k)}$ are edges in $G$;
-    \item for each $i \in \set{2, 3, ..., (k-1)/2}$, $\set{f(q_{2i-1}), f(q_{2i})}$ is an edge in $G$.
-}
-There are $O(m^{1.5})$ choices to satisfy conditions 1 and 2 (think: why?) and $O(m^{\fr{k-1}{2}-1})$ choices to satisfy condition 3. Hence, the total number of such mappings is bounded by $O(m^{k/2})$. For each mapping, we can check in constant time whether it induces an occurrence of $Q$. The time of finding all such occurrences is therefore $O(m^{k/2})$.
-
-\section{Enumerating Stars} \label{sec:star}
-
-Let $Q$ be a $k$-star where $k$ is a constant integer at least 1. It is rudimentary to find all its occurrences in a data graph $G$ of $m$ edges in $O(m^{\rho(Q)})$ time where $\rho(Q) = k$. The details are left to you.
-
-\section{Enumerating Arbitrary Subgraphs} \label{sec:enum-gen}
-
-Let $Q = (V_Q, E_Q)$ be a pattern graph with a constant size. Given a fractional edge cover $w$ of $Q$, we define
+Given a tuple $\bm{u}$ over a subset $U \subseteq \E$ (recall that $\E = \schema(\Q)$) and a relation $R \in \Q$, we define
 \myeqn{
-    \supp(w) &=&
-    \{
-        e \in E_Q \mid w(e) > 0
-    \}. \label{eqn:supp-w}
+    R(\bm{u}) &=&
+    \set{
+        \bm{v} \in R \mid \forall X \in U \cap \schema(R): \bm{v}(X) = \bm{u}(X)
+    }. \label{eqn:alg:semi-join}
 }
-For each vertex $u \in V_Q$, at least one edge in $\supp(w)$ is incident on $u$ (think: why?).
-
-\begin{theorem} \label{thm:decomp}
-   Every pattern graph $Q$ admits an optimal fractional edge cover $w^*$ whose $\supp(w^*)$ induces a collection of vertex-disjoint odd-length cycles $\mycycle_1, ..., \mycycle_\alpha$ ($\alpha \ge 0$) and stars $\mystar_1, ..., \mystar_\beta$ ($\beta \ge 0$) such that $\rho(Q) = \sum_{i=1}^\alpha \rho(\mycycle_i) + \sum_{i=1}^\beta \rho(\mystar_i)$.
-\end{theorem}
-
-We will prove the theorem in the next section. For an illustration, Figure~\ref{fig:fish}(a) shows a pattern graph $Q$ with $\rho(Q) = 5.5$, while Figure~\ref{fig:fish}(b) shows the promised collection, which has $\alpha = 1$ odd-length cycle and $\beta = 2$ stars. It is easy to verify that the fractional edge cover numbers of the cycle and stars sum up to 5.5.
-
-\begin{figure}
-    \centering
-    \begin{tabular}{cc}
-        \includegraphics[height=22mm]{./artwork/fish} &
-        \hspace{5mm}\includegraphics[height=22mm]{./artwork/fish-decomp} \\
-        (a) The ``fish'' graph &
-        (b) The decomposition
-    \end{tabular}
-    \figcapup
-    \caption{Illustration of Theorem~\ref{thm:decomp}}
-    \label{fig:fish}
-    \figcapdown
-\end{figure}
+Note that if $U$ and $\schema(R)$ are disjoint, then $R(\bm{u}) = R$. In relational algebra, \eqref{eqn:alg:semi-join} is referred to as the {\em semi-join} of $R$ with $\bm{u}$. %After a preprocessing of $\tO(|R|)$ time, we can obtain $R(\bm{u})$ in $\tO(1 + |R(\bm{u})|)$ time.
 
 \vgap
 
-Theorem~\ref{thm:decomp} implies the following algorithm to find the occurrences of $Q$ in $G = (V, E)$:
+Given a tuple $\bm{u}$ over a subset $U \subseteq \E$, we define a {\em residual join} as follows:
+\myeqn{
+    \Q(\bm{u}) &=&
+    \set{
+        R_e(\bm{u}) \mid e \in \E
+    }. \label{eqn:alg:residual}
+}
+
+Finally, for each subset $U \in \V$, we define
+\myeqn{
+    \E_U &=& \set{ e \in \E \mid e \cap U \ne \emptyset}.
+    \label{eqn:alg:E_U}
+}
+
+\begin{lemma} \label{lmm:agm-proof:residual}
+    Fix an arbitrary order of the attributes in $\V$: $X_1, X_2, ..., X_d$ where $d = |\V|$. Let $t$ be an integer satisfying $0 \le t \le d$, and $\bm{u}$ a tuple over $U = \set{X_1, ..., X_t}$. We have
+    \myeqn{
+        |\join(\Q(\bm{u}))|
+        &\le&
+        \prod_{e \in \E_U} |R_e(\bm{u})|^{\W_e}. \label{eqn:agm-proof:residual-goal}
+    }
+\end{lemma}
+
+Note that if $t = 1$, then $U = \emptyset$ and $\Q = \Q(\bm{u})$ (as $R(\bm{u}) = R$ for all $R \in \Q$). Hence, Theorem~\ref{thm:agm} is a corollary of the above lemma with $U = \emptyset$.
+
+\extraspacing {\bf Proof of Lemma~\ref{lmm:agm-proof:residual}.} When $t = d$, we have $|R(\bm{u})| \le 1$ for all $R \in \Q$ and, hence, $|\join(\Q)| = 1$. Furthermore, if $|R(\bm{u})| = 0$ for any $R \in \Q$, the join result $\join(\Q)$ must be empty. The lemma therefore holds for $t= d$.
+
+
+
+\section{A Join Algorithm} \label{sec:alg}
+
+\noindent {\bf Fundamental Definitions.} In general, given a relation $R$ and an attribute $X$ in its schema, we define
+\myeqn{
+    \pi_X (R) &=& \set{\bm{u}(X) \mid \bm{u} \in R}. \nn
+}
+This is known as the {\em projection} operator in relational algebra.
+
+\vgap
+
+Let $\Q$ be a join with schema graph $\H = (\V, \E)$. Given a tuple $\bm{u}$ over a set $U \subseteq \schema(\Q)$ of attributes and a relation $R \in \Q$, we define
+\myeqn{
+    R(\bm{u}) &=&
+    \set{
+        \bm{v} \in R \mid \forall X \in U \cap \schema(R): \bm{v}(X) = \bm{u}(X)
+    }. \label{eqn:alg:semi-join}
+}
+Note that if $U$ and $\schema(R)$ are disjoint, then $R(\bm{u}) = R$. In relational algebra, \eqref{eqn:alg:semi-join} is referred to as the {\em semi-join} of $R$ with $\bm{u}$. %After a preprocessing of $\tO(|R|)$ time, we can obtain $R(\bm{u})$ in $\tO(1 + |R(\bm{u})|)$ time.
+
+\vgap
+
+Given a tuple $\bm{u}$ over a set $U \subseteq \schema(\Q)$, we define a {\em residual join} as follows:
+\myeqn{
+    \Q(\bm{u}) &=&
+    \set{
+        R_e(\bm{u}) \mid e \in \E
+    }. \label{eqn:alg:residual}
+}
+
+Finally, for each attribute $X \in \E$, we define
+\myeqn{
+    \E(X) &=& \set{ e \in \E \mid X \in e}.
+    \label{eqn:alg:E-X}
+}
+
+\extraspacing {\bf Algorithm.} Set
+\myeqn{
+    d = |\V|. \label{eqn:alg:d}
+}
+Fix an arbitrary order of the attributes in $\V$: $X_1, X_2, ..., X_d$. To generate a tuple in $\join(\Q)$, we need to decide its value on each of the attributes. The idea of the algorithm is to finalize one value at a time. As the base case, suppose that we have finalize the values on $X_1, ..., X_{d-1}$. In other words, we have obtained a tuple $\bm{u}$ over $U = \set{X_1, ..., X_{d-1}}$. It remains to find all tuples $\bm{v} \in \join(\Q)$ that agree with $\bm{u}$ on all of $X_1, ..., X_{d-1}$, that is, $\bm{v}(X_i) = \bm{u}(X_i)$ for all $i \in [d-1]$. These tuples constitute exactly the result of the residual join $\Q(\bm{u})$. Computing all such $\bm{v}$ is equivalent to finding a set intersection:
+\myeqn{
+    \bigcap_{e \in \E(X_d)} \pi_{X_d}(R_e(\bm{u})). \nn
+}
+Recall that $R_e$ is the relation in $\Q$ whose schema is $e$.
+
+\vgap
+
+Inductively, suppose that we know how to compute the result of $\Q(\bm{u})$ for any tuple $\bm{u}$ over $\set{X_1, ..., X_t}$ where $t$ is an integer satisfying $t \ge 1$. Next, we show how compute the result of $\Q(\bm{v})$ for any tuple $\bm{v}$ over $\set{X_1, ..., X_{t-1}}$. Note that if $t = 1$, then $\bm{v}$ is an empty tuple, in which case $\Q(\bm{v}) = \Q$.
+
+\vgap
+
+First, we compute
+\myeqn{
+    \bigcap_{e \in \E(X_t)} \pi_{X_t}(R_e \ltimes \bm{v}). \label{eqn:alg:intersection}
+}
+For each value $x$ in the intersection of \eqref{eqn:alg:intersection}, we construct a tuple over $\set{X_1, ..., X_t}$ by ``extending $\bm{v}$ with $X_t = v$'', i.e., $\bm{u}(X_i) = \bm{v}(X_i)$ for all $i \in [t-1]$ and $\bm{u}(X_t) = x$. This results in a set of ``extended'' tuples defined as:
+\myeqn{
+    S_\ext &=&
+    \set{
+        \text{tuple $\bm{u}$ extended from $x$} \mid
+        \text{$x$ in the intersection in \eqref{eqn:alg:intersection}}
+    }. \nn
+}
+For each such tuple $\bm{u}$, we compute the result of $\Q(\bm{u})$. The result of $\Q(\bm{v})$ is the union of the $\join(\Q(\bm{u}))$ of all $\bm{u} \in S_\ext$.
+
+\section{Analysis}
+
+\extraspacing {\bf Analysis.} Let us start with a technical lemma:
+
+\begin{lemma} \label{lmm:alg:decomp}
+   Let $\W$ be an arbitrary fractional edge cover of $\H$, and $S$ be the set of values in the intersection computed at \eqref{eqn:alg:intersection}. We have:
+   \myeqn{
+        \sum_{\bm{u} \in S_\ext} \prod_{e \in \E(X_j)} |R_e(\bm{u})|^{\W_e} &\le&  \nn
+   }
+\end{lemma}
+
+
+
+
+
+We make the following assumptions in our analysis:
 \myitems{
-    \item For each $i \in [\alpha]$, find the set $M_i^{\mycycle}$ of occurrences of $\mycycle_i$.
-    %We consider $M_i^{\mycycle}$ to be a set of functions, each mapping the vertex set of $\mycycle_i$ to $V$.
+    \item Given a tuple $\bm{u}$ over a set $U \subseteq \schema(\Q)$ and a relation $R \in \Q$, we can compute $R(\bm{u})$ --- defined in \eqref{eqn:alg:semi-join} --- in $O(1 + |R(\bm{u})|)$ time and $|R(\bm{u})|$ in $O(1)$ time.
 
-    \item For each $i \in [\beta]$, find the set $M_i^{\mystar}$ of occurrences of $\mystar_i$.
-    %We consider $M_i^{\mystar}$ to be a set of functions, each mapping the vertex set of $\mystar_i$ to $V$.
-
-    \item For each $(G_1^{\mycycle}, ..., G_\alpha^{\mycycle}, G_1^{\mystar}, ..., G_\beta^{\mystar}) \in M_1^{\mycycle} \times ... \times M_\alpha^{\mycycle} \times M_1^{\mystar} \times ... \times M_\beta^{\mystar}$, check in constant time whether the subgraphs $G_1^{\mycycle}, ..., G_\alpha^{\mycycle}, G_1^{\mystar}, ...,$ and $G_\beta^{\mystar}$ induce an occurrence of $Q$.
+    \item Given a relation $R \in \Q$ and a tuple $\bm{u}$ over $\schema(R)$, we can decide whether $\bm{u} \in R$ in $O(1)$ time.
 }
-By the discussion in Sections~\ref{sec:cycle} and \ref{sec:star}, the running time is at the order of
-\myeqn{
-    \prod_{i=1}^\alpha m^{\rho(\mycycle_i)}
-    \cdot
-    \prod_{i=1}^\beta m^{\rho(\mystar_i)}
-    \nn
-}
-which is $O(m^{\rho(Q)})$ by Theorem~\ref{thm:decomp}.
+These assumptions can be removed by slowing down the running time we will prove by a logarithmic factor (details left to you).
 
-\vgap
-
-As a side product, we have given a constructive proof of the AGM bound in Theorem~\ref{thm:agm}. The algorithm is worst-case optimal because even just outputting the result takes $\Omega(m^{\rho(Q)})$ time by Theorem~\ref{thm:agm-lb}.
-
-\section{Proof of Theorem~\ref{thm:decomp}} \label{sec:proof-thm-decomp}
-
-We will prove the theorem through a series of lemmas about fractional edge covers. If $w$ is a fractional edge cover of $Q  = (V_Q, E_Q)$, we use $Q_{\supp(w)}$ to denote the subgraph of $Q$ induced by $\supp(w)$.
-
-\begin{lemma} \label{lmm:proof-h1}
-   Suppose that $w^*$ is an optimal fractional edge cover of $Q$ such that $Q_{\supp(w^*)}$ is a collection of vertex-disjoint stars. Then, $w^*$ maps each edge of $Q_{\supp(w^*)}$ to 1 and every other edge of $E_Q$ to 0.
+\begin{lemma}
+    The intersection in \eqref{eqn:alg:intersection} can be computed in $O(\min_{e \in \E(X_t)} |R_e \ltimes \bm{v}|)$ time.
 \end{lemma}
-
 \begin{proof}
-   Trivial and omitted.
+   Define $e^* = \argmin_{e \in \E(X_t)} |R_e \ltimes \bm{v}|$. First, extract $R_{e^*} \ltimes \bm{v}$. For each tuple $\bm{u} \in R_{e^*} \ltimes \bm{v}$, check whether $\bm{u} \in R_e$ for every other $e \in \E(X_t)$. As $\E(X_t)$ has a constant size, the total running time is $O(1 + |R_{e^*} \ltimes \bm{v}|)$.
 \end{proof}
 
-Henceforth, a fractional edge cover $w$ of $Q$ is said to be {\em integral} if $w(e) \in \set{0, 1}$ for each $e \in E_Q$.
-
-
-\begin{lemma} \label{lmm:proof-h2}
-   Suppose that $Q = (V_Q, E_Q)$ has an optimal fractional edge cover $w^*$ such that $Q_{\supp(w^*)}$ is a forest. Then, $Q$ has an optimal fractional edge cover $w$ such that
-   \myitems{
-        \item $w$ is integral;
-        \item $Q_{\supp(w)}$ induces a collection of vertex-disjoint stars.
-   }
-\end{lemma}
-
-\begin{proof}
-    %Let $\T$ be the forest induced by $\supp(w^*)$.
-
-    If $Q_{\supp(w^*)}$ is a collection of vertex-disjoint stars, the claim follows immediately from Lemma~\ref{lmm:proof-h1}. Next, we assume that this is not true.
-
-    \vgap
-
-    %We prove the lemma by induction on $|\supp(w^*)|$. The base case where $|\supp(w^*)| = 1$ holds because in that case $\T$ is a star. Next, assuming that the lemma holds when $|\supp(w^*)| = t$, we will prove the claim for $|\supp(w^*)| = t+1$.
-
-    %\vgap
-
-    Let $\T$ be an arbitrary tree in the forest $Q_{\supp(w^*)}$ such that $\T$ is not a star. Root $\T$ at an arbitrary degree-1 node. Let $z$ be a deepest leaf of $\T$ (i.e., its distance from the root is the largest among all leaves). Let $u_1$ be its parent. The value of $w^*(\set{z, u_1})$ must be 1. Let $u_2$ be the parent of $u_1$, and $u_3$ be the parent of $u_2$ (think: why can't $u_1$ and $u_2$ be the root?). We modify $w^*$ as follows:
-    \myitems{
-        \item increase $w^*(\set{u_2, u_3})$ by $w^*(\set{u_1, u_2})$;
-        \item set $w^*(\set{u_1, u_2})$ to 0.
-    }
-    The new $w^*$ is an optimal fractional edge cover of $Q$
-    with one less edge in $\supp(w^*)$ --- because $\set{u_1, u_2}$ is no longer in $\supp(w^*)$ --- and $\supp(w^*)$ still induces a forest.
-
-    \vgap
-
-    If any tree in the forest $Q_{\supp(w^*)}$ is still not a star, we can repeat the process to reduce $|\supp(w^*)|$ further. Eventually, we obtain an optimal fractional edge cover $w^*$ such that $Q_{\supp(w^*)}$ is a collection of vertex-disjoint stars.
-\end{proof}
-
-
-\begin{lemma} \label{lmm:proof-h3}
-   Every bipartite $Q = (V_Q, E_Q)$ has an integral optimal fractional edge cover $w^*$.
-\end{lemma}
-
-\begin{proof}
-    By Lemma~\ref{lmm:proof-h2}, it suffices to prove that $Q$ has an optimal fractional edge cover $w^*$ whose $Q_{\supp(w^*)}$ is a forest. If this is not true, then $Q_{\supp(w^*)}$ must contain a cycle $\mycycle$. As $Q$ is bipartite, $\mycycle$ must have an even number of edges, which we denote by $e_1, e_2, ..., e_k$ in some traversal order.
-
-    \vgap
-
-    W.l.o.g., suppose that $e_1$ has the smallest weight under $w^*$ among $e_1, e_2, ..., e_k$. Set $\Delta = w^*(e_1)$. We now modify $w^*$ by
-    \myitems{
-        \item decreasing the weights of $e_1, e_3, ..., e_{k-1}$ by $\Delta$;
-        \item increasing the weights of $e_2, e_4, ..., e_{k}$ by $\Delta$.
-    }
-    The new $w^*$ is an optimal fractional edge cover of $Q$ whose $\supp(w^*)$ has at least one less edge (because $e_1$ is no longer in $\supp(w^*)$).
-
-    \vgap
-
-    If the subgraph induced by $\supp(w^*)$ still has a cycle, repeat the above process by further reducing $\supp(w^*)$. This eventually gives a an optimal fractional edge cover $w^*$ of $Q$ whose $\supp(w^*)$ induces a forest.
-\end{proof}
-
-\begin{lemma} \label{lmm:proof-h4}
-   Every pattern graph $Q = (V_Q, E_Q)$ has an optimal fractional edge cover $w^*$ such that $w^*(e) \in \set{0, 1/2, 1}$ for each $e \in E_Q$.
-\end{lemma}
-
-\begin{proof}
-   Build a graph $Q' = (V_{Q'}, E_{Q'})$ as follows. Each vertex $u \in V_Q$ defines two vertices $u_L$ and $u_R$ to $V_{Q'}$ --- refer to them as the {\em left copy} and {\em right copy} of $u$, respectively. Each edge $\set{u, v} \in E_Q$ defines two edges $\set{u_L, v_R}$ and $\set{v_L, u_R}$ to $E_{Q'}$. As every edge of $E_{Q'}$ connects a left-copy vertex to a right-copy vertex, $Q'$ is bipartite. By Lemma~\ref{lmm:proof-h3}, $Q'$ has an integral optimal fractional edge cover $w^*$.
-
-   \vgap
-
-   Define a function $w: E_Q \rightarrow \real_{\ge 0}$ where
-   \myeqn{
-        w(\set{u,v}) = \fr{1}{2}(w^*(\set{u_L, v_R}) + w^*(\set{v_L, u_R})) \nn
-   }
-   for each $\set{u, v} \in E_Q$.
-   Note that $w(\set{u, v}) \in \set{0, 1/2, 1}$.
-
-   \vgap
-
-   We claim that $w$ is a fractional edge cover of $Q$. Indeed, for any vertex $u \in V_Q$, it holds that
-   \myeqn{
-        && \sum_{v \in V_Q: \set{u, v} \in E_{Q}} w(\set{u, v}) \nn \\
-        &=&
-        \fr{1}{2}
-        \sum_{v \in V_Q: \set{u, v} \in E_{Q}}
-        w^*(\set{u_L, v_R}) +
-        w^*(\set{v_L, u_R}) \nn \\
-        &=&
-        \fr{1}{2}
-        \sum_{v_R \in V_{Q'}: \set{u_L, v_R} \in E_{Q'}}
-        w^*(\set{u_L, v_R})
-        +
-        \fr{1}{2}
-        \sum_{v_L \in V_{Q'}: \set{v_L, u_R} \in E_{Q'}}
-        w^*(\set{v_L, u_R})
-        \nn \\
-        &\ge&
-        1 \nn
-   }
-   where the last step used the fact that $w^*$ is a fractional edge cover of $Q'$.
-
-   \vgap
-
-   The total weight of $w$ equals half of the total weight of $w^*$. We argue that $w$ must be an optimal fractional edge cover of $Q$. Otherwise, let $w_0$ be an optimal fractional edge cover of $Q$ with a lower total weight. Construct a function $w^*_0: E_{Q'} \rightarrow \real_{\ge 0}$ by setting, for each $\set{u, v} \in E_Q$:
-   \myeqn{
-        w^*_0(\set{u_L, v_R}) = w^*_0(\set{u_R, v_L}) = w_0(\set{u, v}). \nn
-   }
-   It is easy to check that $w^*_0$ is a fractional edge cover of $Q'$ whose total weight is twice the total weight of $w_0$ and, hence, is less than the total weight of $w^*$, giving a contradiction.
-\end{proof}
-
-
-Henceforth, a fractional edge cover $w$ of $Q$ is said to be {\em half-integral} if $w(e) \in \set{0, 1/2, 1}$ for each $e \in E_Q$.
-
-\begin{lemma} \label{lmm:proof-h5}
-   Any pattern graph $Q = (V_Q, E_Q)$ has an optimal fractional edge cover $w^*$ such that
-   \myitems{
-        \item $w^*$ is half-integral;
-        \item $Q_{\supp(w^*)}$ is a collection of vertex-disjoint odd-length cycles and stars.
-   }
-\end{lemma}
-
-\begin{proof}
-    Let $w^*$ be a half-integral optimal fractional edge cover promised by Lemma~\ref{lmm:proof-h4}. Suppose that $Q_{\supp(w^*)}$ contains an even-length cycle $\mycycle$. Let us denote its edges by $e_1, e_2, ..., e_k$ in some traversal order. The weight $w^*(e_i)$ must be 1/2 for all $i \in [k]$ (think: why?). We now modify $w^*$ by
-    \myitems{
-        \item decreasing the weights of $e_1, e_3, ..., e_{k-1}$ by $1/2$;
-        \item increasing the weights of $e_2, e_4, ..., e_{k}$ by $1/2$.
-    }
-    This creates another half-integral optimal fractional edge cover but with fewer edges in $\supp(w^*)$. By repeating the process, we obtain a half-integral optimal fractional edge cover $w^*$ such that $Q_{\supp(w^*)}$ has no even-length cycles.
-
-    \vgap
-
-    We call an edge $\set{u,v} \in Q_{\supp(w^*)}$ a {\em pendant edge} if $u$ appears in a cycle $\mycycle$ of $G_{\supp(w^*)}$ where $v$ does not belong. Let us traverse $\mycycle$ from $u$, and denote by $e_1, e_2, ..., e_k$ the edges encountered (in this order); in other words, $e_1$ and $e_k$ are incident on $u$. Note that $k$ is an odd number (because $Q_{\supp(w^*)}$ contains no more even-length cycles). The weight $w^*(e_i)$ must be 1/2 for all $i \in [k]$ (think: why?).
-
-    \vgap
-
-    We argue that the weight of $\set{u,v}$ under $w^*$ must be 1/2. Otherwise, its weight must be 1 (because $w^*$ is half-integral). In that case, we can construct another fractional edge cover of $Q$ with a {\em smaller} total weight, which contradicts the optimality of $w^*$. For this purpose, we modify $w^*$ as follows to reduce its total weight:
-    \myitems{
-        \item decrease $w^*(e)$ by 1/2 for $e \in \set{e_1, e_3, ..., e_k}$ --- after which, $w^*(e) = 0$;
-        \item increase $w^*(e)$ by 1/2 for $e \in \set{e_2, e_4, ..., e_{k-1}}$ --- after which, $w^*(e) = 1$.
-    }
-    The resulting $w^*$ is still a fractional edge cover of $Q$, but its total weight has decreased by $1/2$.
-
-    \vgap
-
-    Now that we know $w^*(\set{u, v}) = 1/2$, we proceed to modify $w^*$ as follows:
-    \myitems{
-        \item increase $w^*(\set{u, v})$ by 1/2;
-        \item decrease $w^*(e)$ by 1/2 for $e \in \set{e_1, e_3, ..., e_k}$ --- after which, $w^*(e) = 0$;
-        \item increase $w^*(e)$ by 1/2 for $e \in \set{e_2, e_4, ..., e_{k-1}}$ --- after which, $w^*(e) = 1$.
-    }
-    After modification, $w^*$ remains as a half-integral optimal edge cover of $Q$ but has fewer edges in $\supp(w^*)$. By repeating the process, we obtain a half-integral optimal fractional edge cover $w^*$ such that $Q_{\supp(w^*)}$ has no even-length cycles and no pendent edges.
-
-    \vgap
-
-    At this time, $Q_{\supp(w^*)}$ is a collection of odd-length cycles $\mycycle_1, ..., \mycycle_\alpha$ ($\alpha \ge 0$) and a forest $\T$ such that $\mycycle_1, ..., \mycycle_\alpha$ and $\T$ are vertex disjoint. Using the procedure in the proof of Lemma~\ref{lmm:proof-h2}, we can further modify $w^*$ by adjusting only the weights on the edges of $\T$ so that
-    \myitems{
-        \item $w^*$ as a half-integral optimal fractional edge cover;
-        \item $Q_{\supp(w^*)}$ is a collection of $\mycycle_1, ..., \mycycle_\alpha$ and stars $\mystar_1, ..., \mystar_\beta$ such that
-        \myitems{
-            \item $\mycycle_1, ..., \mycycle_\alpha$, $\mystar_1, ..., \mystar_\beta$ are vertex disjoint;
-            \item the union of the vertices in $\mystar_1, ..., \mystar_\beta$ is the vertex set of $\T$.
-        }
-    }
-    This $w^*$ satisfies the requirements of Lemma~\ref{lmm:proof-h5}.
-\end{proof}
-
-Theorem~\ref{thm:decomp} is a corollary of Lemma~\ref{lmm:proof-h5}.
-
-\section{Remarks}
-
-Theorem~\ref{thm:agm} is a special case of a result presented in \cite{agm13}. The proof of Theorem~\ref{thm:decomp} was adapted from an argument in \cite{akk19}.
 
 \bibliographystyle{plainurl}% the mandatory bibstyle
 \bibliography{ref}
