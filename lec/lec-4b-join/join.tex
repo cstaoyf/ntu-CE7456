@@ -132,9 +132,10 @@ Given a tuple $\bm{u}$ over a subset $U \subseteq \E$ (recall that $\E = \schema
     R(\bm{u}) &=&
     \set{
         \bm{v} \in R \mid \forall X \in U \cap \schema(R): \bm{v}(X) = \bm{u}(X)
-    }. \label{eqn:alg:semi-join}
+    }. \nn
+    %\label{eqn:alg-proof:semi-join}
 }
-Intuitively, $R(\bm{u})$ includes those tuples of $R$ that are ``constrained'' by $\bm{u}$, in the sense that they must take the same value as $\bm{u}$ on every attribute in $U$. Note that if $U$ and $\schema(R)$ are disjoint, then $R(\bm{u}) = R$. In relational algebra, \eqref{eqn:alg:semi-join} is referred to as the {\em semi-join} of $R$ with $\bm{u}$.
+Intuitively, $R(\bm{u})$ includes those tuples of $R$ that are ``constrained'' by $\bm{u}$, in the sense that they must take the same value as $\bm{u}$ on every attribute in $U$. Note that if $U$ and $\schema(R)$ are disjoint, then $R(\bm{u}) = R$.
 
 \vgap
 
@@ -143,7 +144,7 @@ Given a tuple $\bm{u}$ over a subset $U \subseteq \E$, we define a {\em residual
     \Q(\bm{u}) &=&
     \set{
         R_e(\bm{u}) \mid e \in \E
-    }. \label{eqn:alg:residual}
+    }. \label{eqn:alg-proof:residual-join}
 }
 
 \vslit
@@ -177,7 +178,7 @@ We prove the lemma by induction. As the base case, consider $t = d-1$. Because $
 If a relation $R \in \Q$ does not include $X_d$ in its schema, the residual relation $R(\bm{u})$ has at most one tuple. Otherwise, the tuples of $R(\bm{u})$ differ only in their values on $X_d$. If $\bm{v}$ is a tuple in $\join(\Q(\bm{u}))$,  we must have
 \myeqn{
     \bm{v}(X_d) &\in&
-        \bigcap_{e \in \E: X_d \in e} \pi_{X_d}(R_e(\bm{u})). \label{eqn:agm-proof:residual-goal:2}
+        \bigcap_{e \in \E: X_d \in e} \pi_{X_d}(R_e(\bm{u})). \label{eqn:agm-proof:residual-goal:intersection-base}
 }
 Hence:
 \myeqn{
@@ -293,37 +294,33 @@ If an edge $e \in \E$ does not contain $X_i$, we have $R_e(\bm{v}) = R_e(\bm{u})
 }
 This completes the inductive step.
 
-%
-% \section{A Join Algorithm} \label{sec:alg}
-%
-% Set $d = |\V|$ and fix an arbitrary order of the attributes in $\V$: $X_1, X_2, ..., X_d$. To generate a tuple in $\join(\Q)$, we need to decide its value on each attribute. The idea of the algorithm is to finalize one value at a time.
-%
-% \vgap
-%
-% As the base case, suppose that we have finalized the values on $X_1, ..., X_{d-1}$. In other words, we have obtained a tuple $\bm{u}$ over $U = \set{X_1, ..., X_{d-1}}$ such that $|R(\bm{u})| \ge 1$ for all $R \in \Q$. It remains to find all tuples $\bm{v} \in \join(\Q)$ that agree with $\bm{u}$ on all of $X_1, ..., X_{d-1}$, that is, $\bm{v}(X_i) = \bm{u}(X_i)$ for all $i \in [d-1]$ --- those tuples constitute exactly the result of the residual join $\Q(\bm{u})$. Computing all such $\bm{v}$ is equivalent to finding a set intersection:
-% \myeqn{
-%     \bigcap_{e \in \E: X_d \in e} \pi_{X_d}(R_e(\bm{u})). \nn
-% }
-%
-% \vslit
-%
-% Inductively, suppose that we know how to compute the result of $\Q(\bm{u})$ for any tuple $\bm{u}$ over $\set{X_1, ..., X_t}$ where $t$ is an integer satisfying $t \ge 1$. Next, we show how compute the result of $\Q(\bm{v})$ for any tuple $\bm{v}$ over $\set{X_1, ..., X_{t-1}}$. Note that if $t = 1$, then $\bm{v}$ is an empty tuple, in which case $\Q(\bm{v}) = \Q$.
-%
-% \vgap
-%
-% First, we compute
-% \myeqn{
-%     \bigcap_{e \in \E(X_t)} \pi_{X_t}(R_e \ltimes \bm{v}). \label{eqn:alg:intersection}
-% }
-% For each value $x$ in the intersection of \eqref{eqn:alg:intersection}, we construct a tuple over $\set{X_1, ..., X_t}$ by ``extending $\bm{v}$ with $X_t = v$'', i.e., $\bm{u}(X_i) = \bm{v}(X_i)$ for all $i \in [t-1]$ and $\bm{u}(X_t) = x$. This results in a set of ``extended'' tuples defined as:
-% \myeqn{
-%     S_\ext &=&
-%     \set{
-%         \text{tuple $\bm{u}$ extended from $x$} \mid
-%         \text{$x$ in the intersection in \eqref{eqn:alg:intersection}}
-%     }. \nn
-% }
-% For each such tuple $\bm{u}$, we compute the result of $\Q(\bm{u})$. The result of $\Q(\bm{v})$ is the union of the $\join(\Q(\bm{u}))$ of all $\bm{u} \in S_\ext$.
+
+\section{A Join Algorithm} \label{sec:alg}
+
+Let $\Q$ be a join with schema graph $\H = (\V, \E)$. Remarkably, the proof of the AGM bound inspires an algorithm for computing $\join(\Q)$ efficiently. Set $d = |\V|$ and fix an arbitrary order of the attributes in $\V$: $X_1, X_2, ..., X_d$. We aim to solve the following problem:
+
+\vslit
+
+\minipg{0.9\linewidth}{
+    {\bf Problem: Residual Join Computation.} \\
+    Let $t \in [0, d-1]$ be an integer. Given a tuple $\bm{u}$ over $U = \set{X_1, ..., X_{t}}$, the goal is to compute the result of the residual join $\Q(\bm{u})$ defined in \eqref{eqn:alg-proof:residual-join}.
+}
+
+\vslit
+
+\noindent Computing $\join(\Q)$ is equivalent to solving the above problem with $t = 0$ (and hence $U = \emptyset$).
+
+\extraspacing {\bf Algorithm.} For the base case, consider $t = d - 1$. If $|R(\bm{u})| = 0$ for any $R \in \Q$, we immediately return $\join(\Q) = \emptyset$. Otherwise, we compute the intersection on the right hand side of \eqref{eqn:agm-proof:residual-goal:intersection-base} and, for every value $x$ in the intersection, output a tuple $\bm{v}$ by concatenating $\bm{u}$ with $x$, namely: $\bm{v}(X_i) = \bm{u}(X_i)$ for all $i \in [d-1]$ and $\bm{v}(X_d) = x$.
+
+\vgap
+
+Inductively, suppose that we can solve the residual join computation problem for $t = i$ for some $i \in [d]$. Next, we explain how to solve the problem for $t = i-1$.  If $|R(\bm{u})| = 0$ for any $R \in \Q$, we immediately return $\join(\Q) = \emptyset$.  Otherwise, carry out the following steps:
+\myitems{
+    \item Compute the set $\I$ in \eqref{eqn:agm-proof:intersection} and then the set $S_\ext$ in \eqref{eqn:agm-proof:S_ext}.
+
+    \item For each $\bm{v} \in S_\ext$, output $\join(\Q(\bm{v}))$.
+}
+
 %
 % \section{Analysis}
 %
