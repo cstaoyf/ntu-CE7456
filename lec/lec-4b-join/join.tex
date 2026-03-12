@@ -68,7 +68,7 @@ We define a {\em join} as a set $\Q$ of relations. Let $\schema(\Q) = \bigcup_{R
 }
 Our discussion in this lecture assumes that $\schema(\Q)$ has a constant size.
 
-\extraspacing {\bf Math Conventions.} For an integer $x \ge 1$, the notation $[x]$ denotes the set $\{1, 2, ..., x\}$. Every logarithm $\log(\cdot)$ has base $2$. We define $0^0 = 0$.
+\extraspacing {\bf Math Conventions.} We define $0^0 = 0$. For an integer $x \ge 1$, the notation $[x]$ denotes the set $\{1, 2, ..., x\}$. Every logarithm $\log(\cdot)$ has base $2$.
 
 %The notation $\tO(.)$ hides a factor logarithmic to $\sum_{R \in \Q} |R|$.
 
@@ -176,7 +176,7 @@ Given a tuple $\bm{u}$ over a subset $U \subseteq \E$, we define a {\em residual
     \myeqn{
         |\join(\Q(\bm{u}))|
         &\le&
-        \prod_{e \in \E : e \setminus U \ne \emptyset} |R_e(\bm{u})|^{\W_e}. \label{eqn:agm-proof:residual-goal}
+        \prod_{e \in \E} |R_e(\bm{u})|^{\W_e}. \label{eqn:agm-proof:residual-goal}
     }
 \end{lemma}
 
@@ -184,14 +184,35 @@ Given a tuple $\bm{u}$ over a subset $U \subseteq \E$, we define a {\em residual
 
 Specially, if $t = 1$, then $U = \emptyset$ and $\Q = \Q(\bm{u})$ (because $R(\bm{u}) = R$ for all $R \in \Q$). Hence, Theorem~\ref{thm:agm} is a corollary of the above lemma with $U = \emptyset$.
 
-\extraspacing {\bf Proof of Lemma~\ref{lmm:agm-proof:residual}.} When $t = d$, we have $|R(\bm{u})| \le 1$ for all $R \in \Q$ and, hence, $|\join(\Q)| = 1$. Furthermore, if $|R(\bm{u})| = 0$ for any $R \in \Q$, the join result $\join(\Q)$ must be empty. The lemma therefore holds for $t= d$.
+\extraspacing {\bf Proof of Lemma~\ref{lmm:agm-proof:residual}.} As the base case, consider $t = d-1$. First note that
+\myeqn{
+    \sum_{e \in \E : X_d \in e} \W_e &\ge& 1
+    \label{eqn:agm-proof:residual-goal:1}
+}
+because $\W$ is a fractional edge cover of $\H = (\V, \E)$. For any relation $R \in \Q$ whose schema does not include $X_d$, the relation $R(\bm{u})$ has at most one tuple. On the other hand, for each relation $R \in \Q$ whose schema includes $X_d$, the tuples of $R(\bm{u})$ differ in their values on $X_d$. Using these facts, we can thus derive
+\myeqn{
+    |\join(\Q(\bm{u}))|
+    &\le&
+    \min_{e \in \E : X_d \in e} |R_e(\bm{u})| \nn \\
+    \explain{by \eqref{eqn:agm-proof:residual-goal:1}}
+    &\le&
+    \Big(
+        \min_{e \in \E : X_d \in e} |R_e(\bm{u})|
+    \Big)^{\sum_{e \in \E : X_d \in e} \W_e} \nn \\
+    &=&
+    \prod_{e \in \E : X_d \in e}
+    \Big(
+        \min_{e \in \E : X_d \in e} |R_e(\bm{u})|
+    \Big)^{\W_e} \nn \\
+    &\le&
+    \prod_{e \in \E : X_d \in e} |R_e(\bm{u})|^{\W_e}. \nn
+}
 
-\vgap
+%In this case, the right hand side of \eqref{eqn:agm-proof:residual-goal} can be re-written as $\prod_{e \in \E : X_d \in e} |R_e(\bm{u})|^{\W_e}$.
 
-Inductively, assuming that the lemma holds for $t = i$ (where $i \in [d]$), we prove its correctness for $t = i - 1$.
+\vslit
 
-\vgap
-
+Inductively, assuming that the lemma holds for $t = i$ (where $i \in [d]$), next we prove its correctness for $t = i - 1$.
 In general, given a relation $R$ and an attribute $X$ in its schema, we define
 \myeqn{
     \pi_X (R) &=& \set{\bm{v}(X) \mid \bm{v} \in R}. \label{eqn:agm-proof:proj}
@@ -204,12 +225,12 @@ Define:
 \myeqn{
     \I = \bigcap_{e \in \E : X_i \in e} \pi_{X_i}(R_e(\bm{u})). \label{eqn:agm-proof:intersection}
 }
-For each value $x \in \I$, we construct a tuple over $\set{X_1, ..., X_t}$ by ``extending $\bm{u}$ with $X_i = x$'', i.e., $\bm{u}(X_j) = \bm{v}(X_j)$ for all $j \in [i - 1]$ and $\bm{u}(X_i) = x$. This produces a set of ``extended'' tuples:
+For each value $x \in \I$, we construct a tuple $\bm{v}$ over $\set{X_1, ..., X_i}$ by ``extending $\bm{u}$ with $X_i = x$'', i.e., $\bm{v}(X_j) = \bm{u}(X_j)$ for all $j \in [i - 1]$ and $\bm{v}(X_i) = x$. This produces a set of ``extended'' tuples:
 \myeqn{
     S_\ext &=&
     \set{
         \text{tuple $\bm{v}$ extended from $\bm{u}$ and $x$} \mid
-        \text{$x \in \I$ where $\I$ computed in \eqref{eqn:agm:intersection}}
+        \text{$x \in \I$}
     }. \label{eqn:agm-proof:S_ext}
 }
 It is clear that
@@ -218,27 +239,81 @@ It is clear that
     &=&
     \bigcup_{\bm{v} \in S_\ext} \join(\bm{v}). \nn
 }
-Hence
+% Define
+% \myeqn{
+%     \E^\circ &=&
+%     \set{
+%         e \in \E \mid
+%         e \cap \set{X_{i+1}, ..., X_d} \ne \emptyset
+%     }. \nn
+% }
+With the above, we derive
 \myeqn{
     |\join(\bm{u})|
     &=&
     \sum_{\bm{v} \in S_\ext} |\join(\bm{v})| \nn \\
     \explain{by inductive assumption}
+    &\le&
+    \sum_{\bm{v} \in S_\ext}
+    \prod_{e \in \E}
+    |R_e(\bm{v})|^{\W_e} \nn \\
+    &\le&
+    \sum_{\bm{v} \in S_\ext}
+    \Big(
+    \prod_{e \in \E : X_i \in e}
+    |R_e(\bm{v})|^{\W_e}
+    \Big)
+    \Big(
+    \prod_{e \in \E : X_i \notin e}
+    |R_e(\bm{v})|^{\W_e}
+    \Big)
+    \label{eqn:agm-proof:1}
+}
+If an edge $e \in \E$ does not contain $X_i$, we have $R_e(\bm{v}) = R_e(\bm{u})$. Therefore:
+\myeqn{
+    \eqref{eqn:agm-proof:1}
     &=&
     \sum_{\bm{v} \in S_\ext}
-    \prod_{e \in \E_{U \cup \set{X_i}}}
-    |R_e(\bm{v})|^{\W_e} \nn \\
-    \explain{by Friedgut's Inequality in Appendix \ref{app:friedgut}}
+    \Big(
+    \prod_{e \in \E : X_i \in e}
+    |R_e(\bm{v})|^{\W_e}
+    \Big)
+    \Big(
+    \prod_{e \in \E : X_i \notin e}
+    |R_e(\bm{u})|^{\W_e}
+    \Big) \nn \\
+    &=&
+    \Big(
+    \prod_{e \in \E : X_i \notin e}
+    |R_e(\bm{u})|^{\W_e}
+    \Big)
+    \sum_{\bm{v} \in S_\ext}
+    \Big(
+    \prod_{e \in \E : X_i \in e}
+    |R_e(\bm{v})|^{\W_e}
+    \Big) \nn \\
+    \explain{by Friedgut's inequality in Appendix \ref{app:friedgut}}
     &\le&
-    \prod_{e \in \E_{U \cup \set{X_i}}}
+    \Big(
+    \prod_{e \in \E : X_i \notin e}
+    |R_e(\bm{u})|^{\W_e}
+    \Big)
+    \prod_{e \in \E: X_i \in e}
     \Big(
         \sum_{\bm{v} \in S_\ext} |R_e(\bm{v})|
     \Big)^{\W_e} \nn \\
     &\le&
-    \prod_{e \in \E_{U \cup \set{X_i}}}
-    |R_e(\bm{u})|^{\W_e} \nn
+    \Big(
+    \prod_{e \in \E : X_i \notin e}
+    |R_e(\bm{u})|^{\W_e}
+    \Big)
+    \prod_{e \in \E: X_i \in e}
+        |R_e(\bm{u})|^{\W_e} \nn \\
+    &=&
+    \prod_{e \in \E}
+    |R_e(\bm{u})|^{\W_e}. \nn
 }
-
+In particular, we were able to apply Friedgut's inequality in the above derivation because $\sum_{e \in \E: X_i \in e} \W_e \ge 1$ (as $\W$ is a fractional edge cover of $\H$). This completes the inductive step.
 
 
 \section{A Join Algorithm} \label{sec:alg}
