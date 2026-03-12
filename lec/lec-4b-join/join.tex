@@ -123,33 +123,18 @@ The AGM bound is tight:
 
 \vgap
 
-We prove Theorem~\ref{thm:agm} in this lecture and Theorem~\ref{thm:agm-tight} in the next lecture.
+We prove Theorem~\ref{thm:agm} in the next section and Theorem~\ref{thm:agm-tight} in the next lecture.
 
 \section{Proof of Theorem~\ref{thm:agm}} \label{sec:agm-proof}
 
-%\noindent {\bf Fundamental Definitions.}
-
-% In general, given a relation $R$ and an attribute $X$ in its schema, we define
-% \myeqn{
-%     \pi_X (R) &=& \set{\bm{u}(X) \mid \bm{u} \in R}. \label{eqn:agm-proof:proj}
-% }
-% This is known as the {\em projection} operator in relational algebra.
-%
-% \vgap
-%
-% Set
-% \myeqn{
-%     d = |\V|. \label{eqn:alg:d}
-% }
-
-Given a tuple $\bm{u}$ over a subset $U \subseteq \E$ (recall that $\E = \schema(\Q)$) and a relation $R \in \Q$, we define
+Given a tuple $\bm{u}$ over a subset $U \subseteq \E$ (recall that $\E = \schema(\Q)$) and a relation $R \in \Q$, we define a {\em residual relation} as:
 \myeqn{
     R(\bm{u}) &=&
     \set{
         \bm{v} \in R \mid \forall X \in U \cap \schema(R): \bm{v}(X) = \bm{u}(X)
     }. \label{eqn:alg:semi-join}
 }
-Intuitively, $R(\bm{u})$ includes those tuples of $R$ that are ``constrained'' by $\bm{u}$, in the sense that they must take the same value as $\bm{u}$ on every attribute in $U$. Note that if $U$ and $\schema(R)$ are disjoint, then $R(\bm{u}) = R$. In relational algebra, \eqref{eqn:alg:semi-join} is referred to as the {\em semi-join} of $R$ with $\bm{u}$. %After a preprocessing of $\tO(|R|)$ time, we can obtain $R(\bm{u})$ in $\tO(1 + |R(\bm{u})|)$ time.
+Intuitively, $R(\bm{u})$ includes those tuples of $R$ that are ``constrained'' by $\bm{u}$, in the sense that they must take the same value as $\bm{u}$ on every attribute in $U$. Note that if $U$ and $\schema(R)$ are disjoint, then $R(\bm{u}) = R$. In relational algebra, \eqref{eqn:alg:semi-join} is referred to as the {\em semi-join} of $R$ with $\bm{u}$.
 
 \vgap
 
@@ -162,14 +147,6 @@ Given a tuple $\bm{u}$ over a subset $U \subseteq \E$, we define a {\em residual
 }
 
 \vslit
-
-% Finally, for each subset $U \in \V$, we define
-% \myeqn{
-%     \E_U &=& \set{ e \in \E \mid e \cap U \ne \emptyset}.
-%     \label{eqn:alg:E_U}
-% }
-%
-%\vgap
 
 \begin{lemma} \label{lmm:agm-proof:residual}
     Fix an arbitrary order of the attributes in $\V$: $X_1, X_2, ..., X_d$ where $d = |\V|$. Let $t \in [0, d - 1]$ be an integer, and $\bm{u}$ a tuple over $U = \set{X_1, ..., X_t}$. We have
@@ -184,12 +161,25 @@ Given a tuple $\bm{u}$ over a subset $U \subseteq \E$, we define a {\em residual
 
 Specially, if $t = 1$, then $U = \emptyset$ and $\Q = \Q(\bm{u})$ (because $R(\bm{u}) = R$ for all $R \in \Q$). Hence, Theorem~\ref{thm:agm} is a corollary of the above lemma with $U = \emptyset$.
 
-\extraspacing {\bf Proof of Lemma~\ref{lmm:agm-proof:residual}.} As the base case, consider $t = d-1$. First note that
+\extraspacing {\bf Proof of Lemma~\ref{lmm:agm-proof:residual}.} In general, given a relation $R$ and an attribute $X$ in its schema, we define
 \myeqn{
-    \sum_{e \in \E : X_d \in e} \W_e &\ge& 1
+    \pi_X (R) &=& \set{\bm{v}(X) \mid \bm{v} \in R}. \label{eqn:agm-proof:proj}
+}
+This is the {\em projection} operator in relational algebra.
+
+\vgap
+
+We prove the lemma by induction. As the base case, consider $t = d-1$. Because $\W$ is a fractional edge cover of $\H = (\V, \E)$, it holds that
+\myeqn{
+    \sum_{e \in \E : X_d \in e} \W_e &\ge& 1.
     \label{eqn:agm-proof:residual-goal:1}
 }
-because $\W$ is a fractional edge cover of $\H = (\V, \E)$. For any relation $R \in \Q$ whose schema does not include $X_d$, the relation $R(\bm{u})$ has at most one tuple. On the other hand, for each relation $R \in \Q$ whose schema includes $X_d$, the tuples of $R(\bm{u})$ differ in their values on $X_d$. Using these facts, we can thus derive
+If a relation $R \in \Q$ does not include $X_d$ in its schema, the residual relation $R(\bm{u})$ has at most one tuple. Otherwise, the tuples of $R(\bm{u})$ differ only in their values on $X_d$. If $\bm{v}$ is a tuple in $\join(\Q(\bm{u}))$,  we must have
+\myeqn{
+    \bm{v}(X_d) &\in&
+        \bigcap_{e \in \E: X_d \in e} \pi_{X_d}(R_e(\bm{u})). \label{eqn:agm-proof:residual-goal:2}
+}
+Hence:
 \myeqn{
     |\join(\Q(\bm{u}))|
     &\le&
@@ -208,19 +198,13 @@ because $\W$ is a fractional edge cover of $\H = (\V, \E)$. For any relation $R 
     \prod_{e \in \E : X_d \in e} |R_e(\bm{u})|^{\W_e}. \nn
 }
 
-%In this case, the right hand side of \eqref{eqn:agm-proof:residual-goal} can be re-written as $\prod_{e \in \E : X_d \in e} |R_e(\bm{u})|^{\W_e}$.
-
 \vslit
 
-Inductively, assuming that the lemma holds for $t = i$ (where $i \in [d]$), next we prove its correctness for $t = i - 1$.
-In general, given a relation $R$ and an attribute $X$ in its schema, we define
+Inductively, assuming that the lemma holds for $t = i$ (where $i \in [d]$), next we prove its correctness for $t = i - 1$. Because $\W$ is a fractional edge cover of $\H = (\V, \E)$, it holds that
 \myeqn{
-    \pi_X (R) &=& \set{\bm{v}(X) \mid \bm{v} \in R}. \label{eqn:agm-proof:proj}
+    \sum_{e \in \E: X_i \in e} &\ge& 1.
+    \label{eqn:agm-proof:residual-goal:3}
 }
-This is the {\em projection} operator in relational algebra.
-
-\vgap
-
 Define:
 \myeqn{
     \I = \bigcap_{e \in \E : X_i \in e} \pi_{X_i}(R_e(\bm{u})). \label{eqn:agm-proof:intersection}
@@ -239,14 +223,6 @@ It is clear that
     &=&
     \bigcup_{\bm{v} \in S_\ext} \join(\bm{v}). \nn
 }
-% Define
-% \myeqn{
-%     \E^\circ &=&
-%     \set{
-%         e \in \E \mid
-%         e \cap \set{X_{i+1}, ..., X_d} \ne \emptyset
-%     }. \nn
-% }
 With the above, we derive
 \myeqn{
     |\join(\bm{u})|
@@ -292,7 +268,6 @@ If an edge $e \in \E$ does not contain $X_i$, we have $R_e(\bm{v}) = R_e(\bm{u})
     \prod_{e \in \E : X_i \in e}
     |R_e(\bm{v})|^{\W_e}
     \Big) \nn \\
-    \explain{by Friedgut's inequality in Appendix \ref{app:friedgut}}
     &\le&
     \Big(
     \prod_{e \in \E : X_i \notin e}
@@ -302,6 +277,9 @@ If an edge $e \in \E$ does not contain $X_i$, we have $R_e(\bm{v}) = R_e(\bm{u})
     \Big(
         \sum_{\bm{v} \in S_\ext} |R_e(\bm{v})|
     \Big)^{\W_e} \nn \\
+    &&
+    \explain{by \eqref{eqn:agm-proof:residual-goal:3} and Friedgut's inequality in Appendix \ref{app:friedgut}}
+    \nn \\[2mm]
     &\le&
     \Big(
     \prod_{e \in \E : X_i \notin e}
@@ -313,103 +291,69 @@ If an edge $e \in \E$ does not contain $X_i$, we have $R_e(\bm{v}) = R_e(\bm{u})
     \prod_{e \in \E}
     |R_e(\bm{u})|^{\W_e}. \nn
 }
-In particular, we were able to apply Friedgut's inequality in the above derivation because $\sum_{e \in \E: X_i \in e} \W_e \ge 1$ (as $\W$ is a fractional edge cover of $\H$). This completes the inductive step.
+This completes the inductive step.
 
-
-\section{A Join Algorithm} \label{sec:alg}
-
-\noindent {\bf Fundamental Definitions.} In general, given a relation $R$ and an attribute $X$ in its schema, we define
-\myeqn{
-    \pi_X (R) &=& \set{\bm{u}(X) \mid \bm{u} \in R}. \nn
-}
-This is known as the {\em projection} operator in relational algebra.
-
-\vgap
-
-Let $\Q$ be a join with schema graph $\H = (\V, \E)$. Given a tuple $\bm{u}$ over a set $U \subseteq \schema(\Q)$ of attributes and a relation $R \in \Q$, we define
-\myeqn{
-    R(\bm{u}) &=&
-    \set{
-        \bm{v} \in R \mid \forall X \in U \cap \schema(R): \bm{v}(X) = \bm{u}(X)
-    }. \label{eqn:alg:semi-join}
-}
-Note that if $U$ and $\schema(R)$ are disjoint, then $R(\bm{u}) = R$. In relational algebra, \eqref{eqn:alg:semi-join} is referred to as the {\em semi-join} of $R$ with $\bm{u}$. %After a preprocessing of $\tO(|R|)$ time, we can obtain $R(\bm{u})$ in $\tO(1 + |R(\bm{u})|)$ time.
-
-\vgap
-
-Given a tuple $\bm{u}$ over a set $U \subseteq \schema(\Q)$, we define a {\em residual join} as follows:
-\myeqn{
-    \Q(\bm{u}) &=&
-    \set{
-        R_e(\bm{u}) \mid e \in \E
-    }. \label{eqn:alg:residual}
-}
-
-Finally, for each attribute $X \in \E$, we define
-\myeqn{
-    \E(X) &=& \set{ e \in \E \mid X \in e}.
-    \label{eqn:alg:E-X}
-}
-
-\extraspacing {\bf Algorithm.} Set
-\myeqn{
-    d = |\V|. \label{eqn:alg:d}
-}
-Fix an arbitrary order of the attributes in $\V$: $X_1, X_2, ..., X_d$. To generate a tuple in $\join(\Q)$, we need to decide its value on each of the attributes. The idea of the algorithm is to finalize one value at a time. As the base case, suppose that we have finalize the values on $X_1, ..., X_{d-1}$. In other words, we have obtained a tuple $\bm{u}$ over $U = \set{X_1, ..., X_{d-1}}$. It remains to find all tuples $\bm{v} \in \join(\Q)$ that agree with $\bm{u}$ on all of $X_1, ..., X_{d-1}$, that is, $\bm{v}(X_i) = \bm{u}(X_i)$ for all $i \in [d-1]$. These tuples constitute exactly the result of the residual join $\Q(\bm{u})$. Computing all such $\bm{v}$ is equivalent to finding a set intersection:
-\myeqn{
-    \bigcap_{e \in \E(X_d)} \pi_{X_d}(R_e(\bm{u})). \nn
-}
-Recall that $R_e$ is the relation in $\Q$ whose schema is $e$.
-
-\vgap
-
-Inductively, suppose that we know how to compute the result of $\Q(\bm{u})$ for any tuple $\bm{u}$ over $\set{X_1, ..., X_t}$ where $t$ is an integer satisfying $t \ge 1$. Next, we show how compute the result of $\Q(\bm{v})$ for any tuple $\bm{v}$ over $\set{X_1, ..., X_{t-1}}$. Note that if $t = 1$, then $\bm{v}$ is an empty tuple, in which case $\Q(\bm{v}) = \Q$.
-
-\vgap
-
-First, we compute
-\myeqn{
-    \bigcap_{e \in \E(X_t)} \pi_{X_t}(R_e \ltimes \bm{v}). \label{eqn:alg:intersection}
-}
-For each value $x$ in the intersection of \eqref{eqn:alg:intersection}, we construct a tuple over $\set{X_1, ..., X_t}$ by ``extending $\bm{v}$ with $X_t = v$'', i.e., $\bm{u}(X_i) = \bm{v}(X_i)$ for all $i \in [t-1]$ and $\bm{u}(X_t) = x$. This results in a set of ``extended'' tuples defined as:
-\myeqn{
-    S_\ext &=&
-    \set{
-        \text{tuple $\bm{u}$ extended from $x$} \mid
-        \text{$x$ in the intersection in \eqref{eqn:alg:intersection}}
-    }. \nn
-}
-For each such tuple $\bm{u}$, we compute the result of $\Q(\bm{u})$. The result of $\Q(\bm{v})$ is the union of the $\join(\Q(\bm{u}))$ of all $\bm{u} \in S_\ext$.
-
-\section{Analysis}
-
-\extraspacing {\bf Analysis.} Let us start with a technical lemma:
-
-\begin{lemma} \label{lmm:alg:decomp}
-   Let $\W$ be an arbitrary fractional edge cover of $\H$, and $S$ be the set of values in the intersection computed at \eqref{eqn:alg:intersection}. We have:
-   \myeqn{
-        \sum_{\bm{u} \in S_\ext} \prod_{e \in \E(X_j)} |R_e(\bm{u})|^{\W_e} &\le&  \nn
-   }
-\end{lemma}
-
-
-
-
-
-We make the following assumptions in our analysis:
-\myitems{
-    \item Given a tuple $\bm{u}$ over a set $U \subseteq \schema(\Q)$ and a relation $R \in \Q$, we can compute $R(\bm{u})$ --- defined in \eqref{eqn:alg:semi-join} --- in $O(1 + |R(\bm{u})|)$ time and $|R(\bm{u})|$ in $O(1)$ time.
-
-    \item Given a relation $R \in \Q$ and a tuple $\bm{u}$ over $\schema(R)$, we can decide whether $\bm{u} \in R$ in $O(1)$ time.
-}
-These assumptions can be removed by slowing down the running time we will prove by a logarithmic factor (details left to you).
-
-\begin{lemma}
-    The intersection in \eqref{eqn:alg:intersection} can be computed in $O(\min_{e \in \E(X_t)} |R_e \ltimes \bm{v}|)$ time.
-\end{lemma}
-\begin{proof}
-   Define $e^* = \argmin_{e \in \E(X_t)} |R_e \ltimes \bm{v}|$. First, extract $R_{e^*} \ltimes \bm{v}$. For each tuple $\bm{u} \in R_{e^*} \ltimes \bm{v}$, check whether $\bm{u} \in R_e$ for every other $e \in \E(X_t)$. As $\E(X_t)$ has a constant size, the total running time is $O(1 + |R_{e^*} \ltimes \bm{v}|)$.
-\end{proof}
+%
+% \section{A Join Algorithm} \label{sec:alg}
+%
+% Set $d = |\V|$ and fix an arbitrary order of the attributes in $\V$: $X_1, X_2, ..., X_d$. To generate a tuple in $\join(\Q)$, we need to decide its value on each attribute. The idea of the algorithm is to finalize one value at a time.
+%
+% \vgap
+%
+% As the base case, suppose that we have finalized the values on $X_1, ..., X_{d-1}$. In other words, we have obtained a tuple $\bm{u}$ over $U = \set{X_1, ..., X_{d-1}}$ such that $|R(\bm{u})| \ge 1$ for all $R \in \Q$. It remains to find all tuples $\bm{v} \in \join(\Q)$ that agree with $\bm{u}$ on all of $X_1, ..., X_{d-1}$, that is, $\bm{v}(X_i) = \bm{u}(X_i)$ for all $i \in [d-1]$ --- those tuples constitute exactly the result of the residual join $\Q(\bm{u})$. Computing all such $\bm{v}$ is equivalent to finding a set intersection:
+% \myeqn{
+%     \bigcap_{e \in \E: X_d \in e} \pi_{X_d}(R_e(\bm{u})). \nn
+% }
+%
+% \vslit
+%
+% Inductively, suppose that we know how to compute the result of $\Q(\bm{u})$ for any tuple $\bm{u}$ over $\set{X_1, ..., X_t}$ where $t$ is an integer satisfying $t \ge 1$. Next, we show how compute the result of $\Q(\bm{v})$ for any tuple $\bm{v}$ over $\set{X_1, ..., X_{t-1}}$. Note that if $t = 1$, then $\bm{v}$ is an empty tuple, in which case $\Q(\bm{v}) = \Q$.
+%
+% \vgap
+%
+% First, we compute
+% \myeqn{
+%     \bigcap_{e \in \E(X_t)} \pi_{X_t}(R_e \ltimes \bm{v}). \label{eqn:alg:intersection}
+% }
+% For each value $x$ in the intersection of \eqref{eqn:alg:intersection}, we construct a tuple over $\set{X_1, ..., X_t}$ by ``extending $\bm{v}$ with $X_t = v$'', i.e., $\bm{u}(X_i) = \bm{v}(X_i)$ for all $i \in [t-1]$ and $\bm{u}(X_t) = x$. This results in a set of ``extended'' tuples defined as:
+% \myeqn{
+%     S_\ext &=&
+%     \set{
+%         \text{tuple $\bm{u}$ extended from $x$} \mid
+%         \text{$x$ in the intersection in \eqref{eqn:alg:intersection}}
+%     }. \nn
+% }
+% For each such tuple $\bm{u}$, we compute the result of $\Q(\bm{u})$. The result of $\Q(\bm{v})$ is the union of the $\join(\Q(\bm{u}))$ of all $\bm{u} \in S_\ext$.
+%
+% \section{Analysis}
+%
+% \extraspacing {\bf Analysis.} Let us start with a technical lemma:
+%
+% \begin{lemma} \label{lmm:alg:decomp}
+%    Let $\W$ be an arbitrary fractional edge cover of $\H$, and $S$ be the set of values in the intersection computed at \eqref{eqn:alg:intersection}. We have:
+%    \myeqn{
+%         \sum_{\bm{u} \in S_\ext} \prod_{e \in \E(X_j)} |R_e(\bm{u})|^{\W_e} &\le&  \nn
+%    }
+% \end{lemma}
+%
+%
+%
+%
+%
+% We make the following assumptions in our analysis:
+% \myitems{
+%     \item Given a tuple $\bm{u}$ over a set $U \subseteq \schema(\Q)$ and a relation $R \in \Q$, we can compute $R(\bm{u})$ --- defined in \eqref{eqn:alg:semi-join} --- in $O(1 + |R(\bm{u})|)$ time and $|R(\bm{u})|$ in $O(1)$ time.
+%
+%     \item Given a relation $R \in \Q$ and a tuple $\bm{u}$ over $\schema(R)$, we can decide whether $\bm{u} \in R$ in $O(1)$ time.
+% }
+% These assumptions can be removed by slowing down the running time we will prove by a logarithmic factor (details left to you).
+%
+% \begin{lemma}
+%     The intersection in \eqref{eqn:alg:intersection} can be computed in $O(\min_{e \in \E(X_t)} |R_e \ltimes \bm{v}|)$ time.
+% \end{lemma}
+% \begin{proof}
+%    Define $e^* = \argmin_{e \in \E(X_t)} |R_e \ltimes \bm{v}|$. First, extract $R_{e^*} \ltimes \bm{v}$. For each tuple $\bm{u} \in R_{e^*} \ltimes \bm{v}$, check whether $\bm{u} \in R_e$ for every other $e \in \E(X_t)$. As $\E(X_t)$ has a constant size, the total running time is $O(1 + |R_{e^*} \ltimes \bm{v}|)$.
+% \end{proof}
 
 \bibliographystyle{plainurl}% the mandatory bibstyle
 \bibliography{ref}
