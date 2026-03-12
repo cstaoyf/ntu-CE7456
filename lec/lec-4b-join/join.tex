@@ -58,7 +58,7 @@ Today, we discuss the {\em natural join} problem, which lies at the core of data
 
 \vgap
 
-Let $\boldatt$ be a finite set, where each element is called an {\em attribute}. For a non-empty set $\X \subseteq \boldatt$ of attributes, a {\em tuple} over $\X$ is a function $\bm{u}: \X \rightarrow \intdom$ (where $\intdom$ represents the set of integers). For any non-empty subset $\Y \subseteq \X$, we define $\bm{u}[\Y]$ --- called the {\em projection} of $\bm{u}$ on $\Y$ --- as the tuple $\bm{v}$ over $\Y$ satisfying $\bm{v}(Y) = \bm{u}(Y)$ for every attribute $Y \in \Y$. A {\em relation} $R$ is a set of tuples over the same set of attributes; we refer to that set as the {\em schema} of $R$ and represent it as $\schema(R)$.
+Let $\boldatt$ be a finite set, where each element is called an {\em attribute}. For a non-empty set $\X \subseteq \boldatt$ of attributes, a {\em tuple} over $\X$ is a function $\bm{u}: \X \rightarrow \intdom$ (where $\intdom$ represents the set of integers); for each $X \in \X$, we refer to $\bm{u}(X)$ as the {\em value} of $\bm{u}$ on $X$. For any non-empty subset $\Y \subseteq \X$, we define $\bm{u}[\Y]$ --- called the {\em projection} of $\bm{u}$ on $\Y$ --- as the tuple $\bm{v}$ over $\Y$ satisfying $\bm{v}(Y) = \bm{u}(Y)$ for every attribute $Y \in \Y$. A {\em relation} $R$ is a set of tuples over the same set of attributes; we refer to that set as the {\em schema} of $R$ and represent it as $\schema(R)$.
 
 \vgap
 
@@ -132,8 +132,8 @@ Given a tuple $\bm{u}$ over a subset $U \subseteq \E$ (recall that $\E = \schema
     R(\bm{u}) &=&
     \set{
         \bm{v} \in R \mid \forall X \in U \cap \schema(R): \bm{v}(X) = \bm{u}(X)
-    }. \nn
-    %\label{eqn:alg-proof:semi-join}
+    }. %\nn
+    \label{eqn:alg-proof:residual-rel}
 }
 Intuitively, $R(\bm{u})$ includes those tuples of $R$ that are ``constrained'' by $\bm{u}$, in the sense that they must take the same value as $\bm{u}$ on every attribute in $U$. Note that if $U$ and $\schema(R)$ are disjoint, then $R(\bm{u}) = R$.
 
@@ -150,7 +150,7 @@ Given a tuple $\bm{u}$ over a subset $U \subseteq \E$, we define a {\em residual
 \vslit
 
 \begin{lemma} \label{lmm:agm-proof:residual}
-    Fix an arbitrary order of the attributes in $\V$: $X_1, X_2, ..., X_d$ where $d = |\V|$. Let $t \in [0, d]$ be an integer, and $\bm{u}$ a tuple over $U = \set{X_1, ..., X_t}$ such that $R(\bm{u}) \ne \emptyset$ for every $R \in \Q$. We have
+    Fix an arbitrary order of the attributes in $\V$: $X_1, X_2, ..., X_d$ where $d = |\V|$. Let $t \in [0, d]$ be an integer and $\bm{u}$ be a tuple over $U = \set{X_1, ..., X_t}$ such that $R(\bm{u}) \ne \emptyset$ for every $R \in \Q$. We have
     \myeqn{
         |\join(\Q(\bm{u}))|
         &\le&
@@ -299,14 +299,14 @@ It is clear that
         |R_e(\bm{u})|^{\W_e} \nn \\
     &=&
     \prod_{e \in \E}
-    |R_e(\bm{u})|^{\W_e}. \nn
+    |R_e(\bm{u})|^{\W_e}. \label{eqn:agm-proof:residual-goal:4}
 }
 This completes the inductive step.
 
 
 \section{A Join Algorithm} \label{sec:alg}
 
-Let $\Q$ be a join with schema graph $\H = (\V, \E)$. Remarkably, the proof of the AGM bound inspires an algorithm for computing $\join(\Q)$ efficiently. Set $d = |\V|$ and fix an arbitrary order of the attributes in $\V$: $X_1, X_2, ..., X_d$. We aim to solve the following {\em residual join computation problem}:
+Let $\Q$ be a join with schema graph $\H = (\V, \E)$. Remarkably, the proof of the AGM bound inspires an algorithm for computing $\join(\Q)$. Set $d = |\V|$ and fix an arbitrary order of the attributes in $\V$: $X_1, X_2, ..., X_d$. We aim to solve the following {\em residual join computation problem}:
 
 \vslit
 
@@ -316,42 +316,81 @@ Let $\Q$ be a join with schema graph $\H = (\V, \E)$. Remarkably, the proof of t
 
 \vslit
 
-\noindent Computing $\join(\Q)$ is equivalent to solving the above problem with $t = 0$ (and hence $U = \emptyset$).
+\noindent Computing $\join(\Q)$ is equivalent to solving the above with $t = 0$ (and hence $U = \emptyset$).
 
 \extraspacing {\bf Algorithm.} The base case $t = d$ can be trivially settled in $O(1)$ time. Inductively, suppose that we can solve the problem for $t = i$ for some $i \in [d]$. We solve the problem for $t = i-1$ as follows:
-\myitems{
+\myenums{
     \item Find the set $\I$ in \eqref{eqn:agm-proof:intersection} and construct the set $S_\ext$ in \eqref{eqn:agm-proof:S_ext}.
 
     \item For each $\bm{v} \in S_\ext$, output $\join(\Q(\bm{v}))$.
 }
 
-%
-% \section{Analysis}
-%
-% \extraspacing {\bf Analysis.} Let us start with a technical lemma:
-%
-% \begin{lemma} \label{lmm:alg:decomp}
-%    Let $\W$ be an arbitrary fractional edge cover of $\H$, and $S$ be the set of values in the intersection computed at \eqref{eqn:alg:intersection}. We have:
-%    \myeqn{
-%         \sum_{\bm{u} \in S_\ext} \prod_{e \in \E(X_j)} |R_e(\bm{u})|^{\W_e} &\le&  \nn
-%    }
-% \end{lemma}
-%
-%
-%
-%
-%
-% We make the following assumptions in our analysis:
-% \myitems{
-%     \item Given a tuple $\bm{u}$ over a set $U \subseteq \schema(\Q)$ and a relation $R \in \Q$, we can compute $R(\bm{u})$ --- defined in \eqref{eqn:alg:semi-join} --- in $O(1 + |R(\bm{u})|)$ time and $|R(\bm{u})|$ in $O(1)$ time.
-%
-%     \item Given a relation $R \in \Q$ and a tuple $\bm{u}$ over $\schema(R)$, we can decide whether $\bm{u} \in R$ in $O(1)$ time.
-% }
-% These assumptions can be removed by slowing down the running time we will prove by a logarithmic factor (details left to you).
-%
-% \begin{lemma}
-%     The intersection in \eqref{eqn:alg:intersection} can be computed in $O(\min_{e \in \E(X_t)} |R_e \ltimes \bm{v}|)$ time.
-% \end{lemma}
+\extraspacing {\bf Analysis.} We make the following assumptions in our analysis:
+\myitems{
+    \item {{\bf A1:}} Given a tuple $\bm{u}$ over a set $U = \set{X_1, ..., X_t}$ where $t \in [0, d]$ and a relation $R \in \Q$, we can compute $|R(\bm{u})|$ in $O(1)$ time.
+
+    %$R(\bm{u})$ --- defined in \eqref{eqn:alg-proof:residual-rel} --- in $O(1 + |R(\bm{u})|)$ time and
+
+    \item {{\bf A2:}}  Given a tuple $\bm{u}$ over a set $U = \set{X_1, ..., X_t}$ where $t \in [0, d-1]$, a relation $R \in \Q$, and a value $x$, we can test whether $R(\bm{u})$ has a tuple whose value on $X_{t+1}$ is $x$.
+}
+These assumptions can be removed by slowing down the running time in the next lemma by at most a logarithmic factor (details left to you).
+
+\begin{lemma} \label{lmm:alg:residual}
+    Fix an arbitrary fractional edge cover $\W$ of $\H$.
+    The residual join computation problem can be solved in time
+    \myeqn{
+        O\Big(
+        \prod_{e \in \E} |R_e(\bm{u})|^{\W_e}
+        \Big) \label{eqn:alg:residual-time}
+    }
+    under assumptions {\bf A1} and {\bf A2}.
+\end{lemma}
+
+\begin{proof}
+   The base case $t = d$ is straightforward and omitted. Next, assuming that the claim holds for $t = i \in [d]$, we prove the claim for $t = i - 1$.
+
+   \vgap
+
+   In Step 1 of the algorithm, the set $\I$ in \eqref{eqn:agm-proof:intersection} (and, hence, $S_\ext$ in \eqref{eqn:agm-proof:S_ext}) can be computed in
+   \myeqn{
+        O\Big(
+            \min_{e \in \E: X_i \in e} |R_e(\bm{u})|
+        \Big) \label{eqn:alg:residual:1}
+   }
+   time as follows. First, spend $O(1)$ time to find the edge $e^* = \argmin_{e \in \E: X_i \in e} |R_e(\bm{u})|$ (due to assumption {\bf A1}). Then, for each tuple in $R_{e^*}(\bm{u})$, we can test in $O(1)$ time whether the tuple's value on $X_i$ belongs to $\I$ (due to assumption {\bf A2}). We show that \eqref{eqn:alg:residual:1} is bounded by \eqref{eqn:alg:residual-time}. Because $\W$ is a fractional edge cover of $\H = (\V, \E)$, it holds that
+    \myeqn{
+        \sum_{e \in \E : X_i \in e} \W_e &\ge& 1.
+        \label{eqn:alg:residual:2}
+    }
+    Hence:
+    \myeqn{
+        \min_{e \in \E: X_i \in e} |R_e(\bm{u})|
+        &\le&
+        \Big(
+            \min_{e \in \E : X_i \in e} |R_e(\bm{u})|
+        \Big)^{\sum_{e \in \E : X_i \in e} \W_e} \nn \\
+        &=&
+        \prod_{e \in \E : X_i \in e}
+        \Big(
+            \min_{e \in \E : X_i \in e} |R_e(\bm{u})|
+        \Big)^{\W_e} \nn \\
+        &\le&
+        \prod_{e \in \E : X_i \in e} |R_e(\bm{u})|^{\W_e}. \nn
+    }
+
+    \vslit
+
+    Let us now turn to Step 2 of the algorithm. By the inductive assumption, for each $\bm{v} \in S_\ext$, the result of $\Q(\bm{v})$ can be computed in $O(\prod_{e \in \E} |R_e(\bm{v})|^{\W_e})$ time. Therefore, the total cost of Step 2 is
+    \myeqn{
+        O\Big(
+            \sum_{\bm{v} \in S_\ext}
+            \prod_{e \in \E} |R_e(\bm{v})|^{\W_e}
+        \Big) \nn
+    }
+    which, by the derivation in \eqref{eqn:agm-proof:residual-goal:4}, is bounded by \eqref{eqn:alg:residual-time}.
+\end{proof}
+
+
 % \begin{proof}
 %    Define $e^* = \argmin_{e \in \E(X_t)} |R_e \ltimes \bm{v}|$. First, extract $R_{e^*} \ltimes \bm{v}$. For each tuple $\bm{u} \in R_{e^*} \ltimes \bm{v}$, check whether $\bm{u} \in R_e$ for every other $e \in \E(X_t)$. As $\E(X_t)$ has a constant size, the total running time is $O(1 + |R_{e^*} \ltimes \bm{v}|)$.
 % \end{proof}
