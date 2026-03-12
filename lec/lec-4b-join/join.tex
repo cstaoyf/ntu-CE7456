@@ -3,6 +3,7 @@
 \include{./def/yf-def}
 
 \usepackage{wasysym}
+%\usepackage{times}
 
 \title{}
 \author{}
@@ -38,8 +39,8 @@
 
 
 \def\extraspacing{\vspace{4mm} \noindent}
-\def\vgap{\vspace{2mm}}
-\def\vslit{\vspace{0.5mm}}
+\def\vgap{\vspace{4mm}}
+\def\vslit{\vspace{2mm}}
 
 \begin{document}
 
@@ -53,11 +54,11 @@
     \end{center}
 }
 
-Today, we discuss the {\em natural join} problem, which generalizes the subgraph enumeration problem in the previous lecture and is a problem at the core of database theory.
+Today, we discuss the {\em natural join} problem, which lies at the core of database theory and generalizes the subgraph enumeration problem in the previous lecture.
 
 \vgap
 
-Let $\boldatt$ be a finite set, where each element is called an {\em attribute}. For a non-empty set $\X \subseteq \boldatt$ of attributes, a {\em tuple} over $\X$ is a function $\bm{u}: \X \rightarrow \intdom$ (where $\intdom$ represents the set of integers). For any non-empty subset $\Y \subseteq \X$, we define $\bm{u}[\Y]$ --- called the {\em projection} of $\bm{u}$ on $\Y$ --- as the tuple $\bm{v}$ over $\Y$ satisfying $\bm{v}(Y) = \bm{u}(Y)$ for every attribute $Y \in \Y$. A {\em relation} $R$ is a set of tuples over the same set $\Z$ of attributes; we refer to $\Z$ as the {\em schema} of $R$ and represent it as $\schema(R)$.
+Let $\boldatt$ be a finite set, where each element is called an {\em attribute}. For a non-empty set $\X \subseteq \boldatt$ of attributes, a {\em tuple} over $\X$ is a function $\bm{u}: \X \rightarrow \intdom$ (where $\intdom$ represents the set of integers). For any non-empty subset $\Y \subseteq \X$, we define $\bm{u}[\Y]$ --- called the {\em projection} of $\bm{u}$ on $\Y$ --- as the tuple $\bm{v}$ over $\Y$ satisfying $\bm{v}(Y) = \bm{u}(Y)$ for every attribute $Y \in \Y$. A {\em relation} $R$ is a set of tuples over the same set of attributes; we refer to that set as the {\em schema} of $R$ and represent it as $\schema(R)$.
 
 \vgap
 
@@ -65,15 +66,15 @@ We define a {\em join} as a set $\Q$ of relations. Let $\schema(\Q) = \bigcup_{R
 \myeqn{
     \join(\Q) &=& \{\textrm{tuple $\bm{u}$ over $\schema(\Q)$} \mid \forall R \in \Q: \bm{u}[\schema(R)] \in R\}. \label{eqn:join-rslt}
 }
-We consider that $\schema(\Q)$ has a constant size.
+Our discussion in this lecture assumes that $\schema(\Q)$ has a constant size.
 
-\extraspacing {\bf Math Conventions.} For an integer $x \ge 1$, the notation $[x]$ denotes the set $\{1, 2, ..., x\}$. Every logarithm $\log(\cdot)$ has base $2$.
+\extraspacing {\bf Math Conventions.} For an integer $x \ge 1$, the notation $[x]$ denotes the set $\{1, 2, ..., x\}$. Every logarithm $\log(\cdot)$ has base $2$. We define $0^0 = 0$.
 
 %The notation $\tO(.)$ hides a factor logarithmic to $\sum_{R \in \Q} |R|$.
 
 \section{Schema Graphs and Fractional Edge Covers} \label{sec:schema}
 
-Given a join $\Q$, we use $\H$ to denote the hypergraph $(\V, \E)$ --- called the {\em schema graph} of $\Q$ --- where
+Given a join $\Q$, we define its {\em schema graph} as the hypergraph $\H = (\V, \E)$ where
 \myeqn{
     \V &=& \schema(\Q) \nn \\
     \E &=& \set{\schema(R) \mid R \in \Q}. \nn
@@ -82,7 +83,7 @@ Note that there is one-one correspondence between the relations in $\Q$ and the 
 
 \vgap
 
-Next, we regard $\E$ as a ``space'' and define vectors over it. Every such vector $\W$ has a real-valued component $\W_e$ on each hyperedge $e \in \E$. The vector $\W$ is said to be a {\em fractional edge cover} of $\H$ if it satisfies two conditions:
+Regard $\E$ as a ``space'', next we define vectors over it. Every such vector $\W$ has a real-valued component $\W_e$ on each hyperedge $e \in \E$. The vector $\W$ is said to be a {\em fractional edge cover} of $\H$ if it satisfies two conditions:
 \myitems{
     \item $0 \le \W_e \le 1$ for every $e \in \E$.
     \item $\sum_{e \in \E : X \in e} \W_e \ge 1$ for every $X \in \V$.
@@ -95,22 +96,32 @@ Let $\Q$ be a join with schema graph $\H = (\V, \E)$. Every fractional edge cove
     \mit{AGM}_\W &=& \prod_{e \in \E} |R_e|^{\W_e}. \label{eqn:agm}
 }
 
-%We will prove later:
+\vgap
 
 \begin{theorem} \label{thm:agm}
    For any fractional edge cover $\W$ of $\H$., it holds that $|\join(\Q)| \le \mit{AGM}_\W$.
 \end{theorem}
 
-An {\em optimal fractional edge cover} of $\H$ is a fractional edge cover $\W^*$ minimizing \eqref{eqn:agm}. The {\em AGM bound} of $\Q$ is defined as the AGM value of $\W^*$. The AGM bound is tight:
+\vgap
+
+An {\em optimal fractional edge cover} of $\H$ is a fractional edge cover $\W^*$ minimizing \eqref{eqn:agm}. The {\em AGM bound} of $\Q$ is defined as the AGM value of $\W^*$.
+
+\vgap
+
+The AGM bound is tight:
+
+\vgap
 
 \begin{theorem} \label{thm:agm-tight}
-   Fix an arbitrary hypergraph $\H = (\V, \E)$ and an arbitrary integer vector $N$ over $\E$ (i.e., for each $e \in \E$, $N$ has a component $N_e$, which is a positive integer). There exists a join $\Q$ satisfying
+   Fix an arbitrary hypergraph $\H = (\V, \E)$ and an arbitrary integer vector $N$ over $\E$ such that $N_e \ge 1$ for each $e \in \E$. There exists a join $\Q$ satisfying
    \myitems{
         \item the schema graph of $\Q$ is $\H$;
         \item for each $e \in \E$, $|R_e| = N_e$;
         \item $|\join(\Q)|$ is at least the AGM bound of $\Q$ up to a constant factor.
    }
 \end{theorem}
+
+\vgap
 
 We prove Theorem~\ref{thm:agm} in this lecture and Theorem~\ref{thm:agm-tight} in the next lecture.
 
@@ -138,7 +149,7 @@ Given a tuple $\bm{u}$ over a subset $U \subseteq \E$ (recall that $\E = \schema
         \bm{v} \in R \mid \forall X \in U \cap \schema(R): \bm{v}(X) = \bm{u}(X)
     }. \label{eqn:alg:semi-join}
 }
-Note that if $U$ and $\schema(R)$ are disjoint, then $R(\bm{u}) = R$. In relational algebra, \eqref{eqn:alg:semi-join} is referred to as the {\em semi-join} of $R$ with $\bm{u}$. %After a preprocessing of $\tO(|R|)$ time, we can obtain $R(\bm{u})$ in $\tO(1 + |R(\bm{u})|)$ time.
+Intuitively, $R(\bm{u})$ includes those tuples of $R$ that are ``constrained'' by $\bm{u}$, in the sense that they must take the same value as $\bm{u}$ on every attribute in $U$. Note that if $U$ and $\schema(R)$ are disjoint, then $R(\bm{u}) = R$. In relational algebra, \eqref{eqn:alg:semi-join} is referred to as the {\em semi-join} of $R$ with $\bm{u}$. %After a preprocessing of $\tO(|R|)$ time, we can obtain $R(\bm{u})$ in $\tO(1 + |R(\bm{u})|)$ time.
 
 \vgap
 
@@ -150,24 +161,83 @@ Given a tuple $\bm{u}$ over a subset $U \subseteq \E$, we define a {\em residual
     }. \label{eqn:alg:residual}
 }
 
-Finally, for each subset $U \in \V$, we define
-\myeqn{
-    \E_U &=& \set{ e \in \E \mid e \cap U \ne \emptyset}.
-    \label{eqn:alg:E_U}
-}
+\vslit
+
+% Finally, for each subset $U \in \V$, we define
+% \myeqn{
+%     \E_U &=& \set{ e \in \E \mid e \cap U \ne \emptyset}.
+%     \label{eqn:alg:E_U}
+% }
+%
+%\vgap
 
 \begin{lemma} \label{lmm:agm-proof:residual}
-    Fix an arbitrary order of the attributes in $\V$: $X_1, X_2, ..., X_d$ where $d = |\V|$. Let $t$ be an integer satisfying $0 \le t \le d$, and $\bm{u}$ a tuple over $U = \set{X_1, ..., X_t}$. We have
+    Fix an arbitrary order of the attributes in $\V$: $X_1, X_2, ..., X_d$ where $d = |\V|$. Let $t \in [0, d - 1]$ be an integer, and $\bm{u}$ a tuple over $U = \set{X_1, ..., X_t}$. We have
     \myeqn{
         |\join(\Q(\bm{u}))|
         &\le&
-        \prod_{e \in \E_U} |R_e(\bm{u})|^{\W_e}. \label{eqn:agm-proof:residual-goal}
+        \prod_{e \in \E : e \setminus U \ne \emptyset} |R_e(\bm{u})|^{\W_e}. \label{eqn:agm-proof:residual-goal}
     }
 \end{lemma}
 
-Note that if $t = 1$, then $U = \emptyset$ and $\Q = \Q(\bm{u})$ (as $R(\bm{u}) = R$ for all $R \in \Q$). Hence, Theorem~\ref{thm:agm} is a corollary of the above lemma with $U = \emptyset$.
+\vgap
+
+Specially, if $t = 1$, then $U = \emptyset$ and $\Q = \Q(\bm{u})$ (because $R(\bm{u}) = R$ for all $R \in \Q$). Hence, Theorem~\ref{thm:agm} is a corollary of the above lemma with $U = \emptyset$.
 
 \extraspacing {\bf Proof of Lemma~\ref{lmm:agm-proof:residual}.} When $t = d$, we have $|R(\bm{u})| \le 1$ for all $R \in \Q$ and, hence, $|\join(\Q)| = 1$. Furthermore, if $|R(\bm{u})| = 0$ for any $R \in \Q$, the join result $\join(\Q)$ must be empty. The lemma therefore holds for $t= d$.
+
+\vgap
+
+Inductively, assuming that the lemma holds for $t = i$ (where $i \in [d]$), we prove its correctness for $t = i - 1$.
+
+\vgap
+
+In general, given a relation $R$ and an attribute $X$ in its schema, we define
+\myeqn{
+    \pi_X (R) &=& \set{\bm{v}(X) \mid \bm{v} \in R}. \label{eqn:agm-proof:proj}
+}
+This is the {\em projection} operator in relational algebra.
+
+\vgap
+
+Define:
+\myeqn{
+    \I = \bigcap_{e \in \E : X_i \in e} \pi_{X_i}(R_e(\bm{u})). \label{eqn:agm-proof:intersection}
+}
+For each value $x \in \I$, we construct a tuple over $\set{X_1, ..., X_t}$ by ``extending $\bm{u}$ with $X_i = x$'', i.e., $\bm{u}(X_j) = \bm{v}(X_j)$ for all $j \in [i - 1]$ and $\bm{u}(X_i) = x$. This produces a set of ``extended'' tuples:
+\myeqn{
+    S_\ext &=&
+    \set{
+        \text{tuple $\bm{v}$ extended from $\bm{u}$ and $x$} \mid
+        \text{$x \in \I$ where $\I$ computed in \eqref{eqn:agm:intersection}}
+    }. \label{eqn:agm-proof:S_ext}
+}
+It is clear that
+\myeqn{
+    \join(\bm{u})
+    &=&
+    \bigcup_{\bm{v} \in S_\ext} \join(\bm{v}). \nn
+}
+Hence
+\myeqn{
+    |\join(\bm{u})|
+    &=&
+    \sum_{\bm{v} \in S_\ext} |\join(\bm{v})| \nn \\
+    \explain{by inductive assumption}
+    &=&
+    \sum_{\bm{v} \in S_\ext}
+    \prod_{e \in \E_{U \cup \set{X_i}}}
+    |R_e(\bm{v})|^{\W_e} \nn \\
+    \explain{by Friedgut's Inequality in Appendix \ref{app:friedgut}}
+    &\le&
+    \prod_{e \in \E_{U \cup \set{X_i}}}
+    \Big(
+        \sum_{\bm{v} \in S_\ext} |R_e(\bm{v})|
+    \Big)^{\W_e} \nn \\
+    &\le&
+    \prod_{e \in \E_{U \cup \set{X_i}}}
+    |R_e(\bm{u})|^{\W_e} \nn
+}
 
 
 
@@ -266,8 +336,19 @@ These assumptions can be removed by slowing down the running time we will prove 
    Define $e^* = \argmin_{e \in \E(X_t)} |R_e \ltimes \bm{v}|$. First, extract $R_{e^*} \ltimes \bm{v}$. For each tuple $\bm{u} \in R_{e^*} \ltimes \bm{v}$, check whether $\bm{u} \in R_e$ for every other $e \in \E(X_t)$. As $\E(X_t)$ has a constant size, the total running time is $O(1 + |R_{e^*} \ltimes \bm{v}|)$.
 \end{proof}
 
-
 \bibliographystyle{plainurl}% the mandatory bibstyle
 \bibliography{ref}
+
+\appendix
+
+\section{Appendix: Friedgut's Inequality} \label{app:friedgut}
+
+Fix arbitrary integers $p$ and $q$ at least 1. Take a set of non-negative real values $\{a_{i,j} \mid i \in [p], j \in [q]\}$. In addition, take another set of non-negative real values $\{b_i$ $\mid$ $i \in [q]\}$ satisfying $\sum_{i=1}^{q} b_i \geq 1$.  Friedgut's inequality \cite{f04} states that
+    \myeqn{
+        \sum_{i=1}^{p}	\prod_{j=1}^{q} a_{i, j}^{b_j}
+        &\leq&
+        \prod_{j=1}^{q} \left(\sum_{i=1}^{p} a_{i, j}\right)^{b_j}.
+        \label{eqn:friedgut}
+    }
 
 \end{document}
