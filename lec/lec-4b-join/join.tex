@@ -176,7 +176,7 @@ We prove the lemma by induction. As the base case, consider $t = d$. For each $R
 
 Inductively, assuming that the lemma holds for $t = i$ (where $i \in [d]$), next we prove its correctness for $t = i - 1$. Because $\W$ is a fractional edge cover of $\H = (\V, \E)$, we know
 \myeqn{
-    \sum_{e \in \E: X_i \in e} &\ge& 1.
+    \sum_{e \in \E: X_i \in e} \W_e &\ge& 1.
     \label{eqn:agm-proof:residual-goal:3}
 }
 Define:
