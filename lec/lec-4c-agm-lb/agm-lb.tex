@@ -222,16 +222,29 @@ The dual LP can be written as:
         \sum_{i \in [m]: v_j \in e_i} \bm{x}[j] \ge 1 &&  \forall j \in [n]. \nn
     }
 }
-The results of both LPs must be bounded. Denote by $\bm{x}^*$ (resp., $\bm{y}^*$) an optimal solution to the primal (resp., dual) LP.
+The results of both LPs must be bounded. Denote by $\bm{x}^*$ (resp., $\bm{y}^*$) an optimal solution to the primal (resp., dual) LP. By the strong duality theorem, we have:
+\myeqn{
+    \sum_{j=1}^n \bm{x^*}[j]
+    &=&
+    \sum_{i=1}^m \bm{y^*}[i] \cdot \log N_{e_i}.
+    \label{eqn:lp-opt}
+}
 
 \vgap
 
-For any join $\Q$ such that
-\myitems{
-    \item the schema graph of $\Q$ is $\H$, and
-    \item for each $e \in \E$, $|R_e| = N_e$,
+For any join $\Q$ such that (i) the schema graph of $\Q$ is $\H$ and (ii) for each $e \in \E$, $|R_e| = N_e$, the AGM bound of $\Q$ is equivalent to
+\myeqn{
+    2^
+    {\sum_{i=1}^m \bm{y^*}[i] \cdot \log N_{e_i}.}
+    \label{eqn:proof:agm}
 }
-its AGM bound is equivalent
+is the optimal value of the dual LP, which is the value given in \eqref{eqn:lp-opt}. Next, we construct such a join $\Q$ whose result contains
+\myeqn{
+    2^
+    {\sum_{j=1}^n \bm{x^*}[j]}
+    \label{eqn:proof:join-size}
+}
+up to a constant factor. By \eqref{eqn:lp-opt}, the values in \eqref{eqn:proof:agm} and \eqref{eqn:proof:join-size} are the same.
 
 \bibliographystyle{abbrv}
 \bibliography{ref}
