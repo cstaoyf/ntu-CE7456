@@ -36,7 +36,7 @@
 \def\ext{\mathit{ext}}
 \def\join{\mathit{join}}
 \def\schema{\mathit{schema}}
-\def\trans{\text{T}}
+\def\trans{\mathsf{T}}
 
 \def\extraspacing{\vspace{4mm} \noindent}
 \def\vgap{\vspace{4mm}}
@@ -116,7 +116,8 @@ The material of this section can be found in most textbooks (e.g., \cite{mg07}) 
 
 \vgap
 
-Suppose that $\mb{A}$ is an $n \times m$ matrix, $\bm{c}$ is an $n \times 1$ matrix (a.k.a., an $n$-dimensional vector), and $\bm{b}$ an $m \times 1$ matrix (a.k.a., an $m$-dimensional vector). Consider an LP of the form:
+Suppose that $\mb{A}$ is an $m \times n$ matrix, $\bm{c}$ is an $n \times 1$ matrix (a.k.a.\ an $n$-dimensional vector), and $\bm{b}$ an $m \times 1$ matrix (a.k.a.
+an $m$-dimensional vector). Consider an LP of the form:
 \myeqn{
     \text{find an $n \times 1$ matrix $\bm{x}$ to maximize $\bm{c}^\trans \bm{x}$ subject to $\mb{A}\bm{x} \le \bm{b}$ and $\bm{x} \ge 0$}
     \label{eqn:lp:primal}
@@ -130,46 +131,58 @@ We will refer to \eqref{eqn:lp:primal} as the {\em primal form} and to \eqref{eq
 
 \vgap
 
-The result of an LP in the form \eqref{eqn:lp:primal} is one of the following:
+A {\em feasible solution} to the LP of the form \eqref{eqn:lp:primal} is an $n \times 1$ matrix $\bm{x}$ satisfying $\mb{A}\bm{x} \le \bm{b}$ and $\bm{x} \ge 0$. The result of the LP has three possible cases:
 \myitems{
-    \item {{\em empty}}: no $n \times 1$ matrix $\bm{x}$ can simultaneously satisfy $\mb{A}\bm{x} \le \bm{b}$ and $\bm{x} \ge 0$;
-    \item {{\em unbounded}}: for any finite real value $\tau$, there is always an $n \times 1$ matrix $\bm{x}$ such that $\mb{A}\bm{x} \le \bm{b}$, $\bm{x} \ge 0$, and $\bm{c}^\trans \bm{x} \ge \tau$;
+    \item {{\em empty}}: no feasible solutions exist;
+    \item {{\em unbounded}}: for any finite real value $\tau$, there is a feasible solution $\bm{x}$ such that $\bm{c}^\trans \bm{x} \ge \tau$;
 
-    \item {{\em bounded}}: $\bm{c}^\trans \bm{x}$ takes a finite maximum --- called the {\em optimal value} --- among all $n \times 1$ matrices $\bm{x}$ that satisfy $\mb{A}\bm{x} \le \bm{b}$ and $\bm{x} \ge 0$.
+    \item {{\em bounded}}: $\bm{c}^\trans \bm{x}$ takes a finite maximum --- called the {\em optimal value} --- among all feasible solutions $\bm{x}$.
 }
-In the bounded case, we define an {\em optimal solution} to the LP as an $n \times 1$ matrix $\bm{x}^*$ such that $\bm{c}^\trans \bm{x}^*$ equals the optimal value.
+In the bounded case, we define an {\em optimal solution} to the LP as a feasible solution $\bm{x}^*$ such that $\bm{c}^\trans \bm{x}^*$ equals the optimal value.
 
 \vgap
 
-Likewise, the result of an LP in the form \eqref{eqn:lp:dual} is one of the following:
+Likewise, a {\em feasible solution} to the LP of the form \eqref{eqn:lp:dual} is an $m \times 1$ matrix $\bm{y}$ such that $\mb{A}^\trans \bm{y} \ge \bm{c}$ and $\bm{y} \ge 0$. The result of the LP has three possible cases:
 \myitems{
-    \item {{\em empty}}: no $m \times 1$ matrix $\bm{y}$ can simultaneously satisfy $\mb{A}^\trans \bm{y} \ge \bm{c}$ and $\bm{y} \ge 0$;
-    \item {{\em unbounded}}: for any finite real value $\tau$, there is always an $m \times 1$ matrix $\bm{y}$ such that $\mb{A}^\trans \bm{y} \ge \bm{c}$, $\bm{y} \ge 0$, and $\bm{b}^\trans \bm{y} \le \tau$;
+    \item {{\em empty}}: no feasible solutions exist;
+    \item {{\em unbounded}}: for any finite real value $\tau$, there is a feasible solution $\bm{y}$ such that $\bm{b}^\trans \bm{y} \le \tau$;
 
-    \item {{\em bounded}}: $\bm{b}^\trans \bm{y}$ takes a finite minimum --- called the {\em optimal value} --- among all $m \times 1$ matrices $\bm{y}$ that satisfy $\mb{A}^\trans \bm{y} \ge \bm{c}$ and $\bm{y} \ge 0$.
+    \item {{\em bounded}}: $\bm{b}^\trans \bm{y}$ takes a finite minimum --- called the {\em optimal value} --- among all feasible solutions $\bm{y}$.
 }
-In the bounded case, we define an {\em optimal solution} to the LP as an $n \times 1$ matrix $\bm{x}^*$ such that $\bm{c}^\trans \bm{x}^*$ equals the optimal value.
+In the bounded case, we define an {\em optimal solution} to the LP as an $m \times 1$ matrix $\bm{y}^*$ such that $\bm{b}^\trans \bm{y}^*$ equals the optimal value.
 
 \vgap
 
-The {\em strong duality theorem} states that the primal form returns a finite optimal value if and only if the dual form returns the same optimal value. An {\em optimal solution} to the LP in \eqref{eqn:lp:primal} is an $n \times 1$ matrix (a.k.a.\ vector) $\bm{x}^*$ such that $\bm{c}^\trans \bm{x}^*$ equals the optimal value. Similarly, an {\em optimal solution} to the LP in \eqref{eqn:lp:dual} is an $m \times 1$ matrix (a.k.a.\ vector) $\bm{y}^*$ such that $\bm{b}^\trans \bm{y}^*$ equals the optimal value. By the strong duality theorem, $\bm{c}^\trans \bm{x}^* = \bm{b}^\trans \bm{y}^*$.
+The {\em strong duality theorem} states:
+\myitems{
+    \item if the primal form is bounded, the dual form is bounded and returns the same optimal value;
+
+    \item if the dual form is bounded, the primal form is bounded and returns the same optimal value.
+}
+
+
+%An {\em optimal solution} to the LP in \eqref{eqn:lp:primal} is an $n \times 1$ matrix (a.k.a.\ vector) $\bm{x}^*$ such that $\bm{c}^\trans \bm{x}^*$ equals the optimal value. Similarly, an {\em optimal solution} to the LP in \eqref{eqn:lp:dual} is an $m \times 1$ matrix (a.k.a.\ vector) $\bm{y}^*$ such that $\bm{b}^\trans \bm{y}^*$ equals the optimal value. By the strong duality theorem, $\bm{c}^\trans \bm{x}^* = \bm{b}^\trans \bm{y}^*$.
 
 \section{Proof of Theorem~\ref{thm:agm-tight}} \label{proof}
 
 First observe that finding a fractional edge cover $\W$ to maximize \eqref{eqn:agm} can be rephrased as an LP problem:
 \minipg{0.8\linewidth}{
-    {\bf minimize} $\sum_{e \in \E} \W_e \log |R_e|$ subject to
+    {\bf minimize} $\sum_{e \in \E} \W_e \log |R_e|$ {\bf subject to}
     \myeqn{
         \W_e \ge 0 &&  \forall e \in \E \nn \\
         \sum_{e \in \E: X \in e} \W_e \ge 1 &&  \forall X \in \V. \nn
     }
 }
+The result of the LP (i) cannot be unbounded because clearly $\sum_{e \in \E} \W_e \log |R_e| \ge 0$, and (ii) cannot be empty because setting $\W_e = 1$ for all $e \in \E$ satisfies all the constraints.
+
+\vgap
 
 Motivated by the observation, we formulate an instance of LP using the hypergraph $\H = (\V, \E)$ and vector $N$ (over $\E$) given in the statement of Theorem~\ref{thm:agm-tight}. Set
 \myeqn{
     n &=& |\V| \nn \\
     m &=& |\E| \nn
 }
+Let us list the vertices in $\V$ as $v_1, v_2, ..., v_n$ and the edges in $\E$ as $e_1, e_2, ..., e_m$ (the vertex and edge orders are not important).
 
 \vgap
 
