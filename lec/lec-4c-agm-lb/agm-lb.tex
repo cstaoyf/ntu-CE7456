@@ -165,7 +165,7 @@ The {\em strong duality theorem} states:
 
 \section{Proof of Theorem~\ref{thm:agm-tight}} \label{proof}
 
-First observe that finding a fractional edge cover $\W$ to maximize \eqref{eqn:agm} can be rephrased as an LP problem:
+Finding a fractional edge cover $\W$ to minimize \eqref{eqn:agm} can be cast as an LP problem:
 \minipg{0.8\linewidth}{
     {\bf minimize} $\sum_{e \in \E} \W_e \log |R_e|$ {\bf subject to}
     \myeqn{
@@ -173,11 +173,11 @@ First observe that finding a fractional edge cover $\W$ to maximize \eqref{eqn:a
         \sum_{e \in \E: X \in e} \W_e \ge 1 &&  \forall X \in \V. \nn
     }
 }
-The result of the LP (i) cannot be unbounded because clearly $\sum_{e \in \E} \W_e \log |R_e| \ge 0$, and (ii) cannot be empty because setting $\W_e = 1$ for all $e \in \E$ satisfies all the constraints.
+The result of the LP (i) cannot be unbounded because clearly $\sum_{e \in \E} \W_e \log |R_e| \ge 0$, and (ii) cannot be empty because setting $\W_e = 1$ for all $e \in \E$ yields a feasible solution. Therefore, the LP must have a (finite) optimal value.
 
 \vgap
 
-Motivated by the observation, we formulate an instance of LP using the hypergraph $\H = (\V, \E)$ and vector $N$ (over $\E$) given in the statement of Theorem~\ref{thm:agm-tight}. Set
+Motivated by the observation, we formulate two LP instances --- using the hypergraph $\H = (\V, \E)$ and vector $N$ (over $\E$) given in the statement of Theorem~\ref{thm:agm-tight} --- that are dual to each other. Set
 \myeqn{
     n &=& |\V| \nn \\
     m &=& |\E| \nn
@@ -186,8 +186,52 @@ Let us list the vertices in $\V$ as $v_1, v_2, ..., v_n$ and the edges in $\E$ a
 
 \vgap
 
+Define an $m \times n$ matrix $\mb{A}$ where for each $i \in [m]$ and $j \in [n]$:
+\myeqn{
+    \mb{A}[i,j] &=& \left\{
+        \begin{tabular}{ll}
+            1 & if $e_i$ contains $v_j$ \\
+            0 & otherwise
+        \end{tabular}
+    \right. \nn
+}
+Define an $m \times 1$ vector $\bm{b}$ where for each $i \in [m]$:
+\myeqn{
+    \bm{b}[i] = \log N_{e_i} \nn
+}
+and an $n \times 1$ vector $\bm{c}$ where for each $j \in [n]$:
+\myeqn{
+    \bm{c}[j] = 1. \nn
+}
 
+\vgap
 
+We now obtain a primal LP of the form \eqref{eqn:lp:primal} and its dual LP of the form \eqref{eqn:lp:dual}. The primal LP can also be written as:
+\minipg{0.8\linewidth}{
+    {\bf maximize} $\sum_{j=1}^n \bm{x}[j]$ {\bf subject to}
+    \myeqn{
+        \bm{x}[j] \ge 0 &&  \forall j \in [n] \nn \\
+        \sum_{j \in [n]: v_j \in e_i} \bm{x}[j] \le \log N_{e_i} &&  \forall i \in [m]. \nn
+    }
+}
+The dual LP can be written as:
+\minipg{0.8\linewidth}{
+    {\bf minimize} $\sum_{i=1}^m \bm{y}[i] \cdot \log N_{e_i}$ {\bf subject to}
+    \myeqn{
+        \bm{y}[i] \ge 0 &&  \forall i \in [m] \nn \\
+        \sum_{i \in [m]: v_j \in e_i} \bm{x}[j] \ge 1 &&  \forall j \in [n]. \nn
+    }
+}
+The results of both LPs must be bounded. Denote by $\bm{x}^*$ (resp., $\bm{y}^*$) an optimal solution to the primal (resp., dual) LP.
+
+\vgap
+
+For any join $\Q$ such that
+\myitems{
+    \item the schema graph of $\Q$ is $\H$, and
+    \item for each $e \in \E$, $|R_e| = N_e$,
+}
+its AGM bound is equivalent
 
 \bibliographystyle{abbrv}
 \bibliography{ref}
