@@ -4,6 +4,7 @@
 
 \usepackage{wasysym}
 %\usepackage{times}
+%\usepackage{mathabx}
 
 \title{}
 \author{}
@@ -249,11 +250,21 @@ up to a constant factor. By \eqref{eqn:lp-opt}, the values in \eqref{eqn:proof:a
 
 \vgap
 
-For each $i \in [n]$, define
+For each $j \in [n]$, define the {\em domain} of vertex $X_j$ as
 \myeqn{
-    \dom_i &=& \set{1, 2, ..., 2^{\lf \bm{x}^*[i] \rf}}.
+    \dom(X_j) &=& \set{1, 2, ..., 2^{\lf \bm{x}^*[j] \rf}}.
     \nn
 }
+For each $i \in [m]$, define the relation $R_{e_i} \in \Q$ --- namely, the relation whose schema corresponds to $e_i$ --- as the cartesian product of the domains of the vertices in $e_i$. Formally, assume that $e_i$ has vertices $X_{j_1}, X_{j_2}, ..., X_{j_t}$ for some $t \ge 1$. Then, $R_{e_i}$ has
+\myeqn{
+    \prod_{k=1}^t |\dom(X_{j_k})| \nn
+}
+tuples such that, for any $x_{j_k} \in \dom(X_{j_k})$ where $k$ ranges in $[t]$, the relation $R_{e_i}$ contains a tuple $\bm{u}$ with $\bm{u}(X_{j_k}) = x_{j_k}$.
+
+\vgap
+
+By our construction, for any $x_j \in \dom(X_j)$ where $j \in [n]$, the result of the join $\Q$ must contain a tuple $\bm{u}$ satisfying $\bm{u}(X_j) = x_j$ for all $j \in [n]$.
+
 
 \bibliographystyle{abbrv}
 \bibliography{ref}
