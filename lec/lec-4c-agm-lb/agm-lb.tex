@@ -36,7 +36,7 @@
 \def\ext{\mathit{ext}}
 \def\join{\mathit{join}}
 \def\schema{\mathit{schema}}
-
+\def\trans{\text{T}}
 
 \def\extraspacing{\vspace{4mm} \noindent}
 \def\vgap{\vspace{4mm}}
@@ -48,13 +48,13 @@
     \begin{center}
         \vspace{3mm}
     {\Large
-    (CE7456 Lecture Notes 10) Natural Joins} \\[2mm]
+    (CE7456 Lecture Notes 11) Tightness of the AGM Bound} \\[2mm]
     {\large Yufei Tao}
     \vspace{3mm}
     \end{center}
 }
 
-Today, we discuss the {\em natural join} problem, which lies at the core of database theory and generalizes the subgraph enumeration problem in the previous lecture.
+Today, we prove the tightness of the AGM bound on joins.
 
 \vgap
 
@@ -62,21 +62,19 @@ Let $\boldatt$ be a finite set, where each element is called an {\em attribute}.
 
 \vgap
 
+%Our discussion in this lecture assumes that $\schema(\Q)$ has a constant size.
+
+
+
+
+%\vgap
+
+
 We define a {\em join} as a set $\Q$ of relations. Let $\schema(\Q) = \bigcup_{R \in Q} \schema(R)$. The result of $\Q$ is a relation over $\schema(\Q)$ formalized as:
 \myeqn{
     \join(\Q) &=& \{\textrm{tuple $\bm{u}$ over $\schema(\Q)$} \mid \forall R \in \Q: \bm{u}[\schema(R)] \in R\}. \label{eqn:join-rslt}
 }
-Our discussion in this lecture assumes that $\schema(\Q)$ has a constant size.
-
-\extraspacing {\bf Math Conventions.} Define $0^0 = 0$. For an integer $x \ge 1$, the notation $[x]$ denotes the set $\{1, 2, ..., x\}$.
-
-%Every logarithm $\log(\cdot)$ has base $2$.
-
-%The notation $\tO(.)$ hides a factor logarithmic to $\sum_{R \in \Q} |R|$.
-
-\section{Schema Graphs and Fractional Edge Covers} \label{sec:schema}
-
-Given a join $\Q$, we define its {\em schema graph} as the hypergraph $\H = (\V, \E)$ where
+The {\em schema graph} of $\Q$ is the hypergraph $\H = (\V, \E)$ where
 \myeqn{
     \V &=& \schema(\Q) \nn \\
     \E &=& \set{\schema(R) \mid R \in \Q}. \nn
@@ -85,32 +83,21 @@ Note that there is one-one correspondence between the relations in $\Q$ and the 
 
 \vgap
 
-Treating $\E$ as a ``space'', next we define vectors over it. Every such vector $\W$ has a real-valued component $\W_e$ on each hyperedge $e \in \E$. The vector $\W$ is said to be a {\em fractional edge cover} of $\H$ if
+A vector $\W$ over the space $\E$ is a {\em fractional edge cover} of $\H$ if
 \myitems{
-    \item $0 \le \W_e \le 1$ for every $e \in \E$, and
+    \item $\W_e \ge 0$ for every $e \in \E$, and
     \item $\sum_{e \in \E : X \in e} \W_e \ge 1$ for every $X \in \V$.
 }
-
-\section{AGM Bound} \label{sec:agm}
-
-Let $\Q$ be a join with schema graph $\H = (\V, \E)$. Every fractional edge cover $\W$ of $\H$ is associated with an {\em AGM value} defined as
+Every such $\W$ is associated with an {\em AGM value} defined as
 \myeqn{
     \mit{AGM}_\W &=& \prod_{e \in \E} |R_e|^{\W_e}. \label{eqn:agm}
 }
+The {\em AGM bound} of $\Q$ is $\min_\W \mit{AGM}_\W$ where the minimization is taken over all fractional edge covers $\W$ of $\H$.
 
 \vgap
 
-\begin{theorem} \label{thm:agm}
-   For any fractional edge cover $\W$ of $\H$, it holds that $|\join(\Q)| \le \mit{AGM}_\W$.
-\end{theorem}
 
-\vgap
-
-%An {\em optimal fractional edge cover} of $\H$ is a fractional edge cover $\W^*$ minimizing \eqref{eqn:agm}.
-The {\em AGM bound} of $\Q$ is defined as the AGM value of $\W^*$.
-The AGM bound is tight:
-
-\vgap
+Our purpose is to prove:
 
 \begin{theorem} \label{thm:agm-tight}
    Fix an arbitrary hypergraph $\H = (\V, \E)$ and an arbitrary integer vector $N$ over $\E$ such that $N_e \ge 1$ for each $e \in \E$. There exists a join $\Q$ satisfying
@@ -121,272 +108,75 @@ The AGM bound is tight:
    }
 \end{theorem}
 
-\vgap
+\extraspacing {\bf Math Conventions.} For an integer $x \ge 1$, the notation $[x]$ denotes the set $\{1, 2, ..., x\}$. Every logarithm $\log(\cdot)$ has base $2$.
 
-We prove Theorem~\ref{thm:agm} in the next section and Theorem~\ref{thm:agm-tight} in the next lecture.
+\section{Linear Programming} \label{app:lp}
 
-\section{Proof of Theorem~\ref{thm:agm}} \label{sec:agm-proof}
-
-Given a tuple $\bm{u}$ over a subset $U \subseteq \E$ (recall that $\E = \schema(\Q)$) and a relation $R \in \Q$, we define a {\em residual relation} as:
-\myeqn{
-    R(\bm{u}) &=&
-    \set{
-        \bm{v} \in R \mid \forall X \in U \cap \schema(R): \bm{v}(X) = \bm{u}(X)
-    }. %\nn
-    \label{eqn:alg-proof:residual-rel}
-}
-Intuitively, $R(\bm{u})$ includes those tuples of $R$ that are ``constrained'' by $\bm{u}$, in the sense that they must take the same value as $\bm{u}$ on every attribute common to $\schema(R)$ and $U$. Note that if $U$ and $\schema(R)$ are disjoint, then $R(\bm{u}) = R$.
+The material of this section can be found in most textbooks (e.g., \cite{mg07}) on linear programming (LP) and is included for self-containment reasons.
 
 \vgap
 
-Given a tuple $\bm{u}$ over a subset $U \subseteq \E$, we define a {\em residual join} as follows:
+Suppose that $\mb{A}$ is an $n \times m$ matrix, $\bm{c}$ is an $n \times 1$ matrix (a.k.a., an $n$-dimensional vector), and $\bm{b}$ an $m \times 1$ matrix (a.k.a., an $m$-dimensional vector). Consider an LP of the form:
 \myeqn{
-    \Q(\bm{u}) &=&
-    \set{
-        R_e(\bm{u}) \mid e \in \E
-    }. \label{eqn:alg-proof:residual-join}
+    \text{find an $n \times 1$ matrix $\bm{x}$ to maximize $\bm{c}^\trans \bm{x}$ subject to $\mb{A}\bm{x} \le \bm{b}$ and $\bm{x} \ge 0$}
+    \label{eqn:lp:primal}
 }
-
-\vslit
-
-\begin{lemma} \label{lmm:agm-proof:residual}
-    Fix an arbitrary order of the attributes in $\V$: $X_1, X_2, ..., X_d$ where $d = |\V|$. Let $t \in [0, d]$ be an integer and $\bm{u}$ be a tuple over $U = \set{X_1, ..., X_t}$ such that $R(\bm{u}) \ne \emptyset$ for every $R \in \Q$. We have
-    \myeqn{
-        |\join(\Q(\bm{u}))|
-        &\le&
-        \prod_{e \in \E} |R_e(\bm{u})|^{\W_e}. \label{eqn:agm-proof:residual-goal}
-    }
-\end{lemma}
+where $\bm{x} \ge 0$ means that every component of $\bm{x}$ must be at least 0. The duality of the above LP has the form:
+\myeqn{
+    \text{find an $m \times 1$ matrix $\bm{y}$ to minimize $\bm{b}^\trans \bm{y}$ subject to $\mb{A}^\trans\bm{y} \ge \bm{c}$ and $\bm{y} \ge 0$.}
+    \label{eqn:lp:dual}
+}
+We will refer to \eqref{eqn:lp:primal} as the {\em primal form} and to \eqref{eqn:lp:dual} as the {\em dual form}.
 
 \vgap
 
-Specially, if $t = 0$, then $U = \emptyset$ and $\Q = \Q(\bm{u})$ (because $R(\bm{u}) = R$ for all $R \in \Q$). Hence, Theorem~\ref{thm:agm} is a corollary of the above lemma with $U = \emptyset$. Note that the theorem is still correct even if $R(\bm{u}) = \emptyset$ for some $R \in \Q$. We choose to state the theorem the way it is because this will bring us convenience when we prove Lemma~\ref{lmm:alg:residual} later.
-
-\extraspacing {\bf Proof of Lemma~\ref{lmm:agm-proof:residual}.} In general, given a relation $R$ and an attribute $X$ in its schema, we define
-\myeqn{
-    \pi_X (R) &=& \set{\bm{v}(X) \mid \bm{v} \in R}. \label{eqn:agm-proof:proj}
-}
-This is the {\em projection} operator in relational algebra.
-
-\vgap
-
-We prove the lemma by induction. As the base case, consider $t = d$. For each $R \in \Q$, the residual relation $R(\bm{u})$ has exactly one tuple. Thus, $|\join(\Q(\bm{u}))| \le 1$, and \eqref{eqn:agm-proof:residual-goal} holds.
-
-\vgap
-
-Inductively, assuming that the lemma holds for $t = i$ (where $i \in [d]$), next we prove its correctness for $t = i - 1$. Because $\W$ is a fractional edge cover of $\H = (\V, \E)$, we know
-\myeqn{
-    \sum_{e \in \E: X_i \in e} \W_e &\ge& 1.
-    \label{eqn:agm-proof:residual-goal:3}
-}
-Define:
-\myeqn{
-    \I = \bigcap_{e \in \E : X_i \in e} \pi_{X_i}(R_e(\bm{u})). \label{eqn:agm-proof:intersection}
-}
-For each value $x \in \I$, we construct a tuple $\bm{v}$ over $\set{X_1, ..., X_i}$ by ``extending $\bm{u}$ with $X_i = x$'', i.e., $\bm{v}(X_j) = \bm{u}(X_j)$ for all $j \in [i - 1]$ and $\bm{v}(X_i) = x$. This produces a set of ``extended'' tuples:
-\myeqn{
-    S_\ext &=&
-    \set{
-        \text{tuple $\bm{v}$ extended from $\bm{u}$ and $x$} \mid
-        \text{$x \in \I$}
-    }. \label{eqn:agm-proof:S_ext}
-}
-
-\vslit
-
-Consider the residual join $\Q(\bm{v})$ where $\bm{v} \in S_\ext$. We argue that no relation of $\Q(\bm{v})$ is empty. Indeed, for each $e \in \E$:
+The result of an LP in the form \eqref{eqn:lp:primal} is one of the following:
 \myitems{
-    \item if $X_i \notin e$, then $R_e(\bm{v}) = R_e(\bm{u})$, which is not empty;
+    \item {{\em empty}}: no $n \times 1$ matrix $\bm{x}$ can simultaneously satisfy $\mb{A}\bm{x} \le \bm{b}$ and $\bm{x} \ge 0$;
+    \item {{\em unbounded}}: for any finite real value $\tau$, there is always an $n \times 1$ matrix $\bm{x}$ such that $\mb{A}\bm{x} \le \bm{b}$, $\bm{x} \ge 0$, and $\bm{c}^\trans \bm{x} \ge \tau$;
 
-    \item otherwise, since $\bm{v}(X_i)$ belongs to the set $\I$ in \eqref{eqn:agm-proof:intersection}, we can assert $R_e(\bm{v}) \ne \emptyset$.
+    \item {{\em bounded}}: $\bm{c}^\trans \bm{x}$ takes a finite maximum --- called the {\em optimal value} --- among all $n \times 1$ matrices $\bm{x}$ that satisfy $\mb{A}\bm{x} \le \bm{b}$ and $\bm{x} \ge 0$.
 }
-
-\vslit
-
-We can now derive
-\myeqn{
-    \join(\Q(\bm{u}))
-    &=&
-    \bigcup_{\bm{v} \in S_\ext} \join(\Q(\bm{v})) \nn \\
-    \Rightarrow
-    |\join(\Q(\bm{u}))|
-    &=&
-    \sum_{\bm{v} \in S_\ext} |\join(\Q(\bm{v}))| \nn \\
-    \explain{by inductive assumption}
-    &\le&
-    \sum_{\bm{v} \in S_\ext}
-    \prod_{e \in \E}
-    |R_e(\bm{v})|^{\W_e} \nn \\
-    &\le&
-    \sum_{\bm{v} \in S_\ext}
-    \Big(
-    \prod_{e \in \E : X_i \in e}
-    |R_e(\bm{v})|^{\W_e}
-    \Big)
-    \Big(
-    \prod_{e \in \E : X_i \notin e}
-    |R_e(\bm{v})|^{\W_e}
-    \Big) \nn \\
-    &=&
-    \sum_{\bm{v} \in S_\ext}
-    \Big(
-    \prod_{e \in \E : X_i \in e}
-    |R_e(\bm{v})|^{\W_e}
-    \Big)
-    \Big(
-    \prod_{e \in \E : X_i \notin e}
-    |R_e(\bm{u})|^{\W_e}
-    \Big) \nn \\
-    &=&
-    \Big(
-    \prod_{e \in \E : X_i \notin e}
-    |R_e(\bm{u})|^{\W_e}
-    \Big)
-    \sum_{\bm{v} \in S_\ext}
-    \Big(
-    \prod_{e \in \E : X_i \in e}
-    |R_e(\bm{v})|^{\W_e}
-    \Big) \nn \\
-    &\le&
-    \Big(
-    \prod_{e \in \E : X_i \notin e}
-    |R_e(\bm{u})|^{\W_e}
-    \Big)
-    \prod_{e \in \E: X_i \in e}
-    \Big(
-        \sum_{\bm{v} \in S_\ext} |R_e(\bm{v})|
-    \Big)^{\W_e} \nn \\
-    &&
-    \explain{by \eqref{eqn:agm-proof:residual-goal:3} and Friedgut's inequality \eqref{eqn:friedgut} in Appendix \ref{app:friedgut}}
-    \nn \\[2mm]
-    &\le&
-    \Big(
-    \prod_{e \in \E : X_i \notin e}
-    |R_e(\bm{u})|^{\W_e}
-    \Big)
-    \prod_{e \in \E: X_i \in e}
-        |R_e(\bm{u})|^{\W_e} \nn \\
-    &=&
-    \prod_{e \in \E}
-    |R_e(\bm{u})|^{\W_e}. \label{eqn:agm-proof:residual-goal:4}
-}
-This completes the inductive step.
-
-
-\section{A Join Algorithm} \label{sec:alg}
-
-Let $\Q$ be a join with schema graph $\H = (\V, \E)$. Remarkably, the proof of the AGM bound inspires an algorithm for computing $\join(\Q)$. Set $d = |\V|$ and fix an arbitrary order of the attributes in $\V$: $X_1, X_2, ..., X_d$. We make two assumptions:
-\myitems{
-    \item {{\bf A1:}} Given a tuple $\bm{u}$ over a set $U = \set{X_1, ..., X_t}$ where $t \in [0, d]$ and a relation $R \in \Q$, we can compute the residual relation $R(\bm{u})$ --- defined in \eqref{eqn:alg-proof:residual-rel} --- in $O(1 + |R(\bm{u})|)$ time and $|R(\bm{u})|$ in $O(1)$ time.
-
-    \item {{\bf A2:}}  Given a tuple $\bm{u}$ over a set $U = \set{X_1, ..., X_t}$ where $t \in [0, d-1]$, a relation $R \in \Q$, we can test in $O(1)$ time whether $R(\bm{u}) = \emptyset$.
-}
-These assumptions can be removed by slowing down the running time by at most a logarithmic factor (details left to you).
+In the bounded case, we define an {\em optimal solution} to the LP as an $n \times 1$ matrix $\bm{x}^*$ such that $\bm{c}^\trans \bm{x}^*$ equals the optimal value.
 
 \vgap
 
-We aim to solve the following {\em residual join computation problem}:
+Likewise, the result of an LP in the form \eqref{eqn:lp:dual} is one of the following:
+\myitems{
+    \item {{\em empty}}: no $m \times 1$ matrix $\bm{y}$ can simultaneously satisfy $\mb{A}^\trans \bm{y} \ge \bm{c}$ and $\bm{y} \ge 0$;
+    \item {{\em unbounded}}: for any finite real value $\tau$, there is always an $m \times 1$ matrix $\bm{y}$ such that $\mb{A}^\trans \bm{y} \ge \bm{c}$, $\bm{y} \ge 0$, and $\bm{b}^\trans \bm{y} \le \tau$;
 
-\vslit
+    \item {{\em bounded}}: $\bm{b}^\trans \bm{y}$ takes a finite minimum --- called the {\em optimal value} --- among all $m \times 1$ matrices $\bm{y}$ that satisfy $\mb{A}^\trans \bm{y} \ge \bm{c}$ and $\bm{y} \ge 0$.
+}
+In the bounded case, we define an {\em optimal solution} to the LP as an $n \times 1$ matrix $\bm{x}^*$ such that $\bm{c}^\trans \bm{x}^*$ equals the optimal value.
 
-\minipg{0.9\linewidth}{
-    Let $t \in [0, d]$ be an integer. Given a tuple $\bm{u}$ over $U = \set{X_1, ..., X_t}$ such that $R(\bm{u}) \ne \emptyset$ for each $R \in \Q$, compute the result of the residual join $\Q(\bm{u})$ defined in \eqref{eqn:alg-proof:residual-join}.
+\vgap
+
+The {\em strong duality theorem} states that the primal form returns a finite optimal value if and only if the dual form returns the same optimal value. An {\em optimal solution} to the LP in \eqref{eqn:lp:primal} is an $n \times 1$ matrix (a.k.a.\ vector) $\bm{x}^*$ such that $\bm{c}^\trans \bm{x}^*$ equals the optimal value. Similarly, an {\em optimal solution} to the LP in \eqref{eqn:lp:dual} is an $m \times 1$ matrix (a.k.a.\ vector) $\bm{y}^*$ such that $\bm{b}^\trans \bm{y}^*$ equals the optimal value. By the strong duality theorem, $\bm{c}^\trans \bm{x}^* = \bm{b}^\trans \bm{y}^*$.
+
+\section{Proof of Theorem~\ref{thm:agm-tight}} \label{proof}
+
+First observe that finding a fractional edge cover $\W$ to maximize \eqref{eqn:agm} can be rephrased as an LP problem:
+\minipg{0.8\linewidth}{
+    {\bf minimize} $\sum_{e \in \E} \W_e \log |R_e|$ subject to
+    \myeqn{
+        \W_e \ge 0 &&  \forall e \in \E \nn \\
+        \sum_{e \in \E: X \in e} \W_e \ge 1 &&  \forall X \in \V. \nn
+    }
 }
 
-\vslit
-
-\noindent Computing $\join(\Q)$ is equivalent to solving the above with $t = 0$ (and hence $U = \emptyset$).
-
-\extraspacing {\bf Algorithm.} The base case $t = d$ can be trivially settled in $O(1)$ time (assumption {\bf A1}). Inductively, suppose that we can solve the problem for $t = i$ for some $i \in [d]$. We solve the problem for $t = i-1$ as follows:
-\myenums{
-    \item Find the set $\I$ in \eqref{eqn:agm-proof:intersection} and construct the set $S_\ext$ in \eqref{eqn:agm-proof:S_ext}.
-
-    \item For each $\bm{v} \in S_\ext$, output $\join(\Q(\bm{v}))$.
+Motivated by the observation, we formulate an instance of LP using the hypergraph $\H = (\V, \E)$ and vector $N$ (over $\E$) given in the statement of Theorem~\ref{thm:agm-tight}. Set
+\myeqn{
+    n &=& |\V| \nn \\
+    m &=& |\E| \nn
 }
 
-\extraspacing {\bf Analysis.} We prove:
-
-\begin{lemma} \label{lmm:alg:residual}
-    Fix an arbitrary fractional edge cover $\W$ of $\H$.
-    The residual join computation problem can be solved in time
-    \myeqn{
-        O\Big(
-        \prod_{e \in \E} |R_e(\bm{u})|^{\W_e}
-        \Big) \label{eqn:alg:residual-time}
-    }
-    under assumptions {\bf A1} and {\bf A2}.
-\end{lemma}
-
-\begin{proof}
-   The base case $t = d$ is straightforward and omitted. Next, assuming that the claim holds for $t = i \in [d]$, we prove the claim for $t = i - 1$.
-
-   \vgap
-
-   In Step 1 of the algorithm, the set $\I$ in \eqref{eqn:agm-proof:intersection} (and, hence, $S_\ext$ in \eqref{eqn:agm-proof:S_ext}) can be computed in
-   \myeqn{
-        O\Big(
-            \min_{e \in \E: X_i \in e} |R_e(\bm{u})|
-        \Big) \label{eqn:alg:residual:1}
-   }
-   time as follows. First, spend $O(1)$ time to find the edge $e^* = \argmin_{e \in \E: X_i \in e} |R_e(\bm{u})|$ (this is possible due to assumption {\bf A1}). Then, retrieve the tuples in $R_{e^*}(\bm{u})$, which takes $O(|R_{e^*}(\bm{u})|)$ time by assumption {\bf A1}. For each tuple in $R_{e^*}(\bm{u})$, we test in $O(1)$ time whether the tuple's value on $X_i$ belongs to $\I$ (this is possible due to assumption {\bf A2}). The complexity in \eqref{eqn:alg:residual:1} now follows.
-
-   \vgap
-
-   Next, we show that \eqref{eqn:alg:residual:1} is bounded by \eqref{eqn:alg:residual-time}. Because $\W$ is a fractional edge cover of $\H = (\V, \E)$, it holds that
-    \myeqn{
-        \sum_{e \in \E : X_i \in e} \W_e &\ge& 1.
-        \label{eqn:alg:residual:2}
-    }
-    Hence:
-    \myeqn{
-        \min_{e \in \E: X_i \in e} |R_e(\bm{u})|
-        &\le&
-        \Big(
-            \min_{e \in \E : X_i \in e} |R_e(\bm{u})|
-        \Big)^{\sum_{e \in \E : X_i \in e} \W_e} \nn \\
-        &=&
-        \prod_{e \in \E : X_i \in e}
-        \Big(
-            \min_{e \in \E : X_i \in e} |R_e(\bm{u})|
-        \Big)^{\W_e} \nn \\
-        &\le&
-        \prod_{e \in \E : X_i \in e} |R_e(\bm{u})|^{\W_e}. \nn
-    }
-
-    \vslit
-
-    Let us now turn to Step 2 of the algorithm. By the inductive assumption, for each $\bm{v} \in S_\ext$, the result of $\Q(\bm{v})$ can be computed in $O(\prod_{e \in \E} |R_e(\bm{v})|^{\W_e})$ time. Therefore, the total cost of Step 2 is
-    \myeqn{
-        O\Big(
-            \sum_{\bm{v} \in S_\ext}
-            \prod_{e \in \E} |R_e(\bm{v})|^{\W_e}
-        \Big) \nn
-    }
-    which, by the derivation in \eqref{eqn:agm-proof:residual-goal:4}, is bounded by \eqref{eqn:alg:residual-time}.
-\end{proof}
-
-\begin{corollary}
-   Under assumptions {\bf A1} and {\bf A2}, we can compute the result of a join $\Q$ in time that is asymptotically bounded by the AGM bound of $\Q$.
-\end{corollary}
-
-\section{Remark}
-
-The AGM bound was first established in \cite{agm13}. The join algorithm presented is a special case of an algorithm given in \cite{nrr13}.
+\vgap
 
 
-\bibliographystyle{plainurl}% the mandatory bibstyle
+
+
+\bibliographystyle{abbrv}
 \bibliography{ref}
-
-\appendix
-
-\section{Appendix: Friedgut's Inequality} \label{app:friedgut}
-
-Fix arbitrary integers $p$ and $q$ at least 1. Take a set of non-negative real values $\{a_{i,j} \mid i \in [p], j \in [q]\}$. In addition, take another set of non-negative real values $\{b_i$ $\mid$ $i \in [q]\}$ satisfying $\sum_{i=1}^{q} b_i \geq 1$.  Friedgut's inequality \cite{f04} states that
-    \myeqn{
-        \sum_{i=1}^{p}	\prod_{j=1}^{q} a_{i, j}^{b_j}
-        &\leq&
-        \prod_{j=1}^{q} \left(\sum_{i=1}^{p} a_{i, j}\right)^{b_j}.
-        \label{eqn:friedgut}
-    }
 
 \end{document}
