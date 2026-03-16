@@ -102,7 +102,7 @@ The {\em AGM bound} of $\Q$ is $\min_\W \mit{AGM}_\W$ where the minimization is 
 Our purpose is to prove:
 
 \begin{theorem} \label{thm:agm-tight}
-   Fix an arbitrary hypergraph $\H = (\V, \E)$ and an arbitrary integer vector $N$ over $\E$ such that $N_e \ge 1$ for each $e \in \E$. There exists a join $\Q$ satisfying
+   Fix an arbitrary hypergraph $\H = (\V, \E)$ where $|\V|$ is a constant, and an arbitrary integer vector $N$ over $\E$ such that $N_e \ge 1$ for each $e \in \E$. There exists a join $\Q$ satisfying
    \myitems{
         \item the schema graph of $\Q$ is $\H$;
         \item for each $e \in \E$, $|R_e| \le N_e$;
@@ -121,10 +121,10 @@ The material of this section can be found in most textbooks (e.g., \cite{mg07}) 
 Suppose that $\mb{A}$ is an $m \times n$ matrix, $\bm{c}$ is an $n \times 1$ matrix (a.k.a.\ an $n$-dimensional vector), and $\bm{b}$ an $m \times 1$ matrix (a.k.a.
 an $m$-dimensional vector). Consider an LP of the form:
 \myeqn{
-    \text{find an $n \times 1$ matrix $\bm{x}$ to maximize $\bm{c}^\trans \bm{x}$ subject to $\mb{A}\bm{x} \le \bm{b}$ and $\bm{x} \ge 0$}
+    \text{find an $n \times 1$ matrix $\bm{x}$ to maximize $\bm{c}^\trans \bm{x}$ subject to $\mb{A}\bm{x} \le \bm{b}$ and $\bm{x} \ge 0$}.
     \label{eqn:lp:primal}
 }
-where $\bm{x} \ge 0$ means that every component of $\bm{x}$ must be at least 0. The duality of the above LP has the form:
+The duality of the above LP has the form:
 \myeqn{
     \text{find an $m \times 1$ matrix $\bm{y}$ to minimize $\bm{b}^\trans \bm{y}$ subject to $\mb{A}^\trans\bm{y} \ge \bm{c}$ and $\bm{y} \ge 0$.}
     \label{eqn:lp:dual}
@@ -165,7 +165,7 @@ The {\em strong duality theorem} states:
 
 %An {\em optimal solution} to the LP in \eqref{eqn:lp:primal} is an $n \times 1$ matrix (a.k.a.\ vector) $\bm{x}^*$ such that $\bm{c}^\trans \bm{x}^*$ equals the optimal value. Similarly, an {\em optimal solution} to the LP in \eqref{eqn:lp:dual} is an $m \times 1$ matrix (a.k.a.\ vector) $\bm{y}^*$ such that $\bm{b}^\trans \bm{y}^*$ equals the optimal value. By the strong duality theorem, $\bm{c}^\trans \bm{x}^* = \bm{b}^\trans \bm{y}^*$.
 
-\section{Proof of Theorem~\ref{thm:agm-tight}} \label{proof}
+\section{Proof of Theorem~\ref{thm:agm-tight}} \label{sec:proof}
 
 Finding a fractional edge cover $\W$ to minimize \eqref{eqn:agm} can be cast as an LP problem:
 \minipg{0.8\linewidth}{
@@ -184,7 +184,7 @@ Motivated by the observation, we formulate two LP instances --- using the hyperg
     n &=& |\V| \nn \\
     m &=& |\E| \nn
 }
-Let us list the vertices in $\V$ as $X_1, X_2, ..., X_n$ and the edges in $\E$ as $e_1, e_2, ..., e_m$ (the vertex and edge orders are not important).
+Let us list the vertices in $\V$ as $X_1, X_2, ..., X_n$ and the edges in $\E$ as $e_1, e_2, ..., e_m$ (the vertex and edge orderings are not important).
 
 \vgap
 
@@ -208,7 +208,7 @@ and an $n \times 1$ vector $\bm{c}$ where for each $j \in [n]$:
 
 \vgap
 
-We now obtain a primal LP of the form \eqref{eqn:lp:primal} and its dual LP of the form \eqref{eqn:lp:dual}. The primal LP can also be written as:
+The above formulation yields a primal LP of the form \eqref{eqn:lp:primal} and its dual LP of the form \eqref{eqn:lp:dual}. The primal LP can also be written as:
 \minipg{0.8\linewidth}{
     {\bf maximize} $\sum_{j=1}^n \bm{x}[j]$ {\bf subject to}
     \myeqn{
@@ -221,7 +221,7 @@ The dual LP can be written as:
     {\bf minimize} $\sum_{i=1}^m \bm{y}[i] \cdot \log N_{e_i}$ {\bf subject to}
     \myeqn{
         \bm{y}[i] \ge 0 &&  \forall i \in [m] \nn \\
-        \sum_{i \in [m]: X_j \in e_i} \bm{x}[j] \ge 1 &&  \forall j \in [n]. \nn
+        \sum_{i \in [m]: X_j \in e_i} \bm{y}[i] \ge 1 &&  \forall j \in [n]. \nn
     }
 }
 The results of both LPs must be bounded. Denote by $\bm{x}^*$ (resp., $\bm{y}^*$) an optimal solution to the primal (resp., dual) LP. By the strong duality theorem, we have:
@@ -263,8 +263,23 @@ tuples such that, for any $x_{j_k} \in \dom(X_{j_k})$ where $k$ ranges in $[t]$,
 
 \vgap
 
-By our construction, for any $x_j \in \dom(X_j)$ where $j \in [n]$, the result of the join $\Q$ must contain a tuple $\bm{u}$ satisfying $\bm{u}(X_j) = x_j$ for all $j \in [n]$.
+By our construction, for any $(x_1, x_2, ..., x_n) \in \dom(X_1) \times \dom(X_2) \times ... \times \dom(X_n)$, the result of the join $\Q$ must contain a tuple $\bm{u}$ satisfying $\bm{u}(X_j) = x_j$ for each $j \in [n]$. Therefore, the size of $\join(\Q)$ is at least
+\myeqn{
+    \prod_{j=1}^n 2^{\lf \bm{x}^*[j] \rf}
+    \ge
+    \fr{1}{2^n} \cdot \prod_{j=1}^n 2^{\bm{x}^*[j]}
+    =
+    \fr{1}{2^n}
+    \cdot
+    2^
+    {\sum_{j=1}^n \bm{x}^*[j]}.
+    \nn
+}
+Since $n$ is a constant, the above can be lower than \eqref{eqn:proof:join-size} by at most a constant factor.
 
+\section{Remark}
+
+The proof in Section~\ref{sec:proof} is taken from \cite{s23}.
 
 \bibliographystyle{abbrv}
 \bibliography{ref}
