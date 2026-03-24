@@ -35,17 +35,10 @@
 \def\agm{\mathit{AGM}}
 \def\boldatt{\mathbf{att}}
 \def\ext{\mathit{ext}}
-\def\join{\mathit{join}}
-\def\schema{\mathit{schema}}
-
-\def\dc{\textsf{DegC}}
-\def\dom{\mathbf{dom}}
 \def\In{\mathrm{IN}}
 \def\join{\mathit{join}}
 \def\Out{\mathrm{OUT}}
-\def\polym{\mathit{polymat}}
 \def\schema{\mathit{schema}}
-\def\xyspace{\mathrm{space}}
 
 \def\extraspacing{\vspace{4mm} \noindent}
 \def\vgap{\vspace{4mm}}
@@ -274,7 +267,7 @@ To focus our discussion on the mathematical core, we make four assumptions that 
 
 \vgap
 
-We refer to the box $[\In]^d$ as the {\em join space}. Every tuple of $\join(\Q)$ can be seen as a point in this space. The converse, however, does not hold: not every point in $[\In]^d$ necessarily corresponds to a tuple of $\join(\Q)$.
+We refer to the box $[\In]^d$ as the {\em join space}. By assumption {\bf A2}, every tuple of $\join(\Q)$ can be seen as a point in this space. The converse, however, does not hold: not every point in $[\In]^d$ necessarily corresponds to a tuple of $\join(\Q)$.
 
 
 \subsection{The Box-Tree} \label{sec:boxtree:boxtree}
@@ -307,90 +300,20 @@ Property {\bf P2} of the box tree $\T$ implies:
 \myeqn{
     \bigcup_{\text{leaf } B} \join(\Q(B)) &=& \join(\Q). \nn
 }
-where $\Q(B)$ is defined in \eqref{eqn:Q_B}. This indicates a simple way to compute $\join(\Q)$. Generate the entire $\T$, which (by property {\bf P4}) requires $O(\agm_{\W^*} \log \In)$ CPU time. By property {\bf P1}, each leaf $B$ of $\T$ has an AGM value at most 1; hence, we can compute $\join(\Q(B))$ in $O(1)$ time (assumption {\bf A4}). This yields a join reporting algorithm with running time $O(\agm_{\W^*} \cdot \log^2 \In)$.
+where $\Q(B)$ is defined in \eqref{eqn:Q_B}. This indicates a simple way to compute $\join(\Q)$. Generate the entire $\T$, which (by assumption {\bf A3} and property {\bf P4}) requires $O(\agm_{\W^*} \log \In)$ CPU time. By property {\bf P1}, each leaf $B$ of $\T$ has an AGM value at most 1; hence, we can compute $\join(\Q(B))$ in $O(1)$ time (assumption {\bf A4}). This yields a join algorithm with running time $O(\agm_{\W^*} \cdot \log \In)$.
 
 \subsection{Join Sampling} \label{sec:boxtree:sample}
 
-We now tackle the join sampling problem defined in Section~\ref{sec:formalization}. Let $\T$ be the box tree defined by $\Delta = 1$. However, rather than materializing the entire $\T$ (as in Section~\ref{sec:boxtree:report}), this time we store nothing of $\T$, but sample its root-to-leaf paths on an ``as-needed'' basis.
-
-\begin{figure}
-\mytab{
-    {\bf algorithm} \ttt{sample} \\
-    /* $\T$ is the box tree defined by $\Delta = 1$ */ \\
-    1. \> $B \leftarrow [\In]^d$ /* the join space */ \\[0mm]
-    2. \> {\bf while} $\polym_W(B) > 1$ {\bf do} \\[0mm]
-    3. \>\> obtain the child nodes $B_1, B_2$ of $B$ in $\T$ \\[0mm]
-    4. \>\> $B^+ \leftarrow$ a rand.\ value drawn according to \eqref{eqn:apps:B+_1}-\eqref{eqn:apps:B+_3} \\
-    5. \>\> {\bf if} $B^+ = \perp$ {\bf then return} ``failure'' \\[0mm]
-    6. \>\> $B \leftarrow B^+$ \\[1mm]
-    \> /* $\polym_W(B) \le 1$ here */ \\[1mm]
-    7. \> {\bf if} $\join(\Q(B)) \ne \emptyset$ {\bf then} \\[0mm]
-    8. \>\> {\bf return} the only tuple in $\join(\Q(B))$ \\
-    9. \> {\bf else return} ``failure''
-}
-\figcapup
-\caption{An algorithm for join sampling}
-\label{code:sample}
-\figcapdown
-\end{figure}
-
-
-\vgap
-
-The \ttt{sample} algorithm, shown in Figure~\ref{code:sample}, begins at the root of $\T$. In general, if the algorithm is currently at an internal node (with box) $B$, it first obtains the child nodes $B_1$ and $B_2$ of $B$ in $\T$ (this requires only splitting $B$ evenly on its split dimension; see Section~\ref{sec:boxtree:boxtree}). Then, it draws a random value $B^+ \in \set{B_1, B_2, \perp}$ from the following distribution:
+The box-tree technique also yields a simple algorithm for {\em join sampling}, where the goal is to draw a tuple from $\join(\Q)$ uniformly at random. For this purpose, we do not materialize $\T$, but treat the join sampling problem as a tree sampling problem discussed earlier in the course. The details are left to you, but a special case worth discussing is when $\Out = 0$ --- that will the tree sampling algorithm to perform infinite repeats. To remedy the issue, we stop tree sampling after $\agm_{\W^*}$ repeats and revert to the algorithm in Section~\ref{sec:boxtree:report} for computing $\join(\Q)$ in $O(\agm_{\W^*} \cdot \log \In)$ time, which either confirms $\Out = 0$ or allows us to obtain a random tuple of $\join(\Q)$ with no extra cost. The overall sampling time is
 \myeqn{
-    \Pr[B^+ = B_1] &=& \fr{\agm_{\W^*}(B_1)}{\agm_{\W^*}(B)} \label{eqn:apps:B+_1} \\
-    \Pr[B^+ = B_2] &=& \fr{\agm_{\W^*}(B_2)}{\agm_{\W^*}(B)} \label{eqn:apps:B+_2} \\
-% }
-% \vspace{-4mm}
-%\myeqn{
-    \Pr[B^+ = \perp] &=& 1 - \Pr[B^+ = B_1] - \nn \\
-    && \Pr[B^+ = B_2]. \label{eqn:apps:B+_3}
+    O\Big(
+        \fr{\agm_{\W^*}}{\max\{1, \Out\}} \cdot \log \In
+    \Big)
+    \nn
+    %\label{eqn:boxtree:sample-time}
 }
-If $B^+ = \perp$, then the algorithm declares ``failure'' and terminates. Otherwise, it descends to the child $B^+$.
+expected where $\Out = |\join(\Q)|$.
 
-\vgap
-
-Now consider that the algorithm has reached a leaf $B$, whose polymatroid value is at most 1 (property {\bf P1}). As explained in Section~\ref{sec:boxtree:report}, $\join(\Q(B))$ has at most one tuple and can be computed in $O(1)$ time. If $\join(\Q(B))$ is not empty, the algorithm returns the only tuple therein; otherwise, it declares ``failure''.
-
-\vgap
-
-By Property {\bf P3}, \ttt{sample} runs in $O(\log \In)$ time plus $O(\log \In)$ calls to the polymatroid oracle. Whenever \ttt{sample} does not declare failure, we say that it {\em succeeds}. Next, we argue that if the algorithm succeeds, it returns a uniformly random tuple from $\join(\Q)$.
-
-\vgap
-
-Fix an arbitrary tuple $\bm{u} \in \join(\Q)$. As mentioned at the beginning of Section~\ref{sec:boxtree}, $\bm{u}$ can be regarded as a point in the join space. Let $B$ be the leaf of $\T$ whose box covers that point --- such a leaf must exist due to Property {\bf P2}. It must hold that
-\myeqn{
-    \agm_{\W^*}(B) = 1. \label{eqn:apps:sample-help1}
-}
-To see why, note that $\agm_{\W^*}(B) \le 1$ by property {\bf P1}, while, on the other hand, $\agm_{\W^*}(B) \ge |\join(\Q(B))| \ge 1$. Let $B_0, B_1, ..., B_h$ be the nodes on the path of $\T$ from the root to $B$ (i.e., $B_0$ is the root and $B_h = B$). The probability that \ttt{sample} outputs $\bm{u}$ is
-\myeqn{
-    \prod_{i=1}^h \fr{\agm_{\W^*}(B_i)}{\agm_{\W^*}(B_{i-1})}
-    &=&
-    \fr{\agm_{\W^*}(B)}{\agm_{\W^*}([\In]^d)} \nn \\
-    \explain{by \eqref{eqn:apps:sample-help1}}
-    &=& \fr{1}{\agm_{\W^*}}.
-    \label{eqn:sample-probability}
-}
-As the above is identical for all $\bm{u}$, we conclude that \ttt{sample} returns a uniformly random tuple of $\join(\Q)$ whenever it succeeds.
-
-\vgap
-
-The success probability of \ttt{sample} is
-\myeqn{
-    \sum_{\bm{u} \in \join(\Q)} \Pr[\text{$\bm{u}$ is output}]
-    &=&
-    \fr{\Out}{\agm_{\W^*}}. \nn
-}
-In expectation, $\fr{\agm_{\W^*}}{\Out}$ repeats of the algorithm are needed to acquire a sample.
-
-\vgap
-
-A special case occurs when $\Out = 0$ --- this will force us to repeat the algorithm forever. To remedy the issue, we stop using \ttt{sample} after $\agm_{\W^*}$ repeats and revert to a worst-case optimal join algorithm (e.g., \cite{n18}) to compute $\join(\Q)$ in $O(\agm_{\W^*})$ time, which will either confirm $\Out = 0$ or allow us to obtain a random tuple of $\join(\Q)$ with no extra cost.
-
-\vgap
-
-We have not mentioned any data structure. Indeed, the \ttt{sample} algorithm itself requires no data structures. Nevertheless, to implement a call to the polymatroid oracle in $O(\log \In)$ time, one still needs a data structure of $O(\In)$ space, as will be discussed in Section~\ref{sec:boxtree:discussion}. This makes the expected join sampling time $O(\fr{\agm_{\W^*}}{\max\{1, \Out\}} \log^2 \In)$, which is worse than the state of the art \cite{wt26} by only a factor of $O(\log^2 \In)$.
 
 \section{Remark}
 
