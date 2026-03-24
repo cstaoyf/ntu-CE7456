@@ -32,11 +32,20 @@
 \def\Y{\mathcal{Y}}
 \def\Z{\mathcal{Z}}
 \def\att{\mit{diffatt}}
+\def\agm{\mathit{AGM}}
 \def\boldatt{\mathbf{att}}
 \def\ext{\mathit{ext}}
 \def\join{\mathit{join}}
 \def\schema{\mathit{schema}}
 
+\def\dc{\textsf{DegC}}
+\def\dom{\mathbf{dom}}
+\def\In{\mathrm{IN}}
+\def\join{\mathit{join}}
+\def\Out{\mathrm{OUT}}
+\def\polym{\mathit{polymat}}
+\def\schema{\mathit{schema}}
+\def\xyspace{\mathrm{space}}
 
 \def\extraspacing{\vspace{4mm} \noindent}
 \def\vgap{\vspace{4mm}}
@@ -48,326 +57,343 @@
     \begin{center}
         \vspace{3mm}
     {\Large
-    (CE7456 Lecture Notes 10) Natural Joins} \\[2mm]
+    (CE7456 Lecture Notes 11) A Split Theorem} \\[2mm]
     {\large Yufei Tao}
     \vspace{3mm}
     \end{center}
 }
 
-Today, we discuss the {\em natural join} problem, which lies at the core of database theory and generalizes the subgraph enumeration problem in the previous lecture.
+Today, we discuss a theorem that unveils an intrinsic mathematical structure of natural joins. This structure establishes a geometric, hierarchical view over the tuples in the join result, which enables simple algorithms for both computing the join output and sampling from it.
+
+%\extraspacing {\bf Basic Definitions.}
+
+\section{Basic Definitions}
+
+Define $0^0 = 0$. For an integer $x \ge 1$, the notation $[x]$ denotes the set $\{1, 2, ..., x\}$. We use $\intdom$ to represent the set of integers.
 
 \vgap
 
-Let $\boldatt$ be a finite set, where each element is called an {\em attribute}. For a non-empty set $\X \subseteq \boldatt$ of attributes, a {\em tuple} over $\X$ is a function $\bm{u}: \X \rightarrow \intdom$ (where $\intdom$ represents the set of integers); for each $X \in \X$, we refer to $\bm{u}(X)$ as the {\em value} of $\bm{u}$ on $X$. For any non-empty subset $\Y \subseteq \X$, we define $\bm{u}[\Y]$ --- called the {\em projection} of $\bm{u}$ on $\Y$ --- as the tuple $\bm{v}$ over $\Y$ satisfying $\bm{v}(Y) = \bm{u}(Y)$ for every attribute $Y \in \Y$. A {\em relation} $R$ is a set of tuples over the same set $Z$ of attributes; we refer to $Z$ as the {\em schema} of $R$ and represent it as $\schema(R)$.
+Let $\boldatt$ be a finite set, where each element is called an {\em attribute}. For a non-empty set $\X \subseteq \boldatt$ of attributes, a {\em tuple} over $\X$ is a function $\bm{u}: \X \rightarrow \intdom$; for each $X \in \X$, we refer to $\bm{u}(X)$ as the {\em value} of $\bm{u}$ on $X$. For any non-empty subset $\Y \subseteq \X$, we define $\bm{u}[\Y]$ --- called the {\em projection} of $\bm{u}$ on $\Y$ --- as the tuple $\bm{v}$ over $\Y$ satisfying $\bm{v}(Y) = \bm{u}(Y)$ for every attribute $Y \in \Y$. A {\em relation} $R$ is a set of tuples over the same set $Z$ of attributes; we refer to $Z$ as the {\em schema} of $R$ and represent it as $\schema(R)$.
 
 \vgap
 
-We define a {\em join} as a set $\Q$ of relations. Let $\schema(\Q) = \bigcup_{R \in Q} \schema(R)$. The result of $\Q$ is a relation over $\schema(\Q)$ formalized as:
+A {\em join} is defined as a set $\Q$ of relations. Let $\schema(\Q) = \bigcup_{R \in Q} \schema(R)$. The result of $\Q$ is a relation over $\schema(\Q)$ formalized as:
 \myeqn{
     \join(\Q) &=& \{\textrm{tuple $\bm{u}$ over $\schema(\Q)$} \mid \forall R \in \Q: \bm{u}[\schema(R)] \in R\}. \label{eqn:join-rslt}
 }
-Our discussion in this lecture assumes that $\schema(\Q)$ has a constant size.
-
-\extraspacing {\bf Math Conventions.} Define $0^0 = 0$. For an integer $x \ge 1$, the notation $[x]$ denotes the set $\{1, 2, ..., x\}$.
-
-%Every logarithm $\log(\cdot)$ has base $2$.
-
-%The notation $\tO(.)$ hides a factor logarithmic to $\sum_{R \in \Q} |R|$.
-
-\section{Schema Graphs and Fractional Edge Covers} \label{sec:schema}
-
-Given a join $\Q$, we define its {\em schema graph} as the hypergraph $\H = (\V, \E)$ where
+The {\em schema graph} of $\Q$ is a hypergraph $\H = (\V, \E)$ where
 \myeqn{
     \V &=& \schema(\Q) \nn \\
     \E &=& \set{\schema(R) \mid R \in \Q}. \nn
 }
-Note that there is one-one correspondence between the relations in $\Q$ and the hyperedges in $\E$. For each hyperedge $e \in \E$, let $R_e$ represent the corresponding relation $R \in \Q$.
+Note that there is one-one correspondence between the relations in $\Q$ and the hyperedges in $\E$. For each hyperedge $e \in \E$, let $R_e$ represent the corresponding relation $R \in \Q$. Our discussion assumes that both $\V$ and $\E$ have constant sizes.
 
 \vgap
 
-Treating $\E$ as a ``space'', next we define vectors over it. Every such vector $\W$ has a real-valued component $\W_e$ on each hyperedge $e \in \E$. The vector $\W$ is said to be a {\em fractional edge cover} of $\H$ if
+A vector $\W$ over the space of $\E$ has a real-valued component $\W_e$ on each hyperedge $e \in \E$. The vector $\W$ is said to be a {\em fractional edge cover} of $\H$ if
 \myitems{
     \item $0 \le \W_e \le 1$ for every $e \in \E$, and
     \item $\sum_{e \in \E : X \in e} \W_e \ge 1$ for every $X \in \V$.
 }
-
-\section{AGM Bound} \label{sec:agm}
-
-Let $\Q$ be a join with schema graph $\H = (\V, \E)$. Every fractional edge cover $\W$ of $\H$ is associated with an {\em AGM value} defined as
+Every fractional edge cover $\W$ of $\H$ is associated with an {\em AGM value} defined as
 \myeqn{
     \mit{AGM}_\W &=& \prod_{e \in \E} |R_e|^{\W_e}. \label{eqn:agm}
 }
-
-\vgap
-
-\begin{theorem} \label{thm:agm}
-   For any fractional edge cover $\W$ of $\H$, it holds that $|\join(\Q)| \le \mit{AGM}_\W$.
-\end{theorem}
-
-\vgap
-
-%An {\em optimal fractional edge cover} of $\H$ is a fractional edge cover $\W^*$ minimizing \eqref{eqn:agm}.
-The {\em AGM bound} of $\Q$ is defined as the smallest $\mit{AGM}_\W$ over all possible fractional edge covers $\W$ of $\H$.
-The AGM bound is tight:
-
-\vgap
-
-\begin{theorem} \label{thm:agm-tight}
-   Fix an arbitrary hypergraph $\H = (\V, \E)$ and an arbitrary integer vector $N$ over $\E$ such that $N_e \ge 1$ for each $e \in \E$. There exists a join $\Q$ satisfying
-   \myitems{
-        \item the schema graph of $\Q$ is $\H$;
-        \item for each $e \in \E$, $|R_e| = N_e$;
-        \item $|\join(\Q)|$ is at least the AGM bound of $\Q$ up to a constant factor.
-   }
-\end{theorem}
-
-\vgap
-
-We prove Theorem~\ref{thm:agm} in the next section and Theorem~\ref{thm:agm-tight} in the next lecture.
-
-\section{Proof of Theorem~\ref{thm:agm}} \label{sec:agm-proof}
-
-Given a tuple $\bm{u}$ over a subset $U \subseteq \E$ (recall that $\E = \schema(\Q)$) and a relation $R \in \Q$, we define a {\em residual relation} as:
+As proved previously, it holds for any fractional edge cover $\W$ of $\H$ that
 \myeqn{
-    R(\bm{u}) &=&
-    \set{
-        \bm{v} \in R \mid \forall X \in U \cap \schema(R): \bm{v}(X) = \bm{u}(X)
-    }. %\nn
-    \label{eqn:alg-proof:residual-rel}
+    |\join(\Q)| \le \mit{AGM}_\W. \nn
 }
-Intuitively, $R(\bm{u})$ includes those tuples of $R$ that are ``constrained'' by $\bm{u}$, in the sense that they must take the same value as $\bm{u}$ on every attribute common to $\schema(R)$ and $U$. Note that if $U$ and $\schema(R)$ are disjoint, then $R(\bm{u}) = R$.
+The {\em AGM bound} of $\Q$ is the smallest AGM value of all fractional edge covers of $\H$.
+
+\section{``Boxing'' Everything} \label{sec:split:box}
+
+Set $d = |\V|$, and let the attribute sequence
+\myeqn{
+    A_1, A_2, ..., A_d
+    \label{eqn:topological}
+}
+be an (arbitrary) ordering of the attributes in $\V$. By treating each attribute as a {\em dimension}, we will often speak about the $d$-dimensional space $\intdom^d$, where $A_i$ ($i \in [d]$) corresponds to the $i$-th dimension. Note that each tuple in the join result $\join(\Q)$ can be regarded as a point in this space.
 
 \vgap
 
-Given a tuple $\bm{u}$ over a subset $U \subseteq \E$, we define a {\em residual join} as follows:
+We use the term {\em box} to refer to a rectangle $B$ in $\intdom^d$ of the form $[x_1, y_1] \times [x_2, y_2] \times ... \times [x_d, y_d]$. For any $i \in [d]$, let $B(A_i)$ represent the interval $[x_i, y_i]$, i.e., the projection of $B$ onto the $i$-th dimension. In particular, we say that $B(A_i)$ is a {\em singleton interval} if $x_i = y_i$. If $B(A_i)$ is a singleton interval on all $i \in [d]$, we call $B$ a  {\em singleton box}.
+
+\vgap
+
+For each relation $R \in \Q$, we define
 \myeqn{
-    \Q(\bm{u}) &=&
-    \set{
-        R_e(\bm{u}) \mid e \in \E
-    }. \label{eqn:alg-proof:residual-join}
+    R(B) = \{\text{tuple $\bm{u} \in R$} \mid
+    \forall A_i \in \schema(R): \text{ $\bm{u}(A_i) \in B(A_i)$}\}.
+    \label{eqn:R_B}
+}
+Intuitively, $R(B)$ is the subset of tuples in $R$ that are ``selected'' by $B$. Accordingly, define
+\myeqn{
+    \Q(B) = \set{R(B) \mid R \in \Q}.
+    \label{eqn:Q_B}
+}
+Note that $\Q(B)$ is a join whose schema graph is also $\H = (\V, \E)$, i.e., sharing the same schema graph as $\Q$.
+
+\vgap
+
+Take any fractional edge cover $\W$ of $\H$. The {\em AGM value of $\W$ on $B$} is defined as
+\myeqn{
+    \agm_{\W}(B) &=& \prod_{e \in \E} |R_e(B)|^{\W_e}.
+    \label{eqn:box:agm}
 }
 
-\vslit
 
-\begin{lemma} \label{lmm:agm-proof:residual}
-    Fix an arbitrary order of the attributes in $\V$: $X_1, X_2, ..., X_d$ where $d = |\V|$. Let $t \in [0, d]$ be an integer and $\bm{u}$ be a tuple over $U = \set{X_1, ..., X_t}$ such that $R(\bm{u}) \ne \emptyset$ for every $R \in \Q$. We have
+\section{A Split Theorem} \label{sec:split}
+%
+% Given a non-singleton box $B$, we define its {\em split dimension} as the smallest $\sigma \in [d]$ such that $B(A_\sigma)$ is not a singleton interval. A set of boxes $B_1,$ $B_2,$ $..., B_s$ (where $s \ge 2$) is said to {\em refine} $B$ if
+% \myitems{
+%     \item $B_1, B_2, ..., B_s$ are mutually disjoint, and their union is $B$;
+%     \item for every $i \in [d] \setm \set{\sigma}$, it holds that $B_1(A_i) = B_2(A_i) = ... B_s(A_i) = B(A_i)$.
+% }
+
+\begin{theorem} \textsc{(Simple AGM Split Theorem)} \label{thm:split-simple}
+    Consider a join $\Q$ with schema graph $\H = (\V, \E)$ and an arbitrary fractional edge cover $\W$ of $\H$. Let $B$ be a non-singleton box; and let $B_1, B_2$ be any two disjoint boxes partitioning $B$ (i.e., $B_1 \cap B_2 = \emptyset$ and $B_1 \cup B_2 = B$). We must have
     \myeqn{
-        |\join(\Q(\bm{u}))|
-        &\le&
-        \prod_{e \in \E} |R_e(\bm{u})|^{\W_e}. \label{eqn:agm-proof:residual-goal}
+        \agm_W(B_1) + \agm_W(B_2) \le \agm_W(B). \nn
     }
-\end{lemma}
-
-\vgap
-
-Specially, if $t = 0$, then $U = \emptyset$ and $\Q = \Q(\bm{u})$ (because $R(\bm{u}) = R$ for all $R \in \Q$). Hence, Theorem~\ref{thm:agm} is a corollary of the above lemma with $U = \emptyset$. Note that the theorem is still correct even if $R(\bm{u}) = \emptyset$ for some $R \in \Q$. We choose to state the theorem the way it is because this will bring us convenience when we prove Lemma~\ref{lmm:alg:residual} later.
-
-\extraspacing {\bf Proof of Lemma~\ref{lmm:agm-proof:residual}.} In general, given a relation $R$ and an attribute $X$ in its schema, we define
-\myeqn{
-    \pi_X (R) &=& \set{\bm{v}(X) \mid \bm{v} \in R}. \label{eqn:agm-proof:proj}
-}
-This is the {\em projection} operator in relational algebra.
-
-\vgap
-
-We prove the lemma by induction. As the base case, consider $t = d$. For each $R \in \Q$, the residual relation $R(\bm{u})$ has exactly one tuple. Thus, $|\join(\Q(\bm{u}))| \le 1$, and \eqref{eqn:agm-proof:residual-goal} holds.
-
-\vgap
-
-Inductively, assuming that the lemma holds for $t = i$ (where $i \in [d]$), next we prove its correctness for $t = i - 1$. Because $\W$ is a fractional edge cover of $\H = (\V, \E)$, we know
-\myeqn{
-    \sum_{e \in \E: X_i \in e} \W_e &\ge& 1.
-    \label{eqn:agm-proof:residual-goal:3}
-}
-Define:
-\myeqn{
-    \I = \bigcap_{e \in \E : X_i \in e} \pi_{X_i}(R_e(\bm{u})). \label{eqn:agm-proof:intersection}
-}
-For each value $x \in \I$, we construct a tuple $\bm{v}$ over $\set{X_1, ..., X_i}$ by ``extending $\bm{u}$ with $X_i = x$'', i.e., $\bm{v}(X_j) = \bm{u}(X_j)$ for all $j \in [i - 1]$ and $\bm{v}(X_i) = x$. This produces a set of ``extended'' tuples:
-\myeqn{
-    S_\ext &=&
-    \set{
-        \text{tuple $\bm{v}$ extended from $\bm{u}$ and $x$} \mid
-        \text{$x \in \I$}
-    }. \label{eqn:agm-proof:S_ext}
-}
-
-\vslit
-
-Consider the residual join $\Q(\bm{v})$ where $\bm{v} \in S_\ext$. We argue that no relation of $\Q(\bm{v})$ is empty. Indeed, for each $e \in \E$:
-\myitems{
-    \item if $X_i \notin e$, then $R_e(\bm{v}) = R_e(\bm{u})$, which is not empty;
-
-    \item otherwise, since $\bm{v}(X_i)$ belongs to the set $\I$ in \eqref{eqn:agm-proof:intersection}, we can assert $R_e(\bm{v}) \ne \emptyset$.
-}
-
-\vslit
-
-We can now derive
-\myeqn{
-    \join(\Q(\bm{u}))
-    &=&
-    \bigcup_{\bm{v} \in S_\ext} \join(\Q(\bm{v})) \nn \\
-    \Rightarrow
-    |\join(\Q(\bm{u}))|
-    &=&
-    \sum_{\bm{v} \in S_\ext} |\join(\Q(\bm{v}))| \nn \\
-    \explain{by inductive assumption}
-    &\le&
-    \sum_{\bm{v} \in S_\ext}
-    \prod_{e \in \E}
-    |R_e(\bm{v})|^{\W_e} \nn \\
-    &\le&
-    \sum_{\bm{v} \in S_\ext}
-    \Big(
-    \prod_{e \in \E : X_i \in e}
-    |R_e(\bm{v})|^{\W_e}
-    \Big)
-    \Big(
-    \prod_{e \in \E : X_i \notin e}
-    |R_e(\bm{v})|^{\W_e}
-    \Big) \nn \\
-    &=&
-    \sum_{\bm{v} \in S_\ext}
-    \Big(
-    \prod_{e \in \E : X_i \in e}
-    |R_e(\bm{v})|^{\W_e}
-    \Big)
-    \Big(
-    \prod_{e \in \E : X_i \notin e}
-    |R_e(\bm{u})|^{\W_e}
-    \Big) \nn \\
-    &=&
-    \Big(
-    \prod_{e \in \E : X_i \notin e}
-    |R_e(\bm{u})|^{\W_e}
-    \Big)
-    \sum_{\bm{v} \in S_\ext}
-    \Big(
-    \prod_{e \in \E : X_i \in e}
-    |R_e(\bm{v})|^{\W_e}
-    \Big) \nn \\
-    &\le&
-    \Big(
-    \prod_{e \in \E : X_i \notin e}
-    |R_e(\bm{u})|^{\W_e}
-    \Big)
-    \prod_{e \in \E: X_i \in e}
-    \Big(
-        \sum_{\bm{v} \in S_\ext} |R_e(\bm{v})|
-    \Big)^{\W_e} \nn \\
-    &&
-    \explain{by \eqref{eqn:agm-proof:residual-goal:3} and Friedgut's inequality \eqref{eqn:friedgut} in Appendix \ref{app:friedgut}}
-    \nn \\[2mm]
-    &\le&
-    \Big(
-    \prod_{e \in \E : X_i \notin e}
-    |R_e(\bm{u})|^{\W_e}
-    \Big)
-    \prod_{e \in \E: X_i \in e}
-        |R_e(\bm{u})|^{\W_e} \nn \\
-    &=&
-    \prod_{e \in \E}
-    |R_e(\bm{u})|^{\W_e}. \label{eqn:agm-proof:residual-goal:4}
-}
-This completes the inductive step.
-
-
-\section{A Join Algorithm} \label{sec:alg}
-
-Let $\Q$ be a join with schema graph $\H = (\V, \E)$. Remarkably, the proof of the AGM bound inspires an algorithm for computing $\join(\Q)$. Set $d = |\V|$ and fix an arbitrary order of the attributes in $\V$: $X_1, X_2, ..., X_d$. We make two assumptions:
-\myitems{
-    \item {{\bf A1:}} Given a tuple $\bm{u}$ over a set $U = \set{X_1, ..., X_t}$ where $t \in [0, d]$ and a relation $R \in \Q$, we can compute the residual relation $R(\bm{u})$ --- defined in \eqref{eqn:alg-proof:residual-rel} --- in $O(1 + |R(\bm{u})|)$ time and $|R(\bm{u})|$ in $O(1)$ time.
-
-    \item {{\bf A2:}}  Given a tuple $\bm{u}$ over a set $U = \set{X_1, ..., X_t}$ where $t \in [0, d-1]$, a relation $R \in \Q$, we can test in $O(1)$ time whether $R(\bm{u}) = \emptyset$.
-}
-These assumptions can be removed by slowing down the running time by at most a logarithmic factor (details left to you).
-
-\vgap
-
-We aim to solve the following {\em residual join computation problem}:
-
-\vslit
-
-\minipg{0.9\linewidth}{
-    Let $t \in [0, d]$ be an integer. Given a tuple $\bm{u}$ over $U = \set{X_1, ..., X_t}$ such that $R(\bm{u}) \ne \emptyset$ for each $R \in \Q$, compute the result of the residual join $\Q(\bm{u})$ defined in \eqref{eqn:alg-proof:residual-join}.
-}
-
-\vslit
-
-\noindent Computing $\join(\Q)$ is equivalent to solving the above with $t = 0$ (and hence $U = \emptyset$).
-
-\extraspacing {\bf Algorithm.} The base case $t = d$ can be trivially settled in $O(1)$ time (assumption {\bf A1}). Inductively, suppose that we can solve the problem for $t = i$ for some $i \in [d]$. We solve the problem for $t = i-1$ as follows:
-\myenums{
-    \item Find the set $\I$ in \eqref{eqn:agm-proof:intersection} and construct the set $S_\ext$ in \eqref{eqn:agm-proof:S_ext}.
-
-    \item For each $\bm{v} \in S_\ext$, output $\join(\Q(\bm{v}))$.
-}
-
-\extraspacing {\bf Analysis.} We prove:
-
-\begin{lemma} \label{lmm:alg:residual}
-    Fix an arbitrary fractional edge cover $\W$ of $\H$.
-    The residual join computation problem can be solved in time
-    \myeqn{
-        O\Big(
-        \prod_{e \in \E} |R_e(\bm{u})|^{\W_e}
-        \Big) \label{eqn:alg:residual-time}
-    }
-    under assumptions {\bf A1} and {\bf A2}.
-\end{lemma}
+\end{theorem}
 
 \begin{proof}
-   The base case $t = d$ is straightforward and omitted. Next, assuming that the claim holds for $t = i \in [d]$, we prove the claim for $t = i - 1$.
-
-   \vgap
-
-   In Step 1 of the algorithm, the set $\I$ in \eqref{eqn:agm-proof:intersection} (and, hence, $S_\ext$ in \eqref{eqn:agm-proof:S_ext}) can be computed in
-   \myeqn{
-        O\Big(
-            \min_{e \in \E: X_i \in e} |R_e(\bm{u})|
-        \Big) \label{eqn:alg:residual:1}
+   W.l.o.g., assume that $B_1$ and $B_2$ partition $B$ on dimension $A_1$, namely:
+   \myitems{
+        \item $B_1(A_1) \cap B_2(A_1) = \emptyset$ and $B_1(A_1) \cup B_2(A_2) = B(A_1)$;
+        \item $B_1(A_i) = B_2(A_i)$ for all $i \in [2, d]$.
    }
-   time as follows. First, spend $O(1)$ time to find the edge $e^* = \argmin_{e \in \E: X_i \in e} |R_e(\bm{u})|$ (this is possible due to assumption {\bf A1}). Then, retrieve the tuples in $R_{e^*}(\bm{u})$, which takes $O(|R_{e^*}(\bm{u})|)$ time by assumption {\bf A1}. For each tuple in $R_{e^*}(\bm{u})$, we test in $O(1)$ time whether the tuple's value on $X_i$ belongs to $\I$ (this is possible due to assumption {\bf A2}). The complexity in \eqref{eqn:alg:residual:1} now follows.
 
    \vgap
 
-   Next, we show that \eqref{eqn:alg:residual:1} is bounded by \eqref{eqn:alg:residual-time}. Because $\W$ is a fractional edge cover of $\H = (\V, \E)$, it holds that
+   Let us review Friedgut's inequality. Fix arbitrary integers $p$ and $q$ at least 1. Take a set of non-negative real values $\{a_{i,j} \mid i \in [p], j \in [q]\}$. In addition, take another set of non-negative real values $\{b_i$ $\mid$ $i \in [q]\}$ satisfying $\sum_{i=1}^{q} b_i \geq 1$.  Friedgut's inequality \cite{f04} states that
     \myeqn{
-        \sum_{e \in \E : X_i \in e} \W_e &\ge& 1.
-        \label{eqn:alg:residual:2}
+        \sum_{i=1}^{p}	\prod_{j=1}^{q} a_{i, j}^{b_j}
+        &\leq&
+        \prod_{j=1}^{q} \left(\sum_{i=1}^{p} a_{i, j}\right)^{b_j}.
+        \label{eqn:friedgut}
     }
-    Hence:
+
+    \vgap
+
+    We can derive
     \myeqn{
-        \min_{e \in \E: X_i \in e} |R_e(\bm{u})|
-        &\le&
-        \Big(
-            \min_{e \in \E : X_i \in e} |R_e(\bm{u})|
-        \Big)^{\sum_{e \in \E : X_i \in e} \W_e} \nn \\
+        \agm_\W(B_1)
         &=&
-        \prod_{e \in \E : X_i \in e}
-        \Big(
-            \min_{e \in \E : X_i \in e} |R_e(\bm{u})|
-        \Big)^{\W_e} \nn \\
-        &\le&
-        \prod_{e \in \E : X_i \in e} |R_e(\bm{u})|^{\W_e}. \nn
+        \prod_{e \in \E} |R_e(B_1)|^{\W_e} \nn \\
+        &=&
+        \Big(\prod_{e \in \E: A_1 \notin e} |R_e(B_1)|^{\W_e} \Big)
+        \cdot
+        \Big(\prod_{e \in \E: A_1 \in e} |R_e(B_1)|^{\W_e} \Big)
+        \nn \\
+        &=&
+        \Big(\prod_{e \in \E: A_1 \notin e} |R_e(B)|^{\W_e} \Big)
+        \cdot
+        \Big(\prod_{e \in \E: A_1 \in e} |R_e(B_1)|^{\W_e} \Big)
+        \label{eqn:split:1}
     }
-
-    \vslit
-
-    Let us now turn to Step 2 of the algorithm. By the inductive assumption, for each $\bm{v} \in S_\ext$, the result of $\Q(\bm{v})$ can be computed in $O(\prod_{e \in \E} |R_e(\bm{v})|^{\W_e})$ time. Therefore, the total cost of Step 2 is
+    where the last equality used the fact that $R_e(B) = R_e(B_1)$ for every hyperedge $e \in \E$ that does not contain $A_1$. Similarly, a similar derivation yields
     \myeqn{
-        O\Big(
-            \sum_{\bm{v} \in S_\ext}
-            \prod_{e \in \E} |R_e(\bm{v})|^{\W_e}
-        \Big) \nn
+        \agm_\W(B_2)
+        &=&
+        \Big(\prod_{e \in \E: A_1 \notin e} |R_e(B)|^{\W_e} \Big)
+        \cdot
+        \Big(\prod_{e \in \E: A_1 \in e} |R_e(B_2)|^{\W_e} \Big).
+        \label{eqn:split:2}
     }
-    which, by the derivation in \eqref{eqn:agm-proof:residual-goal:4}, is bounded by \eqref{eqn:alg:residual-time}.
+
+    Since $\W$ is a fractional edge cover of $\H$, we have
+    \myeqn{
+        \sum_{e \in \E: A_1 \in e} \W_e \ge 1. \label{eqn:split:3}
+    }
+    For each hyperedge $e \in \E$, it holds that
+    \myeqn{
+        |R_e(B_1)| + |R_e(B_2)|
+        &=&
+        |R_e(B)|. \label{eqn:split:4}
+    }
+    To see why, note that each tuple of $R_e(B)$ appears in exactly one of $R_e(B_1)$ and $R_e(B_2)$ because $B$ is partitioned by $B_1$ and $B_2$.
+
+    \vgap
+
+    We therefore can derive
+    \myeqn{
+        && \agm_\W(B_1) + \agm_\W(B_2) \nn \\
+        \explain{by \eqref{eqn:split:1} and \eqref{eqn:split:2}}
+        &=&
+        \Big(\prod_{e \in \E: A_1 \notin e} |R_e(B)|^{\W_e} \Big)
+        \cdot
+        \sum_{i=1}^2
+        \prod_{e \in \E: A_1 \in e} |R_e(B_i)|^{\W_e} \\
+        \explain{by \eqref{eqn:split:3}}
+        &\le&
+        \Big(\prod_{e \in \E: A_1 \notin e} |R_e(B)|^{\W_e} \Big)
+        \cdot
+        \prod_{e \in \E: A_1 \in e}
+        \Big( \sum_{i=1}^2 |R_e(B_i)| \Big)^{\W_e} \\
+        \explain{by \eqref{eqn:split:4}}
+        &\le&
+        \Big(\prod_{e \in \E: A_1 \notin e} |R_e(B)|^{\W_e} \Big)
+        \cdot
+        \prod_{e \in \E: A_1 \in e}
+        |R_e(B)|^{\W_e} \nn \\
+        &=&
+        \agm_\W(B)
+    }
+    as claimed.
 \end{proof}
 
-\begin{corollary}
-   Under assumptions {\bf A1} and {\bf A2}, we can compute the result of a join $\Q$ in time that is asymptotically bounded by the AGM bound of $\Q$.
-\end{corollary}
+\section{The Box-Tree Technique} \label{sec:boxtree}
+
+Next, we use Theorem~\ref{thm:split-simple}  to design join algorithms. We fix
+\myitems{
+    \item a join $\Q$ with schema graph $\H = (\V, \E)$;
+    \item an arbitrary attribute ordering $A_1, A_2, ..., A_d$ as defined in \eqref{eqn:topological} where $d = |\schema(\Q)|$;
+    \item an arbitrary fractional edge cover $\W^*$ of $\H$ such that $\agm_{\W^*}$ equals the AGM bound of $\Q$.
+}
+
+Define
+\myeqn{
+    \In &=& \sum_{R \in \Q} |R|
+}
+which is the total number of tuples in the relations of $\Q$. We make three assumptions:
+\myitems{
+    \item {{\bf A1:}} $\In$ is a power of 2.
+
+    \item {{\bf A2:}} Attribute values lie in the so-called {\em rank space}. Specifically, for any relation $R \in \Q$, any attribute $A \in \schema(R)$, and any tuple $\bm{u} \in R$, we consider that $\bm{u}(A)$ is an integer in $[\In]$.
+
+    \item {{\bf A3:}} Given any relation $R$ and any box $B$, we can compute $\agm_{\W^*}(B)$ in \eqref{eqn:box:agm} in $\tO(1)$ time, where $\tO(.)$ hides a factor polylogarithmic in $\In$.
+}
+It is standard to satisfy these assumptions by preprocessing the relations of $\Q$ in $\tO(\In)$ time.
+
+\vgap
+
+We refer to the box $[\In]^d$ as the {\em join space}. Every tuple of $\join(\Q)$ can be seen as a point this space. The converse, however, does not hold: not every point in $[\In]^d$ necessarily corresponds to a tuple of $\join(\Q)$.
+
+
+\subsection{The Box-Tree} \label{sec:boxtree:boxtree}
+
+The {\em box tree} $\T$ is built by splitting the join space recursively. This is a binary tree whose nodes are each associated with a distinct box. Henceforth, we will denote a node using its associated box. For a node $B$, we define its {\em AGM value} as $\agm_{\W^*}(B)$; see \eqref{eqn:box:agm} for its calculation. The AGM value of a node is at least the sum of the AGM values of its children.
+
+\vgap
+
+The root of $\T$ is associated with the join space $[\In]^d$. In general, consider a node associated with box $B$. If $B$ has an AGM value at most $1$, it becomes a leaf of $\T$. Otherwise, $B$ must be a non-singleton box (otherwise, its AGM value must be 1), which we split \uline{\em evenly} along some arbitrary dimension into boxes $B_1$ and $B_2$. We then create two child nodes of $B$, associated with $B_1$ and $B_2$, respectively. This completes the definition of the box tree. It is worth mentioning that even splits are always possible due to assumption {\bf A1}.
+
+\vgap
+
+The tree $\T$ has four properties:
+\myitems{
+    \item {{\bf P1}}: Every internal node has an AGM value greater than $1$, while every leaf node has an AGM value at most $1$.
+    \item {{\bf P2}}: The leaf boxes are mutually disjoint and their union is $[\In]^d$.
+    \item {{\bf P3}}: $\T$ has height $O(\log \In)$.
+    \item {{\bf P4}}: $\T$ has $O(\agm_{\W^*} \cdot \log \In)$ nodes, where $\agm_{\W^*}$ is the AGM bound of $\Q$.
+
+}
+Properties {\bf P1} and {\bf P2} follow immediately from the definition of $\T$. To understand {\bf P3}, notice that the box of a child node covers half as many points in the join space as that of its parent node. Since the join space has $\In^d$ points (assumption {\bf A2}), it can be split at most $d \log \In = O(\log \In)$ times before reducing to a singleton box (which must become a leaf because its AGM value is at most 1). Hence, the height of $\T$ is $O(\log \In)$.
+
+\vgap
+
+To prove {\bf P4}, imagine removing all the leaf nodes of $\T$, and let $\T'$ denote the resulting tree (note that $\T'$ need not be binary). Every leaf of $\T'$ is an internal node in $\T$ and hence has a polymatroid value over $\Delta$. The sum of the polymatroid values of all leaves of $\T'$ cannot exceed the polymatroid value of the root, which is precisely $\polym_{W^*}$. Hence, $\T'$ has less than $\polym_{W^*} / \Delta$ leaves, and thus at most $O((\polym_{W^*} / \Delta) \cdot \log \In)$ nodes in total. This proves {\bf P4}, since each node of $\T'$ can parent at most 2 leaves of $\T$.
+
+\vgap
+
+Henceforth, we assume a {\em polymatroid oracle} that can calculate $\polym_{W^*}(B)$ for any box $B$. The implementation of such an oracle will be discussed in Section~\ref{sec:boxtree:discussion}. The reader can safely assume that each call takes $O(\log \In)$ time by resorting to a separate data structure of $O(\In)$ space.
+
+\subsection{Join Reporting} \label{sec:boxtree:report}
+
+Property {\bf P2} of the box tree $\T$ implies:
+\myeqn{
+    \bigcup_{\text{leaf } B} \join(\Q(B)) &=& \join(\Q). \nn
+}
+where $\Q(B)$ is defined in \eqref{eqn:Q_B}. This offers a simple way to compute $\join(\Q)$. Set $\Delta = 1$ and generate the entire $\T$, which (by property {\bf P4}) requires $O(\polym_{W^*} \log \In)$ CPU times plus $O(\polym_{W^*} \log \In)$ calls to the polymatroid oracle. By property {\bf P1}, each leaf $B$ of $\T$ has a polymatroid value at most 1. This implies that, for each $R \in \Q$, the relation $R(B)$ as defined in \eqref{eqn:R_B} has at most a single tuple. Thus, $\join(\Q(B))$ can be obtained in $O(1)$ time.
+This yields a join reporting algorithm with running time $O(\polym_{W^*} \log^2 \In)$, which is worst-case optimal up to an $O(\log^2 \In)$ factor.
+
+\vgap
+
+Let us now attend to the small-delay enumeration problem (see Section~\ref{sec:formalization}), where the goal is to minimize the space of the data structure. To build the structure, first create a box tree $\T$ by setting the parameter $\Delta$ to the target delay. Collect the set $\L$ of leaves $B$ whose $\Q(B)$ has a non-empty result. The data structure simply stores $\L$. The space consumption is $O((\polylog_{W^*}/\Delta) \log \In)$ by property {\bf P4}. To enumerate $\join(\Q)$, for each box $B \in \L$ we compute $\join(\Q(B))$ using a worst-case optimal join algorithm \cite{n18}, which runs in $O(\polym_{W^*}(B)) = O(\Delta)$ time (property {\bf P1}). This fulfills the delay requirement as $\join(\Q(B))$ cannot be empty. In comparison, the state of the art \cite[Proposition 3]{dk18} demands $O((\text{AGM} / \Delta) \log \In)$ space, where $\text{AGM}$ is the AGM bound of $\Q$. This is never better than $O((\polylog_{W^*}/\Delta) \log \In)$ and can, in fact, be considerably worse.
+
+\subsection{Join Sampling} \label{sec:boxtree:sample}
+
+We now tackle the join sampling problem defined in Section~\ref{sec:formalization}. Let $\T$ be the box tree defined by $\Delta = 1$. However, rather than materializing the entire $\T$ (as in Section~\ref{sec:boxtree:report}), this time we store nothing of $\T$, but sample its root-to-leaf paths on an ``as-needed'' basis.
+
+\begin{figure}
+\mytab{
+    {\bf algorithm} \ttt{sample} \\
+    /* $\T$ is the box tree defined by $\Delta = 1$ */ \\
+    1. \> $B \leftarrow [\In]^d$ /* the join space */ \\[0mm]
+    2. \> {\bf while} $\polym_W(B) > 1$ {\bf do} \\[0mm]
+    3. \>\> obtain the child nodes $B_1, B_2$ of $B$ in $\T$ \\[0mm]
+    4. \>\> $B^+ \leftarrow$ a rand.\ value drawn according to \eqref{eqn:apps:B+_1}-\eqref{eqn:apps:B+_3} \\
+    5. \>\> {\bf if} $B^+ = \perp$ {\bf then return} ``failure'' \\[0mm]
+    6. \>\> $B \leftarrow B^+$ \\[1mm]
+    \> /* $\polym_W(B) \le 1$ here */ \\[1mm]
+    7. \> {\bf if} $\join(\Q(B)) \ne \emptyset$ {\bf then} \\[0mm]
+    8. \>\> {\bf return} the only tuple in $\join(\Q(B))$ \\
+    9. \> {\bf else return} ``failure''
+}
+\figcapup
+\caption{An algorithm for join sampling}
+\label{code:sample}
+\figcapdown
+\end{figure}
+
+
+\vgap
+
+The \ttt{sample} algorithm, shown in Figure~\ref{code:sample}, begins at the root of $\T$. In general, if the algorithm is currently at an internal node (with box) $B$, it first obtains the child nodes $B_1$ and $B_2$ of $B$ in $\T$ (this requires only splitting $B$ evenly on its split dimension; see Section~\ref{sec:boxtree:boxtree}). Then, it draws a random value $B^+ \in \set{B_1, B_2, \perp}$ from the following distribution:
+\myeqn{
+    \Pr[B^+ = B_1] &=& \fr{\polym_{W^*}(B_1)}{\polym_{W^*}(B)} \label{eqn:apps:B+_1} \\
+    \Pr[B^+ = B_2] &=& \fr{\polym_{W^*}(B_2)}{\polym_{W^*}(B)} \label{eqn:apps:B+_2} \\
+% }
+% \vspace{-4mm}
+%\myeqn{
+    \Pr[B^+ = \perp] &=& 1 - \Pr[B^+ = B_1] - \nn \\
+    && \Pr[B^+ = B_2]. \label{eqn:apps:B+_3}
+}
+If $B^+ = \perp$, then the algorithm declares ``failure'' and terminates. Otherwise, it descends to the child $B^+$.
+
+\vgap
+
+Now consider that the algorithm has reached a leaf $B$, whose polymatroid value is at most 1 (property {\bf P1}). As explained in Section~\ref{sec:boxtree:report}, $\join(\Q(B))$ has at most one tuple and can be computed in $O(1)$ time. If $\join(\Q(B))$ is not empty, the algorithm returns the only tuple therein; otherwise, it declares ``failure''.
+
+\vgap
+
+By Property {\bf P3}, \ttt{sample} runs in $O(\log \In)$ time plus $O(\log \In)$ calls to the polymatroid oracle. Whenever \ttt{sample} does not declare failure, we say that it {\em succeeds}. Next, we argue that if the algorithm succeeds, it returns a uniformly random tuple from $\join(\Q)$.
+
+\vgap
+
+Fix an arbitrary tuple $\bm{u} \in \join(\Q)$. As mentioned at the beginning of Section~\ref{sec:boxtree}, $\bm{u}$ can be regarded as a point in the join space. Let $B$ be the leaf of $\T$ whose box covers that point --- such a leaf must exist due to Property {\bf P2}. It must hold that
+\myeqn{
+    \polym_{W^*}(B) = 1. \label{eqn:apps:sample-help1}
+}
+To see why, note that $\polym_{W^*}(B) \le 1$ by property {\bf P1}, while, on the other hand, $\polym_{W^*}(B) \ge |\join(\Q(B))| \ge 1$. Let $B_0, B_1, ..., B_h$ be the nodes on the path of $\T$ from the root to $B$ (i.e., $B_0$ is the root and $B_h = B$). The probability that \ttt{sample} outputs $\bm{u}$ is
+\myeqn{
+    \prod_{i=1}^h \fr{\polym_{W^*}(B_i)}{\polym_{W^*}(B_{i-1})}
+    &=&
+    \fr{\polym_{W^*}(B)}{\polym_{W^*}([\In]^d)} \nn \\
+    \explain{by \eqref{eqn:apps:sample-help1}}
+    &=& \fr{1}{\polym_{W^*}}.
+    \label{eqn:sample-probability}
+}
+As the above is identical for all $\bm{u}$, we conclude that \ttt{sample} returns a uniformly random tuple of $\join(\Q)$ whenever it succeeds.
+
+\vgap
+
+The success probability of \ttt{sample} is
+\myeqn{
+    \sum_{\bm{u} \in \join(\Q)} \Pr[\text{$\bm{u}$ is output}]
+    &=&
+    \fr{\Out}{\polym_{W^*}}. \nn
+}
+In expectation, $\fr{\polym_{W^*}}{\Out}$ repeats of the algorithm are needed to acquire a sample.
+
+\vgap
+
+A special case occurs when $\Out = 0$ --- this will force us to repeat the algorithm forever. To remedy the issue, we stop using \ttt{sample} after $\polym_{W^*}$ repeats and revert to a worst-case optimal join algorithm (e.g., \cite{n18}) to compute $\join(\Q)$ in $O(\polym_{W^*})$ time, which will either confirm $\Out = 0$ or allow us to obtain a random tuple of $\join(\Q)$ with no extra cost.
+
+\vgap
+
+We have not mentioned any data structure. Indeed, the \ttt{sample} algorithm itself requires no data structures. Nevertheless, to implement a call to the polymatroid oracle in $O(\log \In)$ time, one still needs a data structure of $O(\In)$ space, as will be discussed in Section~\ref{sec:boxtree:discussion}. This makes the expected join sampling time $O(\fr{\polym_{W^*}}{\max\{1, \Out\}} \log^2 \In)$, which is worse than the state of the art \cite{wt26} by only a factor of $O(\log^2 \In)$.
 
 \section{Remark}
 
@@ -377,16 +403,6 @@ The AGM bound was first established in \cite{agm13}. The join algorithm presente
 \bibliographystyle{plainurl}% the mandatory bibstyle
 \bibliography{ref}
 
-\appendix
 
-\section{Appendix: Friedgut's Inequality} \label{app:friedgut}
-
-Fix arbitrary integers $p$ and $q$ at least 1. Take a set of non-negative real values $\{a_{i,j} \mid i \in [p], j \in [q]\}$. In addition, take another set of non-negative real values $\{b_i$ $\mid$ $i \in [q]\}$ satisfying $\sum_{i=1}^{q} b_i \geq 1$.  Friedgut's inequality \cite{f04} states that
-    \myeqn{
-        \sum_{i=1}^{p}	\prod_{j=1}^{q} a_{i, j}^{b_j}
-        &\leq&
-        \prod_{j=1}^{q} \left(\sum_{i=1}^{p} a_{i, j}\right)^{b_j}.
-        \label{eqn:friedgut}
-    }
 
 \end{document}
