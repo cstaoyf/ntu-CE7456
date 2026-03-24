@@ -57,13 +57,13 @@
     \begin{center}
         \vspace{3mm}
     {\Large
-    (CE7456 Lecture Notes 11) A Split Theorem} \\[2mm]
+    (CE7456 Lecture Notes 11) A Geometric View of Natural Joins } \\[2mm]
     {\large Yufei Tao}
     \vspace{3mm}
     \end{center}
 }
 
-Today, we discuss a theorem that unveils an intrinsic mathematical structure of natural joins. This structure establishes a geometric, hierarchical view over the tuples in the join result, which enables simple algorithms for both computing the join output and sampling from it.
+Today, we discuss a theorem that unveils an intrinsic mathematical structure of natural joins. This structure establishes a geometric, hierarchical view over the tuples in the join result, which enables simple algorithms for both computing the join and sampling from its result.
 
 %\extraspacing {\bf Basic Definitions.}
 
@@ -256,19 +256,25 @@ Define
 \myeqn{
     \In &=& \sum_{R \in \Q} |R|
 }
-which is the total number of tuples in the relations of $\Q$. We make three assumptions:
+which is the total number of tuples in the relations of $\Q$.
+
+\vgap
+
+To focus our discussion on the mathematical core, we make four assumptions that allow us to abstract away implementation details:
 \myitems{
     \item {{\bf A1:}} $\In$ is a power of 2.
 
     \item {{\bf A2:}} Attribute values lie in the so-called {\em rank space}. Specifically, for any relation $R \in \Q$, any attribute $A \in \schema(R)$, and any tuple $\bm{u} \in R$, we consider that $\bm{u}(A)$ is an integer in $[\In]$.
 
-    \item {{\bf A3:}} Given any relation $R$ and any box $B$, we can compute $\agm_{\W^*}(B)$ in \eqref{eqn:box:agm} in $\tO(1)$ time, where $\tO(.)$ hides a factor polylogarithmic in $\In$.
+    \item {{\bf A3:}} Given any relation $R \in \Q$ and any box $B$, we can obtain $\agm_{\W^*}(B)$ --- see \eqref{eqn:box:agm} --- from an oracle for free.
+
+    \item {{\bf A4:}} For any box $B$ with $\agm_{\W^*}(B) \le 1$, we can obtain the result of $\Q(B)$ in constant time.
 }
-It is standard to satisfy these assumptions by preprocessing the relations of $\Q$ in $\tO(\In)$ time.
+%It is standard to satisfy these assumptions by preprocessing the relations of $\Q$ in $\tO(\In)$ time.
 
 \vgap
 
-We refer to the box $[\In]^d$ as the {\em join space}. Every tuple of $\join(\Q)$ can be seen as a point this space. The converse, however, does not hold: not every point in $[\In]^d$ necessarily corresponds to a tuple of $\join(\Q)$.
+We refer to the box $[\In]^d$ as the {\em join space}. Every tuple of $\join(\Q)$ can be seen as a point in this space. The converse, however, does not hold: not every point in $[\In]^d$ necessarily corresponds to a tuple of $\join(\Q)$.
 
 
 \subsection{The Box-Tree} \label{sec:boxtree:boxtree}
@@ -293,11 +299,7 @@ Properties {\bf P1} and {\bf P2} follow immediately from the definition of $\T$.
 
 \vgap
 
-To prove {\bf P4}, imagine removing all the leaf nodes of $\T$, and let $\T'$ denote the resulting tree (note that $\T'$ need not be binary). Every leaf of $\T'$ is an internal node in $\T$ and hence has a polymatroid value over $\Delta$. The sum of the polymatroid values of all leaves of $\T'$ cannot exceed the polymatroid value of the root, which is precisely $\polym_{W^*}$. Hence, $\T'$ has less than $\polym_{W^*} / \Delta$ leaves, and thus at most $O((\polym_{W^*} / \Delta) \cdot \log \In)$ nodes in total. This proves {\bf P4}, since each node of $\T'$ can parent at most 2 leaves of $\T$.
-
-\vgap
-
-Henceforth, we assume a {\em polymatroid oracle} that can calculate $\polym_{W^*}(B)$ for any box $B$. The implementation of such an oracle will be discussed in Section~\ref{sec:boxtree:discussion}. The reader can safely assume that each call takes $O(\log \In)$ time by resorting to a separate data structure of $O(\In)$ space.
+To prove {\bf P4}, imagine removing all the leaf nodes of $\T$, and let $\T'$ denote the resulting tree (note that $\T'$ need not be binary). Every leaf of $\T'$ is an internal node in $\T$ and hence has an AGM value greater than $1$. The sum of the AGM values of all leaves of $\T'$ cannot exceed the AGM value of the root, which is precisely $\agm_{\W^*}$. Hence, $\T'$ has less than $\agm_{W^*}$ leaves, and thus at most $O(\agm_{W^*} \cdot \log \In)$ nodes in total. This proves {\bf P4}, since each node of $\T'$ can parent at most 2 leaves of $\T$.
 
 \subsection{Join Reporting} \label{sec:boxtree:report}
 
@@ -305,12 +307,7 @@ Property {\bf P2} of the box tree $\T$ implies:
 \myeqn{
     \bigcup_{\text{leaf } B} \join(\Q(B)) &=& \join(\Q). \nn
 }
-where $\Q(B)$ is defined in \eqref{eqn:Q_B}. This offers a simple way to compute $\join(\Q)$. Set $\Delta = 1$ and generate the entire $\T$, which (by property {\bf P4}) requires $O(\polym_{W^*} \log \In)$ CPU times plus $O(\polym_{W^*} \log \In)$ calls to the polymatroid oracle. By property {\bf P1}, each leaf $B$ of $\T$ has a polymatroid value at most 1. This implies that, for each $R \in \Q$, the relation $R(B)$ as defined in \eqref{eqn:R_B} has at most a single tuple. Thus, $\join(\Q(B))$ can be obtained in $O(1)$ time.
-This yields a join reporting algorithm with running time $O(\polym_{W^*} \log^2 \In)$, which is worst-case optimal up to an $O(\log^2 \In)$ factor.
-
-\vgap
-
-Let us now attend to the small-delay enumeration problem (see Section~\ref{sec:formalization}), where the goal is to minimize the space of the data structure. To build the structure, first create a box tree $\T$ by setting the parameter $\Delta$ to the target delay. Collect the set $\L$ of leaves $B$ whose $\Q(B)$ has a non-empty result. The data structure simply stores $\L$. The space consumption is $O((\polylog_{W^*}/\Delta) \log \In)$ by property {\bf P4}. To enumerate $\join(\Q)$, for each box $B \in \L$ we compute $\join(\Q(B))$ using a worst-case optimal join algorithm \cite{n18}, which runs in $O(\polym_{W^*}(B)) = O(\Delta)$ time (property {\bf P1}). This fulfills the delay requirement as $\join(\Q(B))$ cannot be empty. In comparison, the state of the art \cite[Proposition 3]{dk18} demands $O((\text{AGM} / \Delta) \log \In)$ space, where $\text{AGM}$ is the AGM bound of $\Q$. This is never better than $O((\polylog_{W^*}/\Delta) \log \In)$ and can, in fact, be considerably worse.
+where $\Q(B)$ is defined in \eqref{eqn:Q_B}. This indicates a simple way to compute $\join(\Q)$. Generate the entire $\T$, which (by property {\bf P4}) requires $O(\agm_{\W^*} \log \In)$ CPU time. By property {\bf P1}, each leaf $B$ of $\T$ has an AGM value at most 1; hence, we can compute $\join(\Q(B))$ in $O(1)$ time (assumption {\bf A4}). This yields a join reporting algorithm with running time $O(\agm_{\W^*} \cdot \log^2 \In)$.
 
 \subsection{Join Sampling} \label{sec:boxtree:sample}
 
@@ -342,8 +339,8 @@ We now tackle the join sampling problem defined in Section~\ref{sec:formalizatio
 
 The \ttt{sample} algorithm, shown in Figure~\ref{code:sample}, begins at the root of $\T$. In general, if the algorithm is currently at an internal node (with box) $B$, it first obtains the child nodes $B_1$ and $B_2$ of $B$ in $\T$ (this requires only splitting $B$ evenly on its split dimension; see Section~\ref{sec:boxtree:boxtree}). Then, it draws a random value $B^+ \in \set{B_1, B_2, \perp}$ from the following distribution:
 \myeqn{
-    \Pr[B^+ = B_1] &=& \fr{\polym_{W^*}(B_1)}{\polym_{W^*}(B)} \label{eqn:apps:B+_1} \\
-    \Pr[B^+ = B_2] &=& \fr{\polym_{W^*}(B_2)}{\polym_{W^*}(B)} \label{eqn:apps:B+_2} \\
+    \Pr[B^+ = B_1] &=& \fr{\agm_{\W^*}(B_1)}{\agm_{\W^*}(B)} \label{eqn:apps:B+_1} \\
+    \Pr[B^+ = B_2] &=& \fr{\agm_{\W^*}(B_2)}{\agm_{\W^*}(B)} \label{eqn:apps:B+_2} \\
 % }
 % \vspace{-4mm}
 %\myeqn{
@@ -364,15 +361,15 @@ By Property {\bf P3}, \ttt{sample} runs in $O(\log \In)$ time plus $O(\log \In)$
 
 Fix an arbitrary tuple $\bm{u} \in \join(\Q)$. As mentioned at the beginning of Section~\ref{sec:boxtree}, $\bm{u}$ can be regarded as a point in the join space. Let $B$ be the leaf of $\T$ whose box covers that point --- such a leaf must exist due to Property {\bf P2}. It must hold that
 \myeqn{
-    \polym_{W^*}(B) = 1. \label{eqn:apps:sample-help1}
+    \agm_{\W^*}(B) = 1. \label{eqn:apps:sample-help1}
 }
-To see why, note that $\polym_{W^*}(B) \le 1$ by property {\bf P1}, while, on the other hand, $\polym_{W^*}(B) \ge |\join(\Q(B))| \ge 1$. Let $B_0, B_1, ..., B_h$ be the nodes on the path of $\T$ from the root to $B$ (i.e., $B_0$ is the root and $B_h = B$). The probability that \ttt{sample} outputs $\bm{u}$ is
+To see why, note that $\agm_{\W^*}(B) \le 1$ by property {\bf P1}, while, on the other hand, $\agm_{\W^*}(B) \ge |\join(\Q(B))| \ge 1$. Let $B_0, B_1, ..., B_h$ be the nodes on the path of $\T$ from the root to $B$ (i.e., $B_0$ is the root and $B_h = B$). The probability that \ttt{sample} outputs $\bm{u}$ is
 \myeqn{
-    \prod_{i=1}^h \fr{\polym_{W^*}(B_i)}{\polym_{W^*}(B_{i-1})}
+    \prod_{i=1}^h \fr{\agm_{\W^*}(B_i)}{\agm_{\W^*}(B_{i-1})}
     &=&
-    \fr{\polym_{W^*}(B)}{\polym_{W^*}([\In]^d)} \nn \\
+    \fr{\agm_{\W^*}(B)}{\agm_{\W^*}([\In]^d)} \nn \\
     \explain{by \eqref{eqn:apps:sample-help1}}
-    &=& \fr{1}{\polym_{W^*}}.
+    &=& \fr{1}{\agm_{\W^*}}.
     \label{eqn:sample-probability}
 }
 As the above is identical for all $\bm{u}$, we conclude that \ttt{sample} returns a uniformly random tuple of $\join(\Q)$ whenever it succeeds.
@@ -383,17 +380,17 @@ The success probability of \ttt{sample} is
 \myeqn{
     \sum_{\bm{u} \in \join(\Q)} \Pr[\text{$\bm{u}$ is output}]
     &=&
-    \fr{\Out}{\polym_{W^*}}. \nn
+    \fr{\Out}{\agm_{\W^*}}. \nn
 }
-In expectation, $\fr{\polym_{W^*}}{\Out}$ repeats of the algorithm are needed to acquire a sample.
+In expectation, $\fr{\agm_{\W^*}}{\Out}$ repeats of the algorithm are needed to acquire a sample.
 
 \vgap
 
-A special case occurs when $\Out = 0$ --- this will force us to repeat the algorithm forever. To remedy the issue, we stop using \ttt{sample} after $\polym_{W^*}$ repeats and revert to a worst-case optimal join algorithm (e.g., \cite{n18}) to compute $\join(\Q)$ in $O(\polym_{W^*})$ time, which will either confirm $\Out = 0$ or allow us to obtain a random tuple of $\join(\Q)$ with no extra cost.
+A special case occurs when $\Out = 0$ --- this will force us to repeat the algorithm forever. To remedy the issue, we stop using \ttt{sample} after $\agm_{\W^*}$ repeats and revert to a worst-case optimal join algorithm (e.g., \cite{n18}) to compute $\join(\Q)$ in $O(\agm_{\W^*})$ time, which will either confirm $\Out = 0$ or allow us to obtain a random tuple of $\join(\Q)$ with no extra cost.
 
 \vgap
 
-We have not mentioned any data structure. Indeed, the \ttt{sample} algorithm itself requires no data structures. Nevertheless, to implement a call to the polymatroid oracle in $O(\log \In)$ time, one still needs a data structure of $O(\In)$ space, as will be discussed in Section~\ref{sec:boxtree:discussion}. This makes the expected join sampling time $O(\fr{\polym_{W^*}}{\max\{1, \Out\}} \log^2 \In)$, which is worse than the state of the art \cite{wt26} by only a factor of $O(\log^2 \In)$.
+We have not mentioned any data structure. Indeed, the \ttt{sample} algorithm itself requires no data structures. Nevertheless, to implement a call to the polymatroid oracle in $O(\log \In)$ time, one still needs a data structure of $O(\In)$ space, as will be discussed in Section~\ref{sec:boxtree:discussion}. This makes the expected join sampling time $O(\fr{\agm_{\W^*}}{\max\{1, \Out\}} \log^2 \In)$, which is worse than the state of the art \cite{wt26} by only a factor of $O(\log^2 \In)$.
 
 \section{Remark}
 
