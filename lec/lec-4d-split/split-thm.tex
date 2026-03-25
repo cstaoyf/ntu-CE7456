@@ -50,13 +50,13 @@
     \begin{center}
         \vspace{3mm}
     {\Large
-    (CE7456 Lecture Notes 11) A Geometric View of Natural Joins } \\[2mm]
+    (CE7456 Lecture Notes 11) The Geometry behind Natural Joins } \\[2mm]
     {\large Yufei Tao}
     \vspace{3mm}
     \end{center}
 }
 
-Today, we discuss a theorem that unveils an intrinsic mathematical structure of natural joins. This structure establishes a geometric, hierarchical view over the tuples in the join result, which enables simple algorithms for both computing the join and sampling from its result.
+Today, we discuss a theorem that unveils an intrinsic mathematical structure underneath natural joins. This structure establishes a geometric, hierarchical view over the tuples in the join result, which enables simple algorithms for both computing the join and sampling from its result.
 
 %\extraspacing {\bf Basic Definitions.}
 
@@ -100,7 +100,7 @@ The {\em AGM bound} of $\Q$ is the smallest AGM value of all fractional edge cov
 
 \section{``Boxing'' Everything} \label{sec:split:box}
 
-Set $d = |\V|$, and let the attribute sequence
+Set $d = |\V|$, and let
 \myeqn{
     A_1, A_2, ..., A_d
     \label{eqn:topological}
@@ -124,7 +124,7 @@ Intuitively, $R(B)$ is the subset of tuples in $R$ that are ``selected'' by $B$.
     \Q(B) = \set{R(B) \mid R \in \Q}.
     \label{eqn:Q_B}
 }
-Note that $\Q(B)$ is a join whose schema graph is also $\H = (\V, \E)$, i.e., sharing the same schema graph as $\Q$.
+Note that $\Q(B)$ is a join whose schema graph is $\H = (\V, \E)$, i.e., sharing the same schema graph as $\Q$.
 
 \vgap
 
@@ -153,7 +153,7 @@ Take any fractional edge cover $\W$ of $\H$. The {\em AGM value of $\W$ on $B$} 
 \begin{proof}
    W.l.o.g., assume that $B_1$ and $B_2$ partition $B$ on dimension $A_1$, namely:
    \myitems{
-        \item $B_1(A_1) \cap B_2(A_1) = \emptyset$ and $B_1(A_1) \cup B_2(A_2) = B(A_1)$;
+        \item $B_1(A_1) \cap B_2(A_1) = \emptyset$ and $B_1(A_1) \cup B_2(A_1) = B(A_1)$;
         \item $B_1(A_i) = B_2(A_i)$ for all $i \in [2, d]$.
    }
 
@@ -209,7 +209,7 @@ Take any fractional edge cover $\W$ of $\H$. The {\em AGM value of $\W$ on $B$} 
 
     \vgap
 
-    We therefore can derive
+    We therefore obtain
     \myeqn{
         && \agm_\W(B_1) + \agm_\W(B_2) \nn \\
         \explain{by \eqref{eqn:split:1} and \eqref{eqn:split:2}}
@@ -217,13 +217,13 @@ Take any fractional edge cover $\W$ of $\H$. The {\em AGM value of $\W$ on $B$} 
         \Big(\prod_{e \in \E: A_1 \notin e} |R_e(B)|^{\W_e} \Big)
         \cdot
         \sum_{i=1}^2
-        \prod_{e \in \E: A_1 \in e} |R_e(B_i)|^{\W_e} \\
-        \explain{by \eqref{eqn:split:3}}
+        \prod_{e \in \E: A_1 \in e} |R_e(B_i)|^{\W_e} \nn \\
+        \explain{by \eqref{eqn:friedgut} and \eqref{eqn:split:3}}
         &\le&
         \Big(\prod_{e \in \E: A_1 \notin e} |R_e(B)|^{\W_e} \Big)
         \cdot
         \prod_{e \in \E: A_1 \in e}
-        \Big( \sum_{i=1}^2 |R_e(B_i)| \Big)^{\W_e} \\
+        \Big( \sum_{i=1}^2 |R_e(B_i)| \Big)^{\W_e} \nn \\
         \explain{by \eqref{eqn:split:4}}
         &\le&
         \Big(\prod_{e \in \E: A_1 \notin e} |R_e(B)|^{\W_e} \Big)
@@ -231,14 +231,14 @@ Take any fractional edge cover $\W$ of $\H$. The {\em AGM value of $\W$ on $B$} 
         \prod_{e \in \E: A_1 \in e}
         |R_e(B)|^{\W_e} \nn \\
         &=&
-        \agm_\W(B)
+        \agm_\W(B) \nn
     }
     as claimed.
 \end{proof}
 
 \section{The Box-Tree Technique} \label{sec:boxtree}
 
-Next, we use Theorem~\ref{thm:split-simple}  to design join algorithms. We fix
+Next, we use Theorem~\ref{thm:split-simple}  to design  algorithms. Let us fix
 \myitems{
     \item a join $\Q$ with schema graph $\H = (\V, \E)$;
     \item an arbitrary attribute ordering $A_1, A_2, ..., A_d$ as defined in \eqref{eqn:topological} where $d = |\schema(\Q)|$;
@@ -249,7 +249,7 @@ Define
 \myeqn{
     \In &=& \sum_{R \in \Q} |R|
 }
-which is the total number of tuples in the relations of $\Q$.
+which is the total number of tuples in the relations of $\Q$ (this is the {\em input size} of $\Q$).
 
 \vgap
 
@@ -276,7 +276,7 @@ The {\em box tree} $\T$ is built by splitting the join space recursively. This i
 
 \vgap
 
-The root of $\T$ is associated with the join space $[\In]^d$. In general, consider a node associated with box $B$. If $B$ has an AGM value at most $1$, it becomes a leaf of $\T$. Otherwise, $B$ must be a non-singleton box (otherwise, its AGM value must be 1), which we split \uline{\em evenly} along some arbitrary dimension into boxes $B_1$ and $B_2$. We then create two child nodes of $B$, associated with $B_1$ and $B_2$, respectively. This completes the definition of the box tree. It is worth mentioning that even splits are always possible due to assumption {\bf A1}.
+The root of $\T$ is associated with the join space $[\In]^d$. In general, consider a node associated with box $B$. If $B$ has an AGM value at most $1$, we make $B$ a leaf of $\T$. Otherwise, $B$ must be a non-singleton box (the AGM value of every singleton box is at most 1), which we split \uline{\em evenly} along some arbitrary dimension into boxes $B_1$ and $B_2$. We then create two child nodes of $B$, associated with $B_1$ and $B_2$, respectively. This completes the definition of the box tree. It is worth mentioning that even splits are always possible due to assumption {\bf A1}.
 
 \vgap
 
@@ -285,10 +285,10 @@ The tree $\T$ has four properties:
     \item {{\bf P1}}: Every internal node has an AGM value greater than $1$, while every leaf node has an AGM value at most $1$.
     \item {{\bf P2}}: The leaf boxes are mutually disjoint and their union is $[\In]^d$.
     \item {{\bf P3}}: $\T$ has height $O(\log \In)$.
-    \item {{\bf P4}}: $\T$ has $O(\agm_{\W^*} \cdot \log \In)$ nodes, where $\agm_{\W^*}$ is the AGM bound of $\Q$.
+    \item {{\bf P4}}: $\T$ has $O(\agm_{\W^*} \cdot \log \In)$ nodes.
 
 }
-Properties {\bf P1} and {\bf P2} follow immediately from the definition of $\T$. To understand {\bf P3}, notice that the box of a child node covers half as many points in the join space as that of its parent node. Since the join space has $\In^d$ points (assumption {\bf A2}), it can be split at most $d \log \In = O(\log \In)$ times before reducing to a singleton box (which must become a leaf because its AGM value is at most 1). Hence, the height of $\T$ is $O(\log \In)$.
+Properties {\bf P1} and {\bf P2} follow immediately from the definition of $\T$. To understand {\bf P3}, notice that the box of a child node covers half as many points in the join space as that of its parent node. Since the join space has $\In^d$ points (assumption {\bf A2}), it can be split at most $d \log \In = O(\log \In)$ times before reducing to a singleton box. Hence, the height of $\T$ is $O(\log \In)$.
 
 \vgap
 
@@ -300,11 +300,11 @@ Property {\bf P2} of the box tree $\T$ implies
 \myeqn{
     \bigcup_{\text{leaf } B} \join(\Q(B)) &=& \join(\Q). \nn
 }
-where $\Q(B)$ is defined in \eqref{eqn:Q_B}. This indicates a simple way to compute $\join(\Q)$. Generate the entire $\T$, which (by assumption {\bf A3} and property {\bf P4}) requires $O(\agm_{\W^*} \log \In)$ CPU time. By property {\bf P1}, each leaf $B$ of $\T$ has an AGM value at most 1; hence, we can compute $\join(\Q(B))$ in $O(1)$ time (assumption {\bf A4}). This yields a join algorithm with running time $O(\agm_{\W^*} \cdot \log \In)$.
+where $\Q(B)$ is defined in \eqref{eqn:Q_B}. To compute $\join(\Q)$, generate the entire $\T$, which (by assumption {\bf A3} and property {\bf P4}) requires $O(\agm_{\W^*} \log \In)$  time. By property {\bf P1}, each leaf $B$ of $\T$ has an AGM value at most 1; hence, we can compute $\join(\Q(B))$ in $O(1)$ time (assumption {\bf A4}). This yields a join algorithm with running time $O(\agm_{\W^*} \cdot \log \In)$.
 
 \subsection{Join Sampling} \label{sec:boxtree:sample}
 
-The box-tree technique also yields a simple algorithm for {\em join sampling}, where the goal is to draw a tuple from $\join(\Q)$ uniformly at random. For this purpose, we do not materialize $\T$, but treat the join sampling problem as a {\em tree sampling} problem discussed earlier in the course. The details are left to you. We discuss here only the special case where $\Out = 0$, because the tree sampling algorithm requires infinite repeats in this scenario. To remedy the issue, we stop tree sampling after $\agm_{\W^*}$ repeats and revert to the algorithm in Section~\ref{sec:boxtree:report} for computing $\join(\Q)$ in $O(\agm_{\W^*} \cdot \log \In)$ time, which either confirms $\Out = 0$ or allows us to obtain a random tuple of $\join(\Q)$ with no extra cost. The overall sampling time is
+The box-tree technique also gives a simple algorithm for {\em join sampling}, where the goal is to draw a tuple from $\join(\Q)$ uniformly at random. For this purpose, we do not materialize $\T$, but treat join sampling as a {\em tree sampling} problem discussed earlier in the course. The details are left to you. We discuss here only the special case where $\Out = 0$, because  tree sampling requires infinite repeats in this scenario. To remedy the issue, we stop tree sampling after $\agm_{\W^*}$ repeats and revert to the algorithm in Section~\ref{sec:boxtree:report} for computing $\join(\Q)$ in $O(\agm_{\W^*} \cdot \log \In)$ time, which either confirms $\Out = 0$ or allows us to obtain a random tuple of $\join(\Q)$ at no extra cost. The overall sampling time is
 \myeqn{
     O\Big(
         \fr{\agm_{\W^*}}{\max\{1, \Out\}} \cdot \log \In
@@ -312,13 +312,12 @@ The box-tree technique also yields a simple algorithm for {\em join sampling}, w
     \nn
     %\label{eqn:boxtree:sample-time}
 }
-expected where $\Out = |\join(\Q)|$.
+in expectation where $\Out = |\join(\Q)|$.
 
 
 \section{Remark}
 
-The AGM bound was first established in \cite{agm13}. The join algorithm presented is a special case of an algorithm given in \cite{nrr13}.
-
+Theorem~\ref{thm:split-simple} is a special case of a result proved in \cite{tw25}. The box-tree technique was developed in  \cite{dlt23}.
 
 \bibliographystyle{plainurl}% the mandatory bibstyle
 \bibliography{ref}
