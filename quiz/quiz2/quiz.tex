@@ -1,0 +1,73 @@
+%\documentclass{...}
+
+\input{./def/yf-formatting}
+
+\usepackage{amsfonts, amsmath, amssymb, amsthm}
+\usepackage{comment}
+\usepackage{graphicx}
+\usepackage{ifthen}
+\usepackage{latexsym}
+%\usepackage{times}
+\usepackage[normalem]{ulem}
+
+\input{./def/yf-def}
+
+\def\dom{\prec}
+\def\T{\mathcal{T}}
+
+\newboolean{solver}\setboolean{solver}{true}
+%\newboolean{solver}\setboolean{solver}{false}
+\ifthenelse{\boolean{solver}}{\includecomment{sol}}{\excludecomment{sol}}
+
+\begin{document}
+
+\section*{CE7456: Quiz 1}
+
+\noindent Name:  \hspace{50mm}
+Student ID:
+
+% \begin{center}
+%     \uline{Classroom Discussion}
+% \end{center}
+
+\extraspacing
+
+
+\extraspacing {\bf Problem 1 (25 marks).} Consider elements $e_1, e_2, ..., e_5$ whose weights are 1, 2, ..., 5, respectively. Build an alias structure on $S = \set{e_1, e_2, ..., e_5}$. Show the contents of each urn in the structure, and provide the necessary details to explain how each urn is obtained.
+
+
+\pagebreak
+
+\extraspacing {\bf Problem 2 (25 marks).} Consider the following tree $\T$, where the number in each node indicates the node's weight:
+\begin{center}
+    \includegraphics[height=50mm]{./artwork/ts}
+\end{center}
+
+\noindent Recall that, in tree sampling, we want to perform weighted sampling on the set of leaves of $\T$ (i.e., the gray nodes in the figure). Further recall that the tree sampling algorithm works by descending a path from the root, and may either {\em succeed} (in extracting a sample) or {\em fail}. Answer the questions below:
+
+\vgap
+
+(a) What is the success probability for one run of the algorithm?
+
+(b) In expectation, how many repeats of the algorithm are needed to extract a sample?
+
+\pagebreak
+
+\extraspacing {\bf Problem 3 (25 marks).} Consider using logarithmic method to handle insertions. Recall that, at all times, the method partitions the current dataset $S$ into disjoint subsets $S_0, S_1, ..., S_h$ where $h = \lc \log_2 |S| \rc$ and each $S_i$ has size either 0 or $2^i$.
+
+\vgap
+
+Show the subset sizes when $|S| = 75$.
+
+\pagebreak
+
+\extraspacing {\bf Problem 4 (25 marks).} $S_1, S_2, ..., S_m$ are $m$ disjoint sets, where each element is an integer and is associated with an integer positive weight. Set $n = \max_{i=1}^m |S_i|$. On each $S_i$ ($1 \le i \le h$), there is
+\myitems{
+    \item an IQS structure that, given any interval $q$,  can extract a weighted sample from $q \cap S_i$ in $O(\log n)$ time;
+
+    \item a ``range sum'' structure that, given any interval $q$, can obtain the total weight of the elements in $q \cap S_i$ in $O(\log n)$ time.
+}
+Given an arbitrary subset $U \subseteq \set{1, 2, ..., n}$, explain how to extract in $O(|U| \log n)$ time a weighted sample from $\bigcup_{j \in U} q \cap S_j$.
+
+
+\end{document}
