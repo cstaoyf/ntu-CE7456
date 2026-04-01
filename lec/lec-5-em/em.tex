@@ -1,0 +1,327 @@
+
+\include{./def/yf-formatting}
+\include{./def/yf-def}
+
+\usepackage{wasysym}
+%\usepackage{times}
+
+\title{}
+\author{}
+\date{}
+
+
+%\def\A{\mathcal{A}}
+%\def\B{\mathcal{B}}
+\def\C{\mathcal{C}}
+%\def\D{\mathcal{D}}
+\def\E{\mathcal{E}}
+\def\FF{\EuScript{F}}
+\def\G{\mathcal{G}}
+\def\GG{\EuScript{G}}
+\def\H{\mathcal{H}}
+\def\I{\mathcal{I}}
+\def\J{\mathcal{J}}
+\def\L{\mathcal{L}}
+\def\Q{\mathcal{Q}}
+\def\S{\mathcal{S}}
+\def\T{\mathcal{T}}
+\def\V{\mathcal{V}}
+%\def\W{\EuScript{W}}
+\def\W{\mathscr{W}}
+\def\X{\mathcal{X}}
+\def\Y{\mathcal{Y}}
+\def\Z{\mathcal{Z}}
+\def\att{\mit{diffatt}}
+\def\agm{\mathit{AGM}}
+\def\boldatt{\mathbf{att}}
+\def\ext{\mathit{ext}}
+\def\In{\mathrm{IN}}
+\def\join{\mathit{join}}
+\def\Out{\mathrm{OUT}}
+\def\schema{\mathit{schema}}
+
+\def\extraspacing{\vspace{4mm} \noindent}
+\def\vgap{\vspace{4mm}}
+\def\vslit{\vspace{2mm}}
+
+\begin{document}
+
+\boxminipg{\linewidth}{
+    \begin{center}
+        \vspace{3mm}
+    {\Large
+    (CE7456 Lecture Notes 12) The Geometry behind Natural Joins } \\[2mm]
+    {\large Yufei Tao}
+    \vspace{3mm}
+    \end{center}
+}
+
+Today, we discuss a theorem that unveils an intrinsic mathematical structure underneath natural joins. This structure establishes a geometric, hierarchical view over the tuples in the join result, which enables simple algorithms for both computing the join and sampling from its result.
+
+%\extraspacing {\bf Basic Definitions.}
+
+\section{Basic Definitions}
+
+Define $0^0 = 0$. For an integer $x \ge 1$, the notation $[x]$ denotes the set $\{1, 2, ..., x\}$. We use $\intdom$ to represent the set of integers.
+
+\vgap
+
+Let $\boldatt$ be a finite set, where each element is called an {\em attribute}. For a non-empty set $\X \subseteq \boldatt$ of attributes, a {\em tuple} over $\X$ is a function $\bm{u}: \X \rightarrow \intdom$; for each $X \in \X$, we refer to $\bm{u}(X)$ as the {\em value} of $\bm{u}$ on $X$. For any non-empty subset $\Y \subseteq \X$, we define $\bm{u}[\Y]$ --- called the {\em projection} of $\bm{u}$ on $\Y$ --- as the tuple $\bm{v}$ over $\Y$ satisfying $\bm{v}(Y) = \bm{u}(Y)$ for every attribute $Y \in \Y$. A {\em relation} $R$ is a set of tuples over the same set $Z$ of attributes; we refer to $Z$ as the {\em schema} of $R$ and represent it as $\schema(R)$.
+
+\vgap
+
+A {\em join} is defined as a set $\Q$ of relations. Let $\schema(\Q) = \bigcup_{R \in Q} \schema(R)$. The result of $\Q$ is a relation over $\schema(\Q)$ formalized as:
+\myeqn{
+    \join(\Q) &=& \{\textrm{tuple $\bm{u}$ over $\schema(\Q)$} \mid \forall R \in \Q: \bm{u}[\schema(R)] \in R\}. \label{eqn:join-rslt}
+}
+The {\em schema graph} of $\Q$ is a hypergraph $\H = (\V, \E)$ where
+\myeqn{
+    \V &=& \schema(\Q) \nn \\
+    \E &=& \set{\schema(R) \mid R \in \Q}. \nn
+}
+Note that there is one-one correspondence between the relations in $\Q$ and the hyperedges in $\E$. For each hyperedge $e \in \E$, let $R_e$ represent the corresponding relation $R \in \Q$. Our discussion assumes that both $\V$ and $\E$ have constant sizes.
+
+\vgap
+
+A vector $\W$ over the space of $\E$ has a real-valued component $\W_e$ on each hyperedge $e \in \E$. The vector $\W$ is said to be a {\em fractional edge cover} of $\H$ if
+\myitems{
+    \item $0 \le \W_e \le 1$ for every $e \in \E$, and
+    \item $\sum_{e \in \E : X \in e} \W_e \ge 1$ for every $X \in \V$.
+}
+Every fractional edge cover $\W$ of $\H$ is associated with an {\em AGM value} defined as
+\myeqn{
+    \mit{AGM}_\W &=& \prod_{e \in \E} |R_e|^{\W_e}. \label{eqn:agm}
+}
+As proved previously, it holds for any fractional edge cover $\W$ of $\H$ that
+\myeqn{
+    |\join(\Q)| \le \mit{AGM}_\W. \nn
+}
+The {\em AGM bound} of $\Q$ is the smallest AGM value of all fractional edge covers of $\H$.
+
+\section{``Boxing'' Everything} \label{sec:split:box}
+
+Set $d = |\V|$, and let
+\myeqn{
+    A_1, A_2, ..., A_d
+    \label{eqn:topological}
+}
+be an (arbitrary) ordering of the attributes in $\V$. By treating each attribute as a {\em dimension}, we will often speak about the $d$-dimensional space $\intdom^d$, where $A_i$ ($i \in [d]$) corresponds to the $i$-th dimension. Note that each tuple in the join result $\join(\Q)$ can be regarded as a point in this space.
+
+\vgap
+
+We use the term {\em box} to refer to a rectangle $B$ in $\intdom^d$ of the form $[x_1, y_1] \times [x_2, y_2] \times ... \times [x_d, y_d]$. For any $i \in [d]$, let $B(A_i)$ represent the interval $[x_i, y_i]$, i.e., the projection of $B$ onto the $i$-th dimension. In particular, we say that $B(A_i)$ is a {\em singleton interval} if $x_i = y_i$. If $B(A_i)$ is a singleton interval on all $i \in [d]$, we call $B$ a  {\em singleton box}.
+
+\vgap
+
+For each relation $R \in \Q$, we define
+\myeqn{
+    R(B) = \{\text{tuple $\bm{u} \in R$} \mid
+    \forall A_i \in \schema(R): \text{ $\bm{u}(A_i) \in B(A_i)$}\}.
+    \label{eqn:R_B}
+}
+Intuitively, $R(B)$ is the subset of tuples in $R$ that are ``selected'' by $B$. Accordingly, define
+\myeqn{
+    \Q(B) = \set{R(B) \mid R \in \Q}.
+    \label{eqn:Q_B}
+}
+Note that $\Q(B)$ is a join whose schema graph is $\H = (\V, \E)$, i.e., sharing the same schema graph as $\Q$.
+
+\vgap
+
+Take any fractional edge cover $\W$ of $\H$. The {\em AGM value of $\W$ on $B$} is defined as
+\myeqn{
+    \agm_{\W}(B) &=& \prod_{e \in \E} |R_e(B)|^{\W_e}.
+    \label{eqn:box:agm}
+}
+
+
+\section{A Split Theorem} \label{sec:split}
+%
+% Given a non-singleton box $B$, we define its {\em split dimension} as the smallest $\sigma \in [d]$ such that $B(A_\sigma)$ is not a singleton interval. A set of boxes $B_1,$ $B_2,$ $..., B_s$ (where $s \ge 2$) is said to {\em refine} $B$ if
+% \myitems{
+%     \item $B_1, B_2, ..., B_s$ are mutually disjoint, and their union is $B$;
+%     \item for every $i \in [d] \setm \set{\sigma}$, it holds that $B_1(A_i) = B_2(A_i) = ... B_s(A_i) = B(A_i)$.
+% }
+
+\begin{theorem} \textsc{(Simple AGM Split Theorem)} \label{thm:split-simple}
+    Consider a join $\Q$ with schema graph $\H = (\V, \E)$ and an arbitrary fractional edge cover $\W$ of $\H$. Let $B$ be a non-singleton box; and let $B_1, B_2$ be any two disjoint boxes partitioning $B$ (i.e., $B_1 \cap B_2 = \emptyset$ and $B_1 \cup B_2 = B$). We must have
+    \myeqn{
+        \agm_W(B_1) + \agm_W(B_2) \le \agm_W(B). \nn
+    }
+\end{theorem}
+
+\begin{proof}
+   W.l.o.g., assume that $B_1$ and $B_2$ partition $B$ on dimension $A_1$, namely:
+   \myitems{
+        \item $B_1(A_1) \cap B_2(A_1) = \emptyset$ and $B_1(A_1) \cup B_2(A_1) = B(A_1)$;
+        \item $B_1(A_i) = B_2(A_i)$ for all $i \in [2, d]$.
+   }
+
+   \vgap
+
+   Let us review Friedgut's inequality. Fix arbitrary integers $p$ and $q$ at least 1. Take a set of non-negative real values $\{a_{i,j} \mid i \in [p], j \in [q]\}$. In addition, take another set of non-negative real values $\{b_i$ $\mid$ $i \in [q]\}$ satisfying $\sum_{i=1}^{q} b_i \geq 1$.  Friedgut's inequality \cite{f04} states that
+    \myeqn{
+        \sum_{i=1}^{p}	\prod_{j=1}^{q} a_{i, j}^{b_j}
+        &\leq&
+        \prod_{j=1}^{q} \left(\sum_{i=1}^{p} a_{i, j}\right)^{b_j}.
+        \label{eqn:friedgut}
+    }
+
+    \vgap
+
+    We can derive
+    \myeqn{
+        \agm_\W(B_1)
+        &=&
+        \prod_{e \in \E} |R_e(B_1)|^{\W_e} \nn \\
+        &=&
+        \Big(\prod_{e \in \E: A_1 \notin e} |R_e(B_1)|^{\W_e} \Big)
+        \cdot
+        \Big(\prod_{e \in \E: A_1 \in e} |R_e(B_1)|^{\W_e} \Big)
+        \nn \\
+        &=&
+        \Big(\prod_{e \in \E: A_1 \notin e} |R_e(B)|^{\W_e} \Big)
+        \cdot
+        \Big(\prod_{e \in \E: A_1 \in e} |R_e(B_1)|^{\W_e} \Big)
+        \label{eqn:split:1}
+    }
+    where the last equality used the fact that $R_e(B) = R_e(B_1)$ for every hyperedge $e \in \E$ that does not contain $A_1$. Similarly, a similar derivation yields
+    \myeqn{
+        \agm_\W(B_2)
+        &=&
+        \Big(\prod_{e \in \E: A_1 \notin e} |R_e(B)|^{\W_e} \Big)
+        \cdot
+        \Big(\prod_{e \in \E: A_1 \in e} |R_e(B_2)|^{\W_e} \Big).
+        \label{eqn:split:2}
+    }
+
+    Since $\W$ is a fractional edge cover of $\H$, we have
+    \myeqn{
+        \sum_{e \in \E: A_1 \in e} \W_e \ge 1. \label{eqn:split:3}
+    }
+    For each hyperedge $e \in \E$, it holds that
+    \myeqn{
+        |R_e(B_1)| + |R_e(B_2)|
+        &=&
+        |R_e(B)|. \label{eqn:split:4}
+    }
+    To see why, note that each tuple of $R_e(B)$ appears in exactly one of $R_e(B_1)$ and $R_e(B_2)$ because $B$ is partitioned by $B_1$ and $B_2$.
+
+    \vgap
+
+    We therefore obtain
+    \myeqn{
+        && \agm_\W(B_1) + \agm_\W(B_2) \nn \\
+        \explain{by \eqref{eqn:split:1} and \eqref{eqn:split:2}}
+        &=&
+        \Big(\prod_{e \in \E: A_1 \notin e} |R_e(B)|^{\W_e} \Big)
+        \cdot
+        \sum_{i=1}^2
+        \prod_{e \in \E: A_1 \in e} |R_e(B_i)|^{\W_e} \nn \\
+        \explain{by \eqref{eqn:friedgut} and \eqref{eqn:split:3}}
+        &\le&
+        \Big(\prod_{e \in \E: A_1 \notin e} |R_e(B)|^{\W_e} \Big)
+        \cdot
+        \prod_{e \in \E: A_1 \in e}
+        \Big( \sum_{i=1}^2 |R_e(B_i)| \Big)^{\W_e} \nn \\
+        \explain{by \eqref{eqn:split:4}}
+        &\le&
+        \Big(\prod_{e \in \E: A_1 \notin e} |R_e(B)|^{\W_e} \Big)
+        \cdot
+        \prod_{e \in \E: A_1 \in e}
+        |R_e(B)|^{\W_e} \nn \\
+        &=&
+        \agm_\W(B) \nn
+    }
+    as claimed.
+\end{proof}
+
+\section{The Box-Tree Technique} \label{sec:boxtree}
+
+Next, we use Theorem~\ref{thm:split-simple}  to design  algorithms. Let us fix
+\myitems{
+    \item a join $\Q$ with schema graph $\H = (\V, \E)$;
+    \item an arbitrary attribute ordering $A_1, A_2, ..., A_d$ as defined in \eqref{eqn:topological} where $d = |\schema(\Q)|$;
+    \item an arbitrary fractional edge cover $\W^*$ of $\H$ such that $\agm_{\W^*}$ equals the AGM bound of $\Q$.
+}
+
+Define
+\myeqn{
+    \In &=& \sum_{R \in \Q} |R|
+}
+which is the total number of tuples in the relations of $\Q$ (this is the {\em input size} of $\Q$).
+
+\vgap
+
+To focus our discussion on the mathematical core, we make four assumptions that allow us to abstract away implementation details:
+\myitems{
+    \item {{\bf A1:}} $\In$ is a power of 2.
+
+    \item {{\bf A2:}} Attribute values lie in the so-called {\em rank space}. Specifically, for any relation $R \in \Q$, any attribute $A \in \schema(R)$, and any tuple $\bm{u} \in R$, we consider that $\bm{u}(A)$ is an integer in $[\In]$.
+
+    \item {{\bf A3:}} Given any relation $R \in \Q$ and any box $B$, we can obtain $\agm_{\W^*}(B)$ --- see \eqref{eqn:box:agm} --- from an oracle for free.
+
+    \item {{\bf A4:}} For any box $B$ with $\agm_{\W^*}(B) \le 1$, we can obtain the result of $\Q(B)$ in constant time.
+}
+%It is standard to satisfy these assumptions by preprocessing the relations of $\Q$ in $\tO(\In)$ time.
+
+\vgap
+
+We refer to the box $[\In]^d$ as the {\em join space}. By assumption {\bf A2}, every tuple of $\join(\Q)$ can be seen as a point in this space. The converse, however, does not hold: not every point in $[\In]^d$ necessarily corresponds to a tuple of $\join(\Q)$.
+
+
+\subsection{The Box-Tree} \label{sec:boxtree:boxtree}
+
+The {\em box tree} $\T$ is built by splitting the join space recursively. This is a binary tree whose nodes are each associated with a distinct box. Henceforth, we will denote a node using its associated box. For a node $B$, we define its {\em AGM value} as $\agm_{\W^*}(B)$; see \eqref{eqn:box:agm} for its calculation. The AGM value of a node is at least the sum of the AGM values of its children.
+
+\vgap
+
+The root of $\T$ is associated with the join space $[\In]^d$. In general, consider a node associated with box $B$. If $B$ has an AGM value at most $1$, we make $B$ a leaf of $\T$. Otherwise, $B$ must be a non-singleton box (the AGM value of every singleton box is at most 1), which we split \uline{\em evenly} along some arbitrary dimension into boxes $B_1$ and $B_2$. We then create two child nodes of $B$, associated with $B_1$ and $B_2$, respectively. This completes the definition of the box tree. It is worth mentioning that even splits are always possible due to assumption {\bf A1}.
+
+\vgap
+
+The tree $\T$ has four properties:
+\myitems{
+    \item {{\bf P1}}: Every internal node has an AGM value greater than $1$, while every leaf node has an AGM value at most $1$.
+    \item {{\bf P2}}: The leaf boxes are mutually disjoint and their union is $[\In]^d$.
+    \item {{\bf P3}}: $\T$ has height $O(\log \In)$.
+    \item {{\bf P4}}: $\T$ has $O(\agm_{\W^*} \cdot \log \In)$ nodes.
+
+}
+Properties {\bf P1} and {\bf P2} follow immediately from the definition of $\T$. To understand {\bf P3}, notice that the box of a child node covers half as many points in the join space as that of its parent node. Since the join space has $\In^d$ points (assumption {\bf A2}), it can be split at most $d \log \In = O(\log \In)$ times before reducing to a singleton box. Hence, the height of $\T$ is $O(\log \In)$.
+
+\vgap
+
+To prove {\bf P4}, imagine removing all the leaf nodes of $\T$, and let $\T'$ denote the resulting tree (note that $\T'$ need not be binary). Every leaf of $\T'$ is an internal node in $\T$ and hence has an AGM value greater than $1$. The sum of the AGM values of all leaves of $\T'$ cannot exceed the AGM value of the root, which is precisely $\agm_{\W^*}$. Hence, $\T'$ has less than $\agm_{W^*}$ leaves, and thus at most $O(\agm_{W^*} \cdot \log \In)$ nodes in total. This proves {\bf P4}, since each node of $\T'$ can parent at most 2 leaves of $\T$.
+
+\subsection{Join Reporting} \label{sec:boxtree:report}
+
+Property {\bf P2} of the box tree $\T$ implies
+\myeqn{
+    \bigcup_{\text{leaf } B} \join(\Q(B)) &=& \join(\Q). \nn
+}
+where $\Q(B)$ is defined in \eqref{eqn:Q_B}. To compute $\join(\Q)$, generate the entire $\T$, which (by assumption {\bf A3} and property {\bf P4}) requires $O(\agm_{\W^*} \log \In)$  time. By property {\bf P1}, each leaf $B$ of $\T$ has an AGM value at most 1; hence, we can compute $\join(\Q(B))$ in $O(1)$ time (assumption {\bf A4}). This yields a join algorithm with running time $O(\agm_{\W^*} \cdot \log \In)$.
+
+\subsection{Join Sampling} \label{sec:boxtree:sample}
+
+The box-tree technique also gives a simple algorithm for {\em join sampling}, where the goal is to draw a tuple from $\join(\Q)$ uniformly at random. For this purpose, we do not materialize $\T$, but treat join sampling as a {\em tree sampling} problem discussed earlier in the course. The details are left to you. We discuss here only the special case where $\Out = 0$, because  tree sampling requires infinite repeats in this scenario. To remedy the issue, we stop tree sampling after $\agm_{\W^*}$ repeats and revert to the algorithm in Section~\ref{sec:boxtree:report} for computing $\join(\Q)$ in $O(\agm_{\W^*} \cdot \log \In)$ time, which either confirms $\Out = 0$ or allows us to obtain a random tuple of $\join(\Q)$ at no extra cost. The overall sampling time is
+\myeqn{
+    O\Big(
+        \fr{\agm_{\W^*}}{\max\{1, \Out\}} \cdot \log \In
+    \Big)
+    \nn
+    %\label{eqn:boxtree:sample-time}
+}
+in expectation where $\Out = |\join(\Q)|$.
+
+
+\section{Remark}
+
+Theorem~\ref{thm:split-simple} is a special case of a result proved in \cite{tw25}. The box-tree technique was developed in  \cite{dlt23}.
+
+\bibliographystyle{plainurl}% the mandatory bibstyle
+\bibliography{ref}
+
+
+
+\end{document}
