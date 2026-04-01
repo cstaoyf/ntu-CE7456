@@ -77,6 +77,10 @@ Every disk block has a unique integer address. Given such an address, a {\em rea
 
 The {\em cost} of an algorithm is measured as the number of I/Os performed. CPU computation is for free but can be performed only on memory-resident data. The {\em space} of a data structure is measured as the number of disk blocks occupied.
 
+\vgap
+
+We assume, w.o.l.g., that the value of $M$ is a multiple of $B$.
+
 \section{Sorting} \label{sec:sort}
 
 Let $S$ be a set of $n \ge B$ integers, each of which fits in a word. Initially, $S$ is stored in an array on disk, which occupies $\lc n/B \rc$ blocks (that is, $B$ integers per block except the last block). The goal of the {\em sorting problem} is to produce an array of $n$ words on disk, where the elements of $S$ are arranged in ascending order.
@@ -89,7 +93,7 @@ We show that the problem can be solved in $O(\fr{n}{B} \log_{M/B} \fr{n}{B})$ I/
 
 Define
 \myeqn{
-    m = M/B. \nn
+    m = M/B. \label{eqn:sort:merge:m}
 }
 The value $m$ can be regarded as the number of blocks (each with $B$ words) that the memory can accommodate.
 
@@ -111,10 +115,19 @@ The algorithm reads every block of each $S_i$ ($i \in [f]$) once, which requires
 
 \subsection{Reducing Sorting to Merging} \label{sec:sort:sort}
 
-Next, we show how to sort a set $S$ of $n$ integers, given in a disk array of $n$ words, by using a merging algorithm as a black box.
-Henceforth, we use the term {\em run} to refer to a sorted array containing a subset of the elements in $S$. Our goal is to produce one single run containing the entire $S$.
+Next, we show how to sort a set $S$ of $n$ integers, given in a disk array of $n$ words, by using the merging algorithm in Section~\ref{sec:sort:merge} as a black box. Henceforth, we use the term {\em run} to refer to a sorted array containing a subset of the elements in $S$. Our goal is to produce one single run containing the entire $S$.
 
-\extraspacing {\bf Initial Pass.}
+\extraspacing {\bf Initial Pass.} We first perform $O(n/B)$ I/Os to create $\lc n/M \rc$ runs, each with $M$ elements except possibly the last run. For this purpose, we cut the array of $S$ into $\lc n/M \rc$ subarrays, each of which has exactly $M$ elements (and occupies $m$ blocks), except possibly the last subarray. For each subarray, we load the elements there into memory, sort them in memory, and then write the sorted order back to the disk, thereby creating a run of $M$ elements (the run for the last subarray may be smaller if $n$ is not a multiple of $M$). The total I/O cost is $O(n/B)$ because each subarrary requires a number of I/Os proportional to the number of blocks it occupies.
+
+\extraspacing {\bf Merging Passes.} The initial pass yields $n_0 = \lc n/M \rc$ runs. In general, given $n_i$ runs where $i \ge 0$, we launch a merging pass to produce
+\myeqn{
+    n_{i+1} = \lc n_i / (m - 1) \rc \nn
+}
+runs in $O(n/B)$ I/Os. For this purpose, divide the $n_i$ runs (arbitrarily) into $n_{i+1}$ groups, each of which contains $m-1$ runs, except possible the last group.
+
+use the merging algorithm to merge every $m-1$ runs into a longer run.
+
+
 
 
 
