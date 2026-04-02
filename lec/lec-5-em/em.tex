@@ -210,7 +210,7 @@ such that
 
 Now, consider the case where $|S_0| < M$. We identify the smallest $t \in [1, h]$ satisfying:
 \myeqn{
-    1 + \sum_{i=0}^t |S_i| &\le& \ell^t \cdot M. \nn
+    1 + \sum_{i=0}^t |S_i| &\le& \ell^t \cdot M. \label{eqn:log-method:t}
 }
 If no such $t$ exists, set $t = h+1$.
 
@@ -221,6 +221,7 @@ After deciding $t$, we move all the elements in $\set{e} \cup S_0 \cup ... \cup 
     \item Write a sorted order of $S_0 \cup \set{e}$ on the disk. Define $\Sigma'_0 = S_0 \cup \set{e}$.
     \item In general, suppose we have obtained $\Sigma_i$ ($0 \le i \le t-1$), merge $\Sigma_i$ with $S_{i+1}$ into $\Sigma_{i+1}$.
     \item Empty $S_0, ..., S_t$ and rename $\Sigma_t$ to $S_t$.
+    \item If $t = h+1$, increases $h$ by 1.
 }
 The total I/O cost of the above steps is
 \myeqn{
@@ -230,10 +231,25 @@ The total I/O cost of the above steps is
     O\left(
         \fr{\ell^t \cdot M}{B}
     \right).
-    \nn
+    \label{eqn:log-method:S_t-cost}
 }
+By definition of $t$, there are more than $\ell^{t-1} \cdot M$ elements in $\set{e} \cup S_0 \cup ... \cup S_{t-1}$, all of which have moved into $S_t$. We charge the I/O cost of \eqref{eqn:log-method:S_t-cost} over those elements, each of which is amortized $O(\ell / B)$ I/Os.
 
-\section{Remark}
+\vgap
+
+To analyze the total I/O cost of handling $n$ insertions, observe that each element can only move from a small subset to a larger one (i.e., from an $S_i$ to some $S_j$ with $i < j$). It is charged $O(\ell/B)$ I/Os each time it does so. As an element can be charged at most $h$ times, we conclude that the total I/O cost is
+\myeqn{
+    O\left(
+        \fr{n \cdot \ell \cdot h}{B}
+    \right)
+    =
+    O\left(
+        \fr{n \cdot \ell \cdot \log_\ell \fr{n}{M}}{B}
+    \right)
+}
+implying an amortized insertion cost of $O(\fr{\ell}{B} \log_\ell \fr{n}{M})$.
+
+%\section{Remark}
 
 \bibliographystyle{plainurl}% the mandatory bibstyle
 \bibliography{ref}
