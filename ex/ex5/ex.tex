@@ -41,30 +41,30 @@ Prepared by Yufei Tao \\
     These exercises are designed to help you practice the techniques taught in class. Attempt them ``at your own risk'' because they are research-oriented and can be rather challenging. Solutions will not be provided in written form. I will be happy to act as a collaborator and sounding board --- I look forward to discussing your creative approaches, refining your key steps, and walking through your attempted solutions with you.
 }
 
-\extraspacing {\bf Problem 1 (Tightness of the AGM Bound for Subgraph Enumeration).} Let $P$ be a connected undirected graph that has a constant number of vertices. Denote by $\rho$ the fractional edge cover number of $P$. Prove: for any sufficiently large number $m$, there is an undirected graph with $m$ edges that contains $\Omega(m^\rho)$ occurrences of $P$.
+\extraspacing {\bf Problem 1 (Tightness of the AGM Bound for Subgraph Enumeration).} Let $P$ be a connected undirected graph that has a constant size. Denote by $\rho$ the fractional edge cover number of $P$. Prove: for any sufficiently large number $m$, there is an undirected graph with $m$ edges that contains $\Omega(m^\rho)$ occurrences of $P$.
 
-\extraspacing {\bf Problem 2.} Let $\Q$ be a join whose schema graph is $\H = (\V, \E)$. Take any fractional edge cover $\W$ of $\H$. Prove: the AGM value of $\Q$ under $\W$ is either 0 or at least 1.
+\extraspacing {\bf Problem 2.} Let $\Q$ be a join whose schema graph $\H = (\V, \E)$ has a constant size. Take any fractional edge cover $\W$ of $\H$. Prove: the AGM value of $\Q$ under $\W$ is either 0 or at least 1.
 
-\extraspacing {\bf Problem 3.} Let $\Q$ be a join whose schema graph is $\H = (\V, \E)$. Take any fractional edge cover $\W$ of $\H$. Prove: if the AGM value of $\Q$ under $\W$ is 1, then for every attribute $A \in \V$, there is a relation $R \in \Q$ satisfying
+\extraspacing {\bf Problem 3.} Let $\Q$ be a join whose schema graph $\H = (\V, \E)$ has a constant size. Take any fractional edge cover $\W$ of $\H$. Prove: if the AGM value of $\Q$ under $\W$ is 1, then for every attribute $A \in \V$, there is a relation $R \in \Q$ satisfying
 \myitems{
     \item $A$ belongs to the schema of $R$;
     \item $|R| = 1$.
 }
 
-\extraspacing {\bf Problem 4.} Let $\Q$ be a join whose schema graph is $\H = (\V, \E)$. Suppose that, for any box $B$ and any relation $R \in \Q$, we can perform the following operations in constant time:
+\extraspacing {\bf Problem 4.} Let $\Q$ be a join whose schema graph $\H = (\V, \E)$ has a constant size. Suppose that, for any box $B$ and any relation $R \in \Q$, we can perform the following operations in constant time:
 \myitems{
     \item find the size of $R(B)$;
     \item find the only tuple in $R(B)$ if $|R(B)| = 1$.
 }
 Describe an algorithm to satisfy assumption {\bf A4} in the lecture notes: obtain the result of $\Q(B)$ in constant time when $\agm_{\W^*}(B) \le 1$.
 
-\extraspacing {\bf Problem 5.} Let us first discuss {\em orthogonal range searching} on multi-dimentional points. Let $P$ be a set of $n$ points in $\real^d$, where the dimensionality is a constant. In $O(n \polylog n)$ time, we can build a data structure such that, for any axis-parallel rectangle $q$, we can
+\extraspacing {\bf Problem 5.} Let us first introduce {\em orthogonal range searching} on multi-dimentional points. Let $P$ be a set of $n$ points in $\real^d$, where the dimensionality $d$ is a constant. In $O(n \polylog n)$ time, we can build a data structure such that, for any axis-parallel rectangle $q$, can
 \myitems{
     \item report $|P \cap q|$ in $O(\polylog n)$ time;
     \item report $P \cap q$ in $O(\polylog n + k)$ time, where $k = |P \cap q|$.
 }
 
-Let $\Q$ be a join whose schema graph is $\H = (\V, \E)$. Describe how to apply the box-tree technique to compute $\Q$ in
+Let $\Q$ be a join whose schema graph $\H = (\V, \E)$ has a constant size. Describe how to apply the box-tree technique to compute $\Q$ in
 \myeqn{
     O(\In \polylog \In + \agm_{\W^*} \polylog \In) \nn
 }
