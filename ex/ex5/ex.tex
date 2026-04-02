@@ -1,0 +1,95 @@
+%\documentclass{...}
+
+\input{./def/yf-formatting}
+
+\usepackage{amsfonts, amsmath, amssymb, amsthm}
+\usepackage{comment}
+\usepackage{graphicx}
+\usepackage{ifthen}
+\usepackage{latexsym}
+%\usepackage{times}
+\usepackage[normalem]{ulem}
+
+\input{./def/yf-def}
+
+\def\out{\text{OUT}}
+\def\T{\mathcal{T}}
+
+\newboolean{solver}\setboolean{solver}{true}
+%\newboolean{solver}\setboolean{solver}{false}
+\ifthenelse{\boolean{solver}}{\includecomment{sol}}{\excludecomment{sol}}
+
+\def\vgap{\vspace{2mm}}
+
+\begin{document}
+
+\section*{CE7456: Exercise List 4}
+Prepared by Yufei Tao \\
+
+% \begin{center}
+%     \uline{Classroom Discussion}
+% \end{center}
+
+\boxminipg{0.95\linewidth}{
+    These exercises are designed to help you practice the techniques taught in class. Attempt them ``at your own risk'' because they are research-oriented and can be rather challenging. Solutions will not be provided in written form. I will be happy to act as a collaborator and sounding board --- I look forward to discussing your creative approaches, refining your key steps, and walking through your attempted solutions with you.
+}
+
+\extraspacing {\bf Problem 1 (Set Intersection Sampling).} Suppose that we have two sets $S_1$ and $S_2$. Each $S_i$ ($i = 1$ or 2) supports the following operations in constant time:
+\myitems{
+    \item return the size of the set;
+    \item draw an element from the set uniformly at random;
+    \item test whether a given element is in the set.
+}
+Describe an algorithm to draw an element from $S_1 \cap S_2$ uniformly at random. Your algorithm should run in $O(\min\set{|S_1|, |S_2|} / \max\set{1, \out})$ expected time, where $\out = |S_1 \cap S_2|$.
+
+\extraspacing {\bf Problem 2.} This exercise shows that the AGM bound is not tight when extra information other than cardinalities is available.
+
+\myitems{
+    \item Prove: An undirected graph with $m$ edges and maximum vertex degree $\lambda \le \sqrt{m}$ can have at most $m \cdot \lambda$ triangles.
+
+    \item Prove: For any integers $m$ and $\lambda$ satisfying $m \ge 1$ and $1 \le \lambda \le \sqrt{m}$, there is an undirected graph with at most $m$ edges and maximum vertex degree at most $\lambda$ that has $\Omega(m \cdot \lambda)$ triangles.
+
+    \item Given an undirected graph with $m$ edges and maximum vertex degree $\lambda \le \sqrt{m}$, describe an algorithm to find all triangles in the graph in $O(m \cdot \lambda)$ time.
+}
+
+\extraspacing {\bf Problem 3.} Using the natural join algorithm discussed in class as a black box, describe how to find all the occurrences of a constant-size pattern graph $Q$ in an undirected graph $G$ of $m$ edges in $O(m^{\rho})$ time, where $\rho$ is the fractional edge cover number of $Q$.
+
+\vgap
+
+Hint: Construct as many relations as the number of edges in $Q$. Note that the result of the join you construct may have ``false positives'', i.e., some tuples in the join result may not correspond to any occurrence of $Q$ in $G$. Argue that we can afford to find those tuples.
+
+\extraspacing {\bf Problem 4.} Explain how to satisfy assumptions {\bf A1} and {\bf A2} in our ``natural join'' lecture notes if you are allowed to preprocess each input relation $R$ of the join in $O(|R|)$ expected time.
+
+\vgap
+
+Hint: Perfect hashing.
+
+\extraspacing {\bf Problem 5*.} This exercise shows that a folklore algorithm for subgraph enumeration turns to be worst-case optimal.
+
+\vgap
+
+Let $G = (V, E)$ and $Q$ be the data and pattern graphs in subgraph enumeration, respectively. We assume that $Q$ is connected. Let $q_1, q_2, ..., q_k$ be an ordering of the vertices in $Q$ such that $q_i$ is connected to at least one vertex in $\set{q_1, q_2, ..., q_{i-1}}$ for each $i \in [2, k]$. To find an occurrence of $Q$ in $G$, we need to find a mapping $f: \set{q_1, ..., q_k} \rightarrow V$ such that (i) $f$ maps each $q_i$ ($1 \le i \le k$) to a distinct vertex, and (ii) $f(q_1), ..., f(q_k)$ define an occurrence of $Q$.
+
+\vgap
+
+We find all such mappings $f$ as follows:
+
+\myitems{
+    \item For each vertex $v_1 \in V$, set $f(q_1) = v_1$.
+    \item Inductively, suppose that we have decided $f(q_i)$ for $i \le t$ where $t \ge 1$. We map $q_{i+1}$ as follows.
+    \myitems{
+        \item Let $Q'$ be the set of vertices in $\set{q_1, q_2, ..., q_{i-1}}$ that are adjacent to $q_i$ in $Q$.
+
+        \item Let $S = \set{f(q) \mid q \in Q'}$.
+
+        \item For each vertex $v_{i+1} \in V \setm \set{f(q_1), f(q_2), ..., f(q_i)}$ that is adjacent in $G$ to every vertex of $S$, set $f(q_{i+1}) = v_{i+1}$.
+    }
+}
+
+Prove: The above algorithm finds all the occurrences of $Q$ in $O(m^{\rho})$ time, where $\rho$ is the fractional edge number of $Q$.
+
+\vgap
+
+Hint: Does the algorithm remind you of the natural join algorithm discussed in class?
+
+\end{document}
