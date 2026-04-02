@@ -160,9 +160,15 @@ It is rudimentary to verify:
 }
 By setting $b = B$, we can store each (leaf or internal) node in $O(1)$ disk blocks. The  B-tree occupies $O(n/B)$ disk blocks, and its height is $O(\log_B n)$.
 
-\extraspacing {\bf Query.}
+\extraspacing {\bf Query.} Given an integer $q$, we can find its predecessor in $S$ as follows. Set $u$ to the root of the B-tree $T$. In general, given a node $u$ such that the predecessor of $q$ --- if it exists --- must be in the sub-tree rooted at $u$, we proceed as follows.
+\myitems{
+    \item If $u$ is a leaf, we read its contents into memory and return the largest data element stored in $u$ that is less than or equal to $q$. If no such element exists, return ``no predecessor''.
 
+    \item If $u$ is an internal node, we read its contents into memory and find the largest routing element $e$ stored in $u$ that is less than or equal to $q$. If $e$ does not exist, terminate the query by returning ``no predecessor''. Otherwise, let $v$ be the child node of $u$ corresponding to $e$. We set $u$ to $v$ and repeat the above steps.
+}
+The algorithm descends a single root-to-leaf path of $T$ and  performs $O(\log_B n)$ I/Os in total.
 
+\extraspacing {\bf Construction.}
 
 \section{Remark}
 
