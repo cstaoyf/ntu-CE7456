@@ -111,23 +111,56 @@ In the beginning, all buffers are empty and all sets $S_1, ..., S_f$ are marked 
 
 \vgap
 
-The algorithm reads every block of each $S_i$ ($i \in [f]$) once, which requires $\lc |S_i|/B \rc$ I/Os; note that the ceiling here is necessary because $|S_i|$ may be smaller than $B$. Thus, reading all of $S_1, ..., S_f$ costs $\sum_{i=1}^f \lc |S_i|/B \rc < \sum_{i=1}^f 1 + |S_i|/B = f + n/B$ I/Os. Each block in the output (sorted) array is written once. Hence, the algorithm performs $\lc n/B \rc$ write I/Os in total. The total I/O cost is therefore $O(f + n/B)$.
+The algorithm reads every block of each $S_i$ ($i \in [f]$) once, which requires $\lc |S_i|/B \rc$ I/Os; note that the ceiling here is necessary because $|S_i|$ may be smaller than $B$. Thus, reading all of $S_1, ..., S_f$ costs $\sum_{i=1}^f \lc |S_i|/B \rc < \sum_{i=1}^f 1 + |S_i|/B = f + n/B$ I/Os. Each block in the output (sorted) array is written once. Hence, the algorithm performs $\lc n/B \rc$ write I/Os in total. The total I/O cost is therefore $O(f + n/B)$. Note that this is $O(n/B)$ if $n \ge M$.
+
 
 \subsection{Reducing Sorting to Merging} \label{sec:sort:sort}
 
-Next, we show how to sort a set $S$ of $n$ integers, given in a disk array of $n$ words, by using the merging algorithm in Section~\ref{sec:sort:merge} as a black box. Henceforth, we use the term {\em run} to refer to a sorted array containing a subset of the elements in $S$. Our goal is to produce one single run containing the entire $S$.
+Next, we explain how to sort a set $S$ of $n$ integers, given in a disk array of $n$ words, by using the merging algorithm in Section~\ref{sec:sort:merge} as a black box. Henceforth, we use the term {\em run} to refer to a sorted array containing a subset of the elements in $S$; the {\em size} of the run is the number of elements it contains. Our goal is to produce one single run containing the entire $S$.
 
-\extraspacing {\bf Initial Pass.} We first perform $O(n/B)$ I/Os to create $\lc n/M \rc$ runs, each with $M$ elements except possibly the last run. For this purpose, we cut the array of $S$ into $\lc n/M \rc$ subarrays, each of which has exactly $M$ elements (and occupies $m$ blocks), except possibly the last subarray. For each subarray, we load the elements there into memory, sort them in memory, and then write the sorted order back to the disk, thereby creating a run of $M$ elements (the run for the last subarray may be smaller if $n$ is not a multiple of $M$). The total I/O cost is $O(n/B)$ because each subarrary requires a number of I/Os proportional to the number of blocks it occupies.
+\extraspacing {\bf Initial Pass.} We first perform $O(n/B)$ I/Os to create $\lc n/M \rc$ runs, each with size $M$ except possibly the last run. For this purpose, we cut the array of $S$ into $\lc n/M \rc$ subarrays, each having exactly $M$ elements (and occupying $m$ blocks), except possibly the last subarray. For each subarray, we load the elements there into memory, sort them (in memory), and then write the sorted order back to the disk, thereby creating a run of $M$ elements (the run for the last subarray may be smaller if $n$ is not a multiple of $M$). The total I/O cost is $O(n/B)$ because each subarrary requires a number of I/Os proportional to the number of blocks it occupies.
 
 \extraspacing {\bf Merging Passes.} The initial pass yields $n_0 = \lc n/M \rc$ runs. In general, given $n_i$ runs where $i \ge 0$, we launch a merging pass to produce
 \myeqn{
     n_{i+1} = \lc n_i / (m - 1) \rc \nn
 }
-runs in $O(n/B)$ I/Os. For this purpose, divide the $n_i$ runs (arbitrarily) into $n_{i+1}$ groups, each of which contains $m-1$ runs, except possible the last group.
+runs in $O(n/B)$ I/Os. For this purpose, divide the $n_i$ runs (arbitrarily) into $n_{i+1}$ groups, each of which contains $m-1$ runs except possible the last group. For each group, apply the the merging algorithm in Section~\ref{sec:sort:merge} to merge the runs therein into one run.
 
-use the merging algorithm to merge every $m-1$ runs into a longer run.
+\vgap
 
+We claim that each merging pass requires $O(n/B)$ I/Os. It suffices to show that, on each group, the merging algorithm performs $O(x/B)$ I/Os, where $x$ is the total number of elements in the runs of the group. This is true because the group involves at least two runs (otherwise, no merging is required), and one of those runs must have a size at least $M$ (first, all runs produced by the initial pass have size $M$, except possibly for one run; second, runs can get only larger after merging). It thus follows that $x > M$ and, by the discussion in Section~\ref{sec:sort:merge}, the merging on the group takes $O(x/B)$ I/Os.
 
+\vgap
+
+As the number of runs decreases by a factor of $\Omega(m)$ after a merging pass, the number of merging passes is $O(\log_m n_0) = O(\log_{M/B} \fr{n}{B})$. The total I/O cost of sorting is therefore $O(\fr{n}{B} \log_{M/B} \fr{n}{B})$.
+
+\section{B-trees} \label{sec:btree}
+
+Next, we present the B-tree, which is a fundamental data structure in external memory. One primary use of the structure is to support predecessor search. Formally, let $S$ be a set of $n$ integers. The {\em predecessor} of an integer $q$ (with respect to $S$) is the largest element of $S$ that is less than or equal to $q$. Given an integer $q$, a {\em predecessor query} returns the predecessor of $q$. We can store $S$ in a B-tree that uses $O(n/B)$ space (this means $O(n/B)$ disk blocks) and answers a predecessor query in $O(\log_B n)$ I/Os.
+
+\extraspacing {\bf Structure.} A {\em B-tree} $T$ on $S$ parameterized by an integer $b$ is defined as follows:
+\myitems{
+    \item All the leaves of $T$ are at the same level\footnote{The root of $T$ is at level 0. In general, if a node of $T$ is at level $\ell$, then its child nodes are at level $\ell + 1$.}.
+
+    \item The internal node has at most $b$ child nodes. If an internal node is not the root, it has $\Omega(b)$ (e.g., $b/4$) child nodes; the root has at least 2 child nodes.
+
+    \item Every leaf node contains at most $b$ elements from $S$; those elements are called {\em data elements}. If a leaf node is not the root, it has $\Omega(b)$ (e.g., $b/4$) elements from $S$; otherwise, there is no constraint on the minimum number of elements in the node.
+
+    \item Every element of $S$ is stored in exactly one leaf node.
+
+    \item If an internal node $u$ has child nodes $v_1, v_2, ..., v_f$ where $f \le b$, then $u$ stores elements $e_1, e_2, ..., e_f$ --- called {\em routing elements} --- where $e_i$ ($i \in [f]$) is the smallest data element stored in the subtree rooted at $v_i$.
+
+    \item If an internal node $u$ has child nodes $v_1, v_2, ..., v_f$ where $f \le b$, then for each $i \in [f]$, all the data elements stored in the subtrees rooted at $v_1, ..., v_{i-1}$ are less than $e_i$ (the routing element for $v_i$).
+}
+
+It is rudimentary to verify:
+\myitems{
+    \item $T$ has $O(1 + n/b)$ leaf nodes and $O(1 + n/b^2)$ internal nodes.
+    \item The height of $T$ is $O(\log_b n)$.
+}
+By setting $b = B$, we can store each (leaf or internal) node in $O(1)$ disk blocks. The  B-tree occupies $O(n/B)$ disk blocks, and its height is $O(\log_B n)$.
+
+\extraspacing {\bf Query.}
 
 
 
