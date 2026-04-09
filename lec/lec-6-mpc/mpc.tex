@@ -66,7 +66,7 @@ This lecture introduces the {\em massively parallel computation} (MPC) model \ci
 
 \section{The MPC Model} \label{sec:model}
 
-In this model, we have $p$ share-nothing machines that are interconnected in a network. Denote by $S$ the input set of elements, and let $n = |S|$. In the beginning, each machine stores $O(n/p)$ elements of $S$; an algorithm has no control over how elements are distributed across the machines. As a standard assumption, the values of $p$ and $n$ satisfy $p < n^{1-\eps}$, where $\eps$ is a positive constant less than 1.
+In this model, we have $p$ share-nothing machines that are interconnected in a network. Denote by $S$ the input set of elements, and let $n = |S|$. In the beginning, each machine stores at most $n/p$ elements of $S$; an algorithm has no control over how elements are distributed across the machines. As a standard assumption, the values of $p$ and $n$ satisfy $p < n^{1-\eps}$, where $\eps$ is a positive constant less than 1.
 
 
 \vgap
@@ -94,17 +94,17 @@ With load $n$, any problem can be solved trivially in one round by simply sendin
 
 \section{Sorting} \label{sec:sort}
 
-The sorting problem is defined as follows in the MPC model. Let $S$ be a set of $n$ integers, initially distributed across $p$ machines in an arbitrary manner, subject to the constraint that each machine has $O(n/p)$ elements. The goal is to re-distribute the elements across the machines such that the elements on machine $i$ are less than those on machine $j$, for any $1 \le i < j \le p$.
+The sorting problem is defined as follows in the MPC model. Let $S$ be a set of $n$ integers, initially distributed across $p$ machines in an arbitrary manner, subject to the constraint that each machine has at most $n/p$ elements. The goal is to re-distribute the elements across the machines such that the elements on machine $i$ are less than those on machine $j$, for any $1 \le i < j \le p$.
 
 \vgap
 
-\todo{State the guarantees}
+Assuming $n \ge 30$ and $n \ge p^2 \ln n$, we will present a 2-round algorithm that achieves a load of $O(n/p)$ with probability at least $1 - 1/n^2$.
 
-\extraspacing {\bf Algorithm.} For each $i \in [p]$, denote by $S_i$ the set of elements stored on machine $i$ initially.
-
-\vgap
-
-In the first phase of round 1, each machine generates a sample set $\Sigma_i \subseteq S_i$ as follows: for each element of $S_i$, independently toss a coin with probability $\rho$ of heads ---  where $\rho$ is a value to be determined later --- and add the element to $\Sigma_i$ if the coin comes up heads.
+\extraspacing {\bf Algorithm.} For each $i \in [p]$, denote by $S_i$ the set of elements stored on machine $i$ initially. Set
+\myeqn{
+    \pi = (p / n) \cdot \ln n
+}
+In the first phase of round 1, each machine generates a sample set $\Sigma_i \subseteq S_i$ as follows: for each element of $S_i$, independently toss a coin with probability $\pi$ of heads ---  where $\pi$ is a value to be determined later --- and add the element to $\Sigma_i$ if the coin comes up heads.
 
 \vgap
 
@@ -114,11 +114,11 @@ In the second phase of round 1, machine $i \in [p]$ sends $\Sigma_i$ to every ot
 
 In the first phase of round 2, each machine collects
 \myeqn{
-    S_\mit{sam} &=& \bigcup_{j=1}^p \Sigma_j. \nn
+    S_\mit{sam} &=& \bigcup_{j=1}^p \Sigma_j. \label{eqn:sort:S_sam}
 }
 Set
 \myeqn{
-    s = |S_\mit{sam}|. \nn
+    s = |S_\mit{sam}|. \label{eqn:sort:s}
 }
 The machine identifies $p - 1$ elements $b_1, b_2, ..., b_{p-1}$ where $b_j$ ($1 \le j \le p-1$) is the $j \cdot \lc s/p \rc$-th smallest elements in $S_\mit{sam}$. In addition, define $b_0 = -\infty$ and $b_p = \infty$. We refer to $b_0, b_1, ..., b_p$ as {\em boundary elements}.
 
@@ -126,60 +126,71 @@ The machine identifies $p - 1$ elements $b_1, b_2, ..., b_{p-1}$ where $b_j$ ($1
 
 In the second phase of round 2, machine $i \in [p]$ sends to machine $j \in [p]$ the elements in $S_i \cap (b_{i-1}, b_i]$.
 
-\extraspacing {\bf Analysis.} Define
-\myeqn{
-    m = n/p. \nn
-}
-The algorithm incurs a load of $O(m + p \ln n)$ when three conditions are met (think: why?):
+\extraspacing {\bf Analysis.}
+The algorithm incurs a load of $O(\fr{n}{p} + p \ln n)$ when the following two conditions are met (think: why?):
 \myitems{
     \item {{\bf C1:}} $|\Sigma_i| = O(\ln n)$ for all $i \in [p]$.
     %\item {{\bf C2:}} $s = O(m)$.
-	\item {{\bf C2:}} $S \cap (b_{i-1}, b_i]$ has $O(m)$ elements for all $i \in [p]$.
+	\item {{\bf C2:}} $S \cap (b_{i-1}, b_i]$ has $O(n/p)$ elements for all $i \in [p]$.
 }
+The load $O(\fr{n}{p} + p \ln n)$ is $O(n/p)$ when $n \ge p^2 \ln n$.
 
 \vgap
 
 
-\begin{theorem} \label{thm:sort-tera-samplerate}
-	When $m \ge t \ln (nt)$, {\bf C1} and {\bf C2} hold simultaneously with probability at least $1-1/n^2$ by setting $\rho = \fr{1}{m} \ln(nt)$.
+\begin{theorem} \label{thm:sort}
+	When $n \ge \max\{30, p \ln n\}$, {\bf C1} and {\bf C2} hold simultaneously with probability at least $1 - 1/n^2$ by setting $\pi = (p / n) \cdot \ln n$.
 \end{theorem}
 
 \begin{proof}
-	We will consider $p \ge 9$ because otherwise $m = \Omega(n)$, in which case {\bf C1} and {\bf C2} hold trivially. Our proof is based on the Chernoff bound and a bucketing argument.
-
-	\vgap
-
-	Consider an arbitrary $i \in [p]$. Let random variable $X$ be the size of $\Sigma_i$. Hence, $\expt[X] = m \rho = \ln(nt)$. An application of Chernoff bound \eqref{eqn:chernoff2} gives:
+	Consider an arbitrary $i \in [p]$. Let random variable $X_i$ be the size of $\Sigma_i$. Hence, $\expt[X_i] \le (n/p) \cdot \pi = \ln n$. An application of Chernoff bound \eqref{eqn:chernoff2} gives:
 	\begin{eqnarray}
-		\Pr[X \ge 18 \ln(nt)] \le \exp(- 3 \ln(nt)) \le 1/n^3. \nonumber
+		\Pr[X_i \ge 18 \ln n] \le \exp(- 3 \ln n) = 1/n^3. \nonumber
 	\end{eqnarray}
 	By union bound, the probability that this is true for at least one $i \in [p]$ is at most $p/n^3$. It thus follows that {\bf C1} holds with probability at least $1 - p/n^3$.
 
 	\vgap
 
-	Next, we consider {\bf C2}.
-	Imagine that $S$ has been sorted in ascending order. We divide the sorted list into $\lf p/8 \rf$ sub-lists as evenly as possible; call each sub-list a {\em bucket}. Each bucket has between $8n/t=8m$ and $16m$ objects. We observe that {\em {\bf C2} holds if every bucket covers at least one boundary object}. To understand why, notice that under this condition, no bucket can fall between two consecutive boundary objects (counting also the dummy ones)\footnote{If there was one, the bucket would not be able to cover any boundary object.}. Hence, every $S_i$, $1 \le i \le t$, can contain objects in at most 2 buckets, i.e., $|S_i| \le 32m = O(m)$.
+	Next, we consider {\bf C2}. First, by the above analysis, we can assert
+	\myeqn{
+        \Pr[s \le 18 p \cdot \ln n] \ge 1 - p/n^3 \nn
+	}
+	where the value of $s$ is given in \eqref{eqn:sort:s}.
+	Unless otherwise stated, the subsequent discussion assumes $s \le 18 p \cdot \ln n$.
 
 	\vgap
 
-	A bucket $\beta$ definitely includes a boundary object if $\beta$ covers more than $1.6 \ln(nt) > s/t$ samples (i.e., objects from $S_\mit{sam}$), as a boundary object is taken every $\lc s/t \rc$ consecutive samples. Let $|\beta| \ge 8m$ be the number of objects in $\beta$. Define random variable $x_j$, $1 \le j \le |\beta|$, to be 1 if the $j$-th object in $\beta$ is sampled, and 0 otherwise. Define:
-	\begin{eqnarray}
-		X = \sum_{j=1}^{|\beta|} x_j = |\beta \cap S_\mit{sam}|. \nn
-	\end{eqnarray}
-	Clearly, $\expt[X] \ge 8m\rho = 8 \ln(nt)$. We have:
-	\begin{eqnarray}
-		\Pr[X \le 1.6 \ln(nt)] &=& \Pr[X \le (1 - 4/5)8 \ln(nt)] \nn \\
-		&\le& \Pr[X \le (1 - 4/5)\expt[X]] \nn \\
-		\textrm{(by Chernoff)} &\le& \exp\left(- \fr{16}{25} \fr{\expt[X]}{3}\right) \nn \\
-		&\le& \exp\left(- \fr{16}{25} \cdot \fr{8 \ln(nt)}{3}\right) \nn \\
-		&\le& \exp(-\ln(nt)) \nn \\
-		&\le& 1/(nt). \nn
-	\end{eqnarray}
-	We say that $\beta$ {\em fails} if it covers no boundary object. The above derivation shows that $\beta$ fails with probability at most $1/(nt)$. As there are at most $t/8$ buckets, the probability that at least one bucket fails is at most $1/(8n)$. Hence, {\bf C2} can be violated with probability at most $1/(8n)$ under the event $s < 1.6 t \ln(nt)$, i.e., at most $9/8n$ overall.
+	Imagine that $S$ has been sorted in ascending order. Let us  partition the sorted list into $\lc p/64 \rc$ sub-lists --- call each sub-list a {\em bucket} --- such that each bucket has between $64 n/p$ and $128 n/p$ objects (think: why is it fair to assume such a partitioning?). Observe that {\em {\bf C2} holds if every bucket covers at least one boundary element}. Indeed, under this condition, no bucket can fall between two consecutive boundary elements; hence, for each $i \in [t]$, the set $S \cap (b_{i-1}, b_i]$ can contain elements from at most 2 buckets, implying $S \cap (b_{i-1}, b_i]$ has size at most $256 n/p$.
 
 	\vgap
 
-	Therefore, {\bf C1} and {\bf C2} hold at the same time with probability at least $1 - 17/(8n)$.
+	Fix an arbitrary bucket $S_\mit{buk}$. Under the event $s \le 18p \cdot \ln n$, the bucket must include a boundary element if it has at least $18 \ln n$ --- which is at least $s/p$ --- elements from $S_\mit{sam}$ (as defined in \eqref{eqn:sort:S_sam}) because a boundary element is taken every $\lc s/p \rc$ consecutive elements in the sorted order of $S_\mit{sam}$.
+
+	\vgap
+
+	For each $j \in [|S_\mit{buk}|]$, define random variable $Y_j = 1$ if the $j$-th element of $S_\mit{buk}$ is sampled in the first phase of round 1, or 0 otherwise. Define
+	\myeqn{
+        Y &=& \sum_{j=1}^{|S_\mit{buk}|} Y_j. \nn
+	}
+	Note that $Y$ is the number of elements of $S_\mit{sam}$ that are contained in $S_\mit{buk}$. Clearly, $\expt[Y] \ge (64n / p) \cdot \pi = 64 \ln n$. We have:
+	\begin{eqnarray}
+		\Pr[Y < 18 \ln n] &=& \Pr[Y \le (1 - 46/64) \cdot 64 \ln n] \nn \\
+		&\le& \Pr[Y \le (1 - 46/64)\expt[Y]] \nn \\
+		\textrm{(by Chernoff bound \eqref{eqn:chernoff1})} &\le& \exp\left(- \fr{46^2}{64^2} \cdot \fr{\expt[Y]}{3}\right) \nn \\
+		&\le& \exp\left(- \fr{46^2}{64^2} \cdot \fr{64 \ln n}{3}\right) \nn \\
+		&<& \exp(-3 \ln n) \nn \\
+		&\le& 1/n^3. \nn
+	\end{eqnarray}
+	This means that the probability that $S_\mit{buk}$ does not cover any boundary element is at most $1/n^3$. 	As there are $\lc p/64 \rc \le p$ buckets, the probability that
+	at least one bucket fails to cover any boundary element is at most $p/n^3$.
+
+	\vgap
+
+	We can now conclude that {\bf C2} holds with probability at least $1 - 2p/n^3$ (think: why does the constant 2 come from?).
+
+	\vgap
+
+	Therefore, {\bf C1} and {\bf C2} hold at the same time with probability at least $1 - 3p/n^3$ which is at least $1 - 1/n^2$ because $n \ge 3p$.
 \end{proof}
 
 
@@ -199,7 +210,7 @@ The algorithm incurs a load of $O(m + p \ln n)$ when three conditions are met (t
     }
     For any $0 < \gamma < 1$, it holds that
     \myeqn{
-        \Pr[X \geq (1 + \gamma) \expt[X]] &\leq&  \exp(- \gamma^2 \cdot \expt[X] / 3). \label{eqn:chernoff2}
+        \Pr[X \le (1 - \gamma) \expt[X]] &\leq&  \exp(- \gamma^2 \cdot \expt[X] / 3). \label{eqn:chernoff2}
     }
 %\end{lemma}
 Proofs for \eqref{eqn:chernoff1} and \eqref{eqn:chernoff2} can be found in \cite{stl12}.
