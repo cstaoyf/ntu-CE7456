@@ -230,7 +230,17 @@ Each machine examines the elements in its (initial) local storage as follows. Le
     1 + \left(y \mod \lf p^{1/t} \rf \right). \label{eqn:cp:coord-on-i}
 }
 
-\extraspacing {\bf Correctness.}
+\extraspacing {\bf Correctness.} We prove that each $(u_1, u_2, ..., u_t) \in S_1 \times S_2 \times ... \times S_t$ is produced on at least one machine.
+
+\vgap
+
+For each $i \in [t]$, let $y_i$ be the ID of tuple $u_i \in S_i$, and define
+\myeqn{
+    x_i = 1 + \left(y_i \mod \lf p^{1/t} \rf \right). \nn
+}
+Thus, the machine with coordinates $(x_1, x_2, ..., x_t)$ definitely receives all the $t$ tuples $u_1, u_2, ..., u_t$.
+
+\extraspacing {\bf Load Analysis.} Let us first discuss how many elements are sent by a machine.
 
 
 
