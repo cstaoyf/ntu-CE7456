@@ -199,6 +199,15 @@ The algorithm incurs a load of $O(\fr{n}{p} + p \ln n) = O(n/p)$ when the follow
 	Therefore, {\bf C1} and {\bf C2} hold at the same time with probability at least $1 - 3p/n^3$, which is at least $1 - 1/n^2$ because $n \ge 3p$.
 \end{proof}
 
+\extraspacing {\bf A Lower Bound.} For any values of $p$ and $n$, any algorithm must incur a load of $\Omega(n/p)$, no matter how many rounds are performed (think: why?).
+
+\section{Cartesian Product} \label{sec:cp}
+
+The {\em Cartesian product} (CP) problem is defined as follows in the MPC model. Let $R_1, R_2, ..., R_t$ be $t \ge 2$ sets of elements. Let $n = \sum_{i=1}^t |R_i|$. The elements of $R_1, ..., R_t$ are initially distributed across $p$ machines in an arbitrary manner, subject to the constraint that each machine has at most $n/p$ elements. The goal is to produce each $t$-tuple $(u_1, u_2, ..., u_t) \in R_1 \times R_2 \times ... \times R_t$ on at least one machine.
+
+\vgap
+
+Next, we will show how to solve the problem in one round with load $O(n / p^{1/t})$. Our description makes the following assumption: for every $R_i$ ($i \in [t]$), each element of $R_i$ is associated with a unique ID from $[|R_i|]$.
 
 %\section{Remark} ksv10
 
