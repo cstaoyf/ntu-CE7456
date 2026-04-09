@@ -50,210 +50,158 @@
     \begin{center}
         \vspace{3mm}
     {\Large
-    (CE7456 Lecture Notes 13) The External Memory Model} \\[2mm]
+    (CE7456 Lecture Notes 14) Massively Parallel Computation} \\[2mm]
     {\large Yufei Tao}
     \vspace{3mm}
     \end{center}
 }
 
-
-So far, all our algorithm analysis has been conducted in the RAM (random access machine) model. This model is suitable for studying algorithms that aim to minimize CPU time. However, in many practical applications --- such as database systems --- data sets are too large to fit in main memory and must instead be stored on disk. Algorithms operating on such data perform numerous disk I/O operations, which are orders of magnitude slower than CPU computations and often become the main performance bottleneck. The RAM model is no longer an appropriate computation model for studying algorithms that are designed to minimize I/O cost.
+We have seen two computational models so far: (i) the RAM model, which is suitable when the data fit in main memory, and (ii) the EM model, which is suitable when the data fit on the disk (of one machine). In practice, many applications need to process datasets so large that they must be stored on multiple machines. The performance bottleneck in processing such data --- e.g., in systems like Hadoop and Spark --- is neither CPU computation nor I/O access; rather, it is typically the communication across machines. The RAM and EM models are no longer appropriate for studying algorithms in such scenarios.
 
 \vgap
 
-This lecture introduces the {\em external memory} (EM) model, which is the de facto model for analyzing I/O-efficient algorithms. We will then illustrate the characteristics of the model through several representative algorithms.
+This lecture introduces the {\em massively parallel computation} (MPC) model \cite{bks17,ksv10} for studying algorithms designed to minimize parallel communication over a large number of machines. We will then illustrate the characteristics of the model through several representative algorithms.
 
 \extraspacing {\bf Math Conventions.} Given an integer $x \ge 1$, we use $[x]$ to represent the set $\set{1, 2, ..., x}$.
 
-\section{The External Memory Model} \label{sec:em}
+\section{The MPC Model} \label{sec:model}
 
-In the EM model \cite{av88}, a machine is equipped with a memory of $M$ words and a disk of unbounded size. The disk is formatted into disjoint {\em blocks}, each having $B$ words, where $B$ is called the {\em block size}. The values $M$ and $B$ are parameters of the model satisfying $M \ge 3B$ (they cannot be regarded as constants).
+In this model, we have $p$ share-nothing machines that are interconnected in a network. Denote by $S$ the input set of elements, and let $n = |S|$. In the beginning, each machine stores $O(n/p)$ elements of $S$; an algorithm has no control over how elements are distributed across the machines. As a standard assumption, the values of $p$ and $n$ satisfy $p < n^{1-\eps}$, where $\eps$ is a positive constant less than 1.
 
-\vgap
-
-Every disk block has a unique integer address. Given such an address, a {\em read I/O operation} loads the contents of the corresponding disk block into memory, replacing the $B$ (memory) words previously stored there. Conversely, given a disk address, a {\em write I/O operation} writes $B$ memory words into the corresponding block, overwriting the $B$ words originally in that block. Henceforth, we use ``I/O'' to refer to either a read I/O or a write I/O.
 
 \vgap
 
-The {\em cost} of an algorithm is measured as the number of I/Os performed. CPU computation is for free but can be performed only on memory-resident data. The {\em space} of a data structure is measured as the number of disk blocks occupied.
+An algorithm starts by having each machine perform some initial computation on its local data. Then, it executes in {\em rounds}, each having two phases:
+\myitems{
+  \item in the first phase, the machines exchange messages (every message should have been prepared either in the initial computation or the second phase of the previous round);
+  \item in the second phase, each machine performs local computation.
+}
+An algorithm can perform any number of rounds as needed. Upon termination, the final output must be available on the machines in the form specified by the problem definition.
 
 \vgap
 
-We assume, w.o.l.g., that the value of $M$ is a multiple of $B$.
+The {\em load of a round} is the largest number of words communicated (sent and received combined) by a machine in that round; specifically, if machine $i \in [p]$ communicates $\ell_i$ words in this round, then the load of the round is $\max_{i=1}^p \ell_i$.
+The (total) {\em load} of the algorithm is the sum of the loads of all the rounds.
+
+\vgap
+
+With load $n$, any problem can be solved trivially in one round by simply sending all data to one machine. In practice, a good algorithm ought to perform a small number of rounds and incur a small load. Accordingly, two interesting questions arise in theory:
+\myitems{
+    \item ({\bf Load complexity}) What is the smallest load for solving a problem within a given number of rounds?
+
+    \item ({\bf Round complexity}) What is the smallest number of rounds for solving a problem when each round can incur no more than a given load?
+}
 
 \section{Sorting} \label{sec:sort}
 
-Let $S$ be a set of $n \ge B$ integers, each of which fits in a word. Initially, $S$ is stored in an array on disk, which occupies $\lc n/B \rc$ blocks (that is, $B$ integers per block except the last block). The goal of the {\em sorting problem} is to produce an array of $n$ words on disk, where the elements of $S$ are arranged in ascending order.
+The sorting problem is defined as follows in the MPC model. Let $S$ be a set of $n$ integers, initially distributed across $p$ machines in an arbitrary manner, subject to the constraint that each machine has $O(n/p)$ elements. The goal is to re-distribute the elements across the machines such that the elements on machine $i$ are less than those on machine $j$, for any $1 \le i < j \le p$.
 
 \vgap
 
-We show that the problem can be solved in $O(\fr{n}{B} \log_{M/B} \fr{n}{B})$ I/Os, which is known to be worst-case optimal \cite{av88}.
+\todo{State the guarantees}
 
-\subsection{Merging} \label{sec:sort:merge}
+\extraspacing {\bf Algorithm.} For each $i \in [p]$, denote by $S_i$ the set of elements stored on machine $i$ initially.
 
-Define
+\vgap
+
+In the first phase of round 1, each machine generates a sample set $\Sigma_i \subseteq S_i$ as follows: for each element of $S_i$, independently toss a coin with probability $\rho$ of heads ---  where $\rho$ is a value to be determined later --- and add the element to $\Sigma_i$ if the coin comes up heads.
+
+\vgap
+
+In the second phase of round 1, machine $i \in [p]$ sends $\Sigma_i$ to every other machine.
+
+\vgap
+
+In the first phase of round 2, each machine collects
 \myeqn{
-    m = M/B. \label{eqn:sort:merge:m}
+    S_\mit{sam} &=& \bigcup_{j=1}^p \Sigma_j. \nn
 }
-The value $m$ can be regarded as the number of blocks (each with $B$ words) that the memory can accommodate.
-
-\vgap
-
-We first tackle the {\em merging problem} defined as follows. Let $S_1, S_2, ..., S_f$ be $f$ disjoint sets of integers, where $f \le m - 1$. Define $n = \sum_{i=1}^f |S_i|$. For each $i \in [f]$, the set $S_i$ has been sorted in an array of $|S_i|$ words stored on disk. The goal is to produce an array of $n$ words on disk, where the elements of $S_1 \cup S_2 \cup ... \cup S_f$ are arranged in ascending order.
-
-\vgap
-
-For each $i \in [f]$, we allocate a memory block (i.e., $B$ memory words) to serve as the {\em input buffer} for $S_i$. The $f$ input buffers use $f B \le (m - 1) B = M - B$ words of memory, leaving at least $B$ memory words still available. We allocate $B$ of those words to serve as the {\em output buffer}.
-
-\vgap
-
-In the beginning, all buffers are empty and all sets $S_1, ..., S_f$ are marked as {\em active}. For each $i \in [f]$, the algorithm starts by loading the first block of (the array) $S_i$ into its input buffer. As long as every active set's input buffer is non-empty, we move the smallest element among all the elements currently in the input buffers to the output buffer (e.g., if the element $e$ is from $S_1$, then $e$ is removed from the input buffer of $S_1$ and added to the output buffer). Whenever the output buffer is full, we perform an I/O to write the (sorted) elements there to a disk block at the end of the output array. Whenever an input buffer of an active $S_i$ (for some $i \in [f]$) is empty, we perform an I/O to read the next block of $S_i$ into the input buffer. If no such block exists (i.e., the entire $S_i$ has been read), we mark $S_i$ as {\em inactive}.
-
-\vgap
-
-The algorithm reads every block of each $S_i$ ($i \in [f]$) once, which requires $\lc |S_i|/B \rc$ I/Os; note that the ceiling here is necessary because $|S_i|$ may be smaller than $B$. Thus, reading all of $S_1, ..., S_f$ costs $\sum_{i=1}^f \lc |S_i|/B \rc < \sum_{i=1}^f 1 + |S_i|/B = f + n/B$ I/Os. Each block in the output (sorted) array is written once. Hence, the algorithm performs $\lc n/B \rc$ write I/Os in total. The total I/O cost is therefore $O(f + n/B)$. Note that this is $O(n/B)$ if $n \ge M$.
-
-
-\subsection{Reducing Sorting to Merging} \label{sec:sort:sort}
-
-Next, we explain how to sort a set $S$ of $n$ integers, given in a disk array of $n$ words, by using the merging algorithm in Section~\ref{sec:sort:merge} as a black box. Henceforth, we use the term {\em run} to refer to a sorted array containing a subset of the elements in $S$; the {\em size} of the run is the number of elements it contains. Our goal is to produce one single run containing the entire $S$.
-
-\extraspacing {\bf Initial Pass.} We first perform $O(n/B)$ I/Os to create $\lc n/M \rc$ runs, each with size $M$ except possibly the last run. For this purpose, we cut the array of $S$ into $\lc n/M \rc$ subarrays, each having exactly $M$ elements (and occupying $m$ blocks), except possibly the last subarray. For each subarray, we load the elements there into memory, sort them (in memory), and then write the sorted order back to the disk, thereby creating a run of $M$ elements (the run for the last subarray may be smaller if $n$ is not a multiple of $M$). The total I/O cost is $O(n/B)$ because each subarrary requires a number of I/Os proportional to the number of blocks it occupies.
-
-\extraspacing {\bf Merging Passes.} The initial pass yields $n_0 = \lc n/M \rc$ runs. In general, given $n_i$ runs where $i \ge 0$, we launch a merging pass to produce
+Set
 \myeqn{
-    n_{i+1} = \lc n_i / (m - 1) \rc \nn
+    s = |S_\mit{sam}|. \nn
 }
-runs in $O(n/B)$ I/Os. For this purpose, divide the $n_i$ runs (arbitrarily) into $n_{i+1}$ groups, each of which contains $m-1$ runs except possible the last group. For each group, apply the the merging algorithm in Section~\ref{sec:sort:merge} to merge the runs therein into one run.
+The machine identifies $p - 1$ elements $b_1, b_2, ..., b_{p-1}$ where $b_j$ ($1 \le j \le p-1$) is the $j \cdot \lc s/p \rc$-th smallest elements in $S_\mit{sam}$. In addition, define $b_0 = -\infty$ and $b_p = \infty$. We refer to $b_0, b_1, ..., b_p$ as {\em boundary elements}.
 
 \vgap
 
-We claim that each merging pass requires $O(n/B)$ I/Os. It suffices to show that, on each group, the merging algorithm performs $O(x/B)$ I/Os, where $x$ is the total number of elements in the runs of the group. Note that the group involves at least two runs (otherwise, no merging is required), and one of those runs must have a size at least $M$ (first, all runs produced by the initial pass have size $M$, except possibly for one run; second, runs can get only larger after merging). It thus follows that $x > M$ and, by the discussion in Section~\ref{sec:sort:merge}, the merging on the group takes $O(x/B)$ I/Os.
+In the second phase of round 2, machine $i \in [p]$ sends to machine $j \in [p]$ the elements in $S_i \cap (b_{i-1}, b_i]$.
 
-\vgap
-
-As the number of runs decreases by a factor of $\Omega(m)$ after a merging pass, the number of merging passes is $O(\log_m n_0) = O(\log_{M/B} \fr{n}{B})$. The total I/O cost of sorting is therefore $O(\fr{n}{B} \log_{M/B} \fr{n}{B})$.
-
-\section{B-trees} \label{sec:btree}
-
-Next, we present the B-tree, which is a fundamental data structure in external memory. One primary use of the structure is to support predecessor search. Formally, let $S$ be a set of $n$ integers. The {\em predecessor} of an integer $q$ (with respect to $S$) is the largest element of $S$ that is less than or equal to $q$. Given an integer $q$, a {\em predecessor query} returns the predecessor of $q$. We can store $S$ in a B-tree that uses $O(n/B)$ space (this means $O(n/B)$ disk blocks) and answers a predecessor query in $O(\log_B n)$ I/Os.
-
-\extraspacing {\bf Structure.} A {\em B-tree} $T$ on $S$ parameterized by an integer $b \ge 2$ is defined as follows:
+\extraspacing {\bf Analysis.} Define
+\myeqn{
+    m = n/p. \nn
+}
+The algorithm incurs a load of $O(m + p \ln n)$ when three conditions are met (think: why?):
 \myitems{
-    \item All the leaves of $T$ are at the same level\footnote{The root of $T$ is at level 0. In general, if a node of $T$ is at level $\ell$, then its child nodes are at level $\ell + 1$.}.
-
-    \item The internal node has at most $b$ child nodes. If an internal node is not the root, it has $\Omega(b)$ (e.g., $b/2$) child nodes; the root has at least 2 child nodes.
-
-    \item Every leaf node contains at most $b$ elements from $S$; those elements are called {\em data elements}. If a leaf node is not the root, it has $\Omega(b)$ (e.g., $b/2$) elements from $S$; otherwise, there is no constraint on the minimum number of elements in the node.
-
-    \item Every element of $S$ is stored in exactly one leaf node.
-
-    \item If an internal node $u$ has child nodes $v_1, v_2, ..., v_f$ where $f \le b$, then $u$ stores elements $e_1, e_2, ..., e_f$ --- called {\em routing elements} --- where $e_i$ ($i \in [f]$) is the smallest data element stored in the subtree rooted at $v_i$.
-
-    \item If an internal node $u$ has child nodes $v_1, v_2, ..., v_f$ where $f \le b$, then for each $i \in [f]$, all the data elements stored in the subtrees rooted at $v_1, ..., v_{i-1}$ are less than $e_i$ (the routing element for $v_i$).
+    \item {{\bf C1:}} $|\Sigma_i| = O(\ln n)$ for all $i \in [p]$.
+    %\item {{\bf C2:}} $s = O(m)$.
+	\item {{\bf C2:}} $S \cap (b_{i-1}, b_i]$ has $O(m)$ elements for all $i \in [p]$.
 }
-
-It is rudimentary to verify:
-\myitems{
-    \item $T$ has $O(1 + n/b)$ leaf nodes and $O(1 + n/b^2)$ internal nodes.
-    \item The height of $T$ is $O(\log_b n)$.
-}
-By setting $b = B$, we can store each (leaf or internal) node in at most 2 disk blocks. The  B-tree occupies $O(n/B)$ disk blocks, and its height is $O(\log_B n)$.
 
 \vgap
 
-As a remark, the leaf nodes of $T$ implies a sorted order of the elements in $S$.
 
-\extraspacing {\bf Query.} Given an integer $q$, we can find its predecessor in $S$ as follows. Initially, set $u$ to the root of the B-tree $T$. In general, given a node $u$ such that the predecessor of $q$ --- if it exists --- must be in the sub-tree rooted at $u$, we proceed as follows.
-\myitems{
-    \item If $u$ is a leaf, we read its contents into memory and return the largest data element stored in $u$ that is less than or equal to $q$. If no such element exists, return ``no predecessor''.
+\begin{theorem} \label{thm:sort-tera-samplerate}
+	When $m \ge t \ln (nt)$, {\bf C1} and {\bf C2} hold simultaneously with probability at least $1-1/n^2$ by setting $\rho = \fr{1}{m} \ln(nt)$.
+\end{theorem}
 
-    \item If $u$ is an internal node, we read its contents into memory and find the largest routing element $e$ stored in $u$ that is less than or equal to $q$. If $e$ does not exist, terminate the query by returning ``no predecessor''. Otherwise, let $v$ be the child node of $u$ corresponding to $e$. We set $u$ to $v$ and repeat the above steps.
-}
-The algorithm descends a single root-to-leaf path of $T$ and  performs $O(\log_B n)$ I/Os in total.
+\begin{proof}
+	We will consider $p \ge 9$ because otherwise $m = \Omega(n)$, in which case {\bf C1} and {\bf C2} hold trivially. Our proof is based on the Chernoff bound and a bucketing argument.
 
-\extraspacing {\bf Construction.} Once $S$ has been sorted, it is rudimentary to create a B-tree on $S$ bottom-up using $O(1 + n/B)$ I/Os.
+	\vgap
 
-\section{Insertions with $\bm{o(1)}$ Amortized I/Os} \label{sec:log-method}
+	Consider an arbitrary $i \in [p]$. Let random variable $X$ be the size of $\Sigma_i$. Hence, $\expt[X] = m \rho = \ln(nt)$. An application of Chernoff bound \eqref{eqn:chernoff2} gives:
+	\begin{eqnarray}
+		\Pr[X \ge 18 \ln(nt)] \le \exp(- 3 \ln(nt)) \le 1/n^3. \nonumber
+	\end{eqnarray}
+	By union bound, the probability that this is true for at least one $i \in [p]$ is at most $p/n^3$. It thus follows that {\bf C1} holds with probability at least $1 - p/n^3$.
 
-You should have noticed that the B-tree resembles the binary search tree (BST) in internal memory. Next, we discuss an interesting phenomenon in EM that is absent in RAM. Every insertion on a BST takes at least constant time --- in fact, even just ``taking a look'' at the integer to be inserted already requires constant time. In EM, the integer to be inserted is given to the structure in memory. We will see that it is possible to perform an insertion in $o(1)$ amortized I/Os.
+	\vgap
 
-\vgap
+	Next, we consider {\bf C2}.
+	Imagine that $S$ has been sorted in ascending order. We divide the sorted list into $\lf p/8 \rf$ sub-lists as evenly as possible; call each sub-list a {\em bucket}. Each bucket has between $8n/t=8m$ and $16m$ objects. We observe that {\em {\bf C2} holds if every bucket covers at least one boundary object}. To understand why, notice that under this condition, no bucket can fall between two consecutive boundary objects (counting also the dummy ones)\footnote{If there was one, the bucket would not be able to cover any boundary object.}. Hence, every $S_i$, $1 \le i \le t$, can contain objects in at most 2 buckets, i.e., $|S_i| \le 32m = O(m)$.
 
-Formally, a data structure is said to achieve an {\em amortized insertion cost} of $U(n)$ I/Os if, for any value $n \ge 1$, we can perform $n$ arbitrary insertions into an initially empty structure in at most $n \cdot U(n)$ I/Os. Let $\ell$ be an integer satisfying
-\myeqn{
-    2 \le \ell \le B. \nn
-}
-Next, we show how to support an insertion in $O(\fr{\ell}{B} \log_\ell \fr{n}{M})$ amortized I/Os, while still being able to answer a predecessor query in $O(\log_B n \cdot \log_\ell \fr{n}{M})$ I/Os. In practice, the value of $n$ is often bounded by a polynomial of $B$ (e.g., if $B = 1024$, then $n \le B^4$ would be a reasonable assumption to make in practice). In this case, setting $\ell = B^\delta$ for some arbitrarily small constant $\delta > 0$ yields amortized I/O cost $O(1/B^{1-\delta})$ and $O(1)$ query time.
+	\vgap
 
-\vgap
+	A bucket $\beta$ definitely includes a boundary object if $\beta$ covers more than $1.6 \ln(nt) > s/t$ samples (i.e., objects from $S_\mit{sam}$), as a boundary object is taken every $\lc s/t \rc$ consecutive samples. Let $|\beta| \ge 8m$ be the number of objects in $\beta$. Define random variable $x_j$, $1 \le j \le |\beta|$, to be 1 if the $j$-th object in $\beta$ is sampled, and 0 otherwise. Define:
+	\begin{eqnarray}
+		X = \sum_{j=1}^{|\beta|} x_j = |\beta \cap S_\mit{sam}|. \nn
+	\end{eqnarray}
+	Clearly, $\expt[X] \ge 8m\rho = 8 \ln(nt)$. We have:
+	\begin{eqnarray}
+		\Pr[X \le 1.6 \ln(nt)] &=& \Pr[X \le (1 - 4/5)8 \ln(nt)] \nn \\
+		&\le& \Pr[X \le (1 - 4/5)\expt[X]] \nn \\
+		\textrm{(by Chernoff)} &\le& \exp\left(- \fr{16}{25} \fr{\expt[X]}{3}\right) \nn \\
+		&\le& \exp\left(- \fr{16}{25} \cdot \fr{8 \ln(nt)}{3}\right) \nn \\
+		&\le& \exp(-\ln(nt)) \nn \\
+		&\le& 1/(nt). \nn
+	\end{eqnarray}
+	We say that $\beta$ {\em fails} if it covers no boundary object. The above derivation shows that $\beta$ fails with probability at most $1/(nt)$. As there are at most $t/8$ buckets, the probability that at least one bucket fails is at most $1/(8n)$. Hence, {\bf C2} can be violated with probability at most $1/(8n)$ under the event $s < 1.6 t \ln(nt)$, i.e., at most $9/8n$ overall.
 
-The approach we take can be regarded as the EM version of the logarithmic method discussed in an earlier lecture and captures the essence of a popular structure called the log-structured merge (LSM) tree \cite{ocgo96}.
+	\vgap
 
-\extraspacing {\bf Structure.} Let $S$ be the set of integers stored in our data structure (initially, $S$ is empty). At all times, we divide $S$ into $h = O(\log_\ell \fr{n}{M})$ disjoint subsets
-\myeqn{
-    S_0, S_1, ..., S_h \nn
-}
-such that
-\myitems{
-    \item $S = \bigcup_{i=0}^h S_i$;
-    \item $|S_i| \le \ell^i \cdot M$ for each $i \in [0, h]$.
-    \item $S_0$ is stored in memory.
-    \item Each of $S_1, S_2, ..., S_h$ is stored in a B-tree (this implies that each of them is sorted on disk).
-}
+	Therefore, {\bf C1} and {\bf C2} hold at the same time with probability at least $1 - 17/(8n)$.
+\end{proof}
 
-\extraspacing {\bf Query.} To find the predecessor of an integer $q$, we search all of $S_0, S_1, ..., S_h$. It is obvious that the query cost is $O(h \log_B n) = O(\log_\ell \fr{n}{M} \cdot \log_B n)$ I/Os.
 
-\extraspacing {\bf Insertion.} Suppose that we need to insert an element $e \in S$, which is given in memory. If $|S_0| < M$, we add $e$ to $S_0$ and finish. No I/Os are performed and the insertion cost is 0.
-
-\vgap
-
-Now, consider the case where $|S_0| \ge M$. We identify the smallest $t \in [1, h]$ satisfying:
-\myeqn{
-    1 + \sum_{i=0}^t |S_i| &\le& \ell^t \cdot M. \label{eqn:log-method:t}
-}
-If no such $t$ exists, set $t = h+1$.
-
-\vgap
-
-After deciding $t$, we move all the elements in $\set{e} \cup S_0 \cup ... \cup S_{t-1}$ into $S_t$. This can be done in $O(\ell^t \cdot M / B)$ I/Os by incremental pair-wise merging. Specifically:
-\myitems{
-    \item Write a sorted order of $S_0 \cup \set{e}$ on the disk. Define $\Sigma_0 = S_0 \cup \set{e}$.
-    \item In general, suppose we have obtained $\Sigma_i$ ($0 \le i \le t-1$), apply the algorithm of Section~\ref{sec:sort:merge} to merge (the sorted) $\Sigma_i$ with (the sorted) $S_{i+1}$ into (a sorted) $\Sigma_{i+1}$.
-    \item Empty $S_0, ..., S_t$ and rename $\Sigma_t$ to $S_t$.
-    \item If $t = h+1$, increases $h$ by 1.
-}
-The total I/O cost of the above steps is
-\myeqn{
-    O\left(
-        \sum_{i=0}^t \fr{\ell^i \cdot M}{B}
-    \right) =
-    O\left(
-        \fr{\ell^t \cdot M}{B}
-    \right).
-    \label{eqn:log-method:S_t-cost}
-}
-By definition of $t$, there are more than $\ell^{t-1} \cdot M$ elements in $\set{e} \cup S_0 \cup ... \cup S_{t-1}$, all of which have moved into $S_t$. We charge the I/O cost of \eqref{eqn:log-method:S_t-cost} over those elements, each of which is amortized $O(\ell / B)$ I/Os.
-
-\vgap
-
-To analyze the total I/O cost of handling $n$ insertions, observe that each element can only move from a small subset to a larger one (i.e., from an $S_i$ to some $S_j$ with $i < j$). It is charged $O(\ell/B)$ I/Os each time it does so. As an element can be charged at most $h$ times, we conclude that the total I/O cost is
-\myeqn{
-    O\left(
-        \fr{n \cdot \ell \cdot h}{B}
-    \right)
-    =
-    O\left(
-        \fr{n \cdot \ell \cdot \log_\ell \fr{n}{M}}{B}
-    \right)
-}
-implying an amortized insertion cost of $O(\fr{\ell}{B} \log_\ell \fr{n}{M})$.
-
-%\section{Remark}
+%\section{Remark} ksv10
 
 \bibliographystyle{plainurl}% the mandatory bibstyle
 \bibliography{ref}
 
+\appendix
 
+\section*{Appendix: Chernoff Bounds}
+
+%\begin{lemma} \label{lmm::chernoff}
+    Let $X_1, X_2, ..., X_f$ be independent Bernoulli random variables that are identically distributed. Define $X = \sum_{i \in [f]} X_i$. For any $\gamma \geq 2$, it holds that
+    \myeqn{
+        \Pr[X \geq \gamma \cdot \expt[X]] &\leq&  \exp(-\gamma \cdot \expt[X] / 6). \label{eqn:chernoff1}
+    }
+    For any $0 < \gamma < 1$, it holds that
+    \myeqn{
+        \Pr[X \geq (1 + \gamma) \expt[X]] &\leq&  \exp(- \gamma^2 \cdot \expt[X] / 3). \label{eqn:chernoff2}
+    }
+%\end{lemma}
+Proofs for \eqref{eqn:chernoff1} and \eqref{eqn:chernoff2} can be found in \cite{stl12}.
 
 \end{document}
