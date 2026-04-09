@@ -240,9 +240,36 @@ For each $i \in [t]$, let $y_i$ be the ID of tuple $u_i \in S_i$, and define
 }
 Thus, the machine with coordinates $(x_1, x_2, ..., x_t)$ definitely receives all the $t$ tuples $u_1, u_2, ..., u_t$.
 
-\extraspacing {\bf Load Analysis.} Let us first discuss how many elements are sent by a machine.
+\extraspacing {\bf Load Analysis.} Let us first discuss how many elements are sent by a machine. As mentioned, the machine sends an element $e \in S_i$ with ID $y$ to all machines whose coordinates on machine $i$ are equal to \eqref{eqn:cp:coord-on-i}. There are $(p^*)^{(t-1)/t} = O(p^{(t-1)/t})$ such machines. Since the machine has $n/p$ elements initially, it sends
+\myeqn{
+    O \left(
+        \fr{n}{p} \cdot p^{\fr{t-1}{t}}
+    \right)
+    =
+    O \left(
+        \fr{n}{p^{1/t}}
+    \right)
+    \nn
+}
+elements.
 
+\vgap
 
+Next, we analyze how many elements are received by a machine. If a machine is not in the grid, it receives nothing. Now, consider a machine with coordinates $(x_1, x_2, ..., x_t)$. For each $i \in [t]$, the machine receives all the elements of $R_i$ whose coordinates $y$ satisfy
+\myeqn{
+    x_i = 1 + \left(y \mod \lf p^{1/t} \rf \right). \nn
+}
+There can be at most $1 + |R_i| / \lf p^{1/t} \rf = O(|R_i| / p^{1/t})$ such elements. Therefore, the total number of elements received by the machine is bounded by
+\myeqn{
+    O\left(
+        \sum_{i=1}^t
+        \fr{|R_i|}{p^{1/t}}
+    \right)
+    =
+    O\left(
+        \fr{n}{p^{1/t}}
+    \right). \nn
+}
 
 %\section{Remark} ksv10
 
