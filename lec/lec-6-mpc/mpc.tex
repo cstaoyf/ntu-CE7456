@@ -199,7 +199,7 @@ The algorithm incurs a load of $O(\fr{n}{p} + p \ln n) = O(n/p)$ when the follow
 	Therefore, {\bf C1} and {\bf C2} hold at the same time with probability at least $1 - 3p/n^3$, which is at least $1 - 1/n^2$ because $n \ge 3p$.
 \end{proof}
 
-\extraspacing {\bf A Lower Bound.} For any values of $p$ and $n$, any algorithm must incur a load of $\Omega(n/p)$, no matter how many rounds are performed (think: why?).
+\extraspacing {\bf A Lower Bound.} For any values of $p$ and $n$, any algorithm must incur a load of $\Omega(n/p)$ in the worst case, no matter how many rounds are performed (think: why?).
 
 \section{Cartesian Product} \label{sec:cp}
 
@@ -270,6 +270,21 @@ There can be at most $1 + |R_i| / \lf p^{1/t} \rf = O(|R_i| / p^{1/t})$ such ele
         \fr{n}{p^{1/t}}
     \right). \nn
 }
+
+\extraspacing {\bf A Lower Bound.} We prove that any algorithm solving the CP problem must incur a load of $\Omega(n / p^{1/t})$ in the worst case, regardless of how many rounds it performs.
+
+\vgap
+
+As a hard input, we set the size of each $S_i$ to be $n/t$, for all $i \in [t]$. The CP (Cartesian product) has a total size of $(n/t)^t$. Suppose that an algorithm can guarantee a load of $L$.  This means that, throughout the algorithm, each machine can see at most $L + \fr{n}{p}$ distinct elements in total and, hence, can produce at most $(L + \fr{n}{p})^t$ tuples in the CP. This yields:
+\myeqn{
+    t \cdot \left(L + \fr{n}{p} \right)^t
+    &\ge&
+    \left(
+        \fr{n}{t}
+    \right)^t. \nn
+}
+Solving the inequality gives $L = \Omega(n / p^{1/t})$.
+
 
 %\section{Remark} ksv10
 
