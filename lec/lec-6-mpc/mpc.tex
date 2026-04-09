@@ -98,13 +98,13 @@ The sorting problem is defined as follows in the MPC model. Let $S$ be a set of 
 
 \vgap
 
-Assuming $n \ge 30$ and $n \ge p^2 \ln n$, we will present a 2-round algorithm that achieves a load of $O(n/p)$ with probability at least $1 - 1/n^2$.
+Assuming $n \ge 30$ and $n \ge p^2 \ln n$, we show how to solve the problem in 2 rounds, achieving a load of $O(n/p)$ with probability at least $1 - 1/n^2$.
 
 \extraspacing {\bf Algorithm.} For each $i \in [p]$, denote by $S_i$ the set of elements stored on machine $i$ initially. Set
 \myeqn{
     \pi = (p / n) \cdot \ln n
 }
-In the first phase of round 1, each machine generates a sample set $\Sigma_i \subseteq S_i$ as follows: for each element of $S_i$, independently toss a coin with probability $\pi$ of heads ---  where $\pi$ is a value to be determined later --- and add the element to $\Sigma_i$ if the coin comes up heads.
+In the first phase of round 1, each machine generates a sample set $\Sigma_i \subseteq S_i$ as follows: for each element of $S_i$, independently toss a coin with probability $\pi$ of heads and add the element to $\Sigma_i$ if the coin comes up heads.
 
 \vgap
 
@@ -120,77 +120,83 @@ Set
 \myeqn{
     s = |S_\mit{sam}|. \label{eqn:sort:s}
 }
-The machine identifies $p - 1$ elements $b_1, b_2, ..., b_{p-1}$ where $b_j$ ($1 \le j \le p-1$) is the $j \cdot \lc s/p \rc$-th smallest elements in $S_\mit{sam}$. In addition, define $b_0 = -\infty$ and $b_p = \infty$. We refer to $b_0, b_1, ..., b_p$ as {\em boundary elements}.
+The machine identifies $p - 1$ elements $b_1, b_2, ..., b_{p-1}$ where $b_j$ ($1 \le j \le p-1$) is the $j \cdot \lc s/p \rc$-th smallest element in $S_\mit{sam}$. In addition, define $b_0 = -\infty$ and $b_p = \infty$. We refer to $b_0, b_1, ..., b_p$ the as {\em boundary elements}.
 
 \vgap
 
 In the second phase of round 2, machine $i \in [p]$ sends to machine $j \in [p]$ the elements in $S_i \cap (b_{i-1}, b_i]$.
 
 \extraspacing {\bf Analysis.}
-The algorithm incurs a load of $O(\fr{n}{p} + p \ln n)$ when the following two conditions are met (think: why?):
+The algorithm incurs a load of $O(\fr{n}{p} + p \ln n) = O(n/p)$ when the following two conditions are met (think: why?):
 \myitems{
     \item {{\bf C1:}} $|\Sigma_i| = O(\ln n)$ for all $i \in [p]$.
     %\item {{\bf C2:}} $s = O(m)$.
 	\item {{\bf C2:}} $S \cap (b_{i-1}, b_i]$ has $O(n/p)$ elements for all $i \in [p]$.
 }
-The load $O(\fr{n}{p} + p \ln n)$ is $O(n/p)$ when $n \ge p^2 \ln n$.
-
-\vgap
-
 
 \begin{theorem} \label{thm:sort}
-	When $n \ge \max\{30, p \ln n\}$, {\bf C1} and {\bf C2} hold simultaneously with probability at least $1 - 1/n^2$ by setting $\pi = (p / n) \cdot \ln n$.
+	When $n \ge \max\{30, p \ln n\}$, {\bf C1} and {\bf C2} hold simultaneously with probability at least $1 - 1/n^2$.
 \end{theorem}
 
 \begin{proof}
-	Consider an arbitrary $i \in [p]$. Let random variable $X_i$ be the size of $\Sigma_i$. Hence, $\expt[X_i] \le (n/p) \cdot \pi = \ln n$. An application of Chernoff bound \eqref{eqn:chernoff2} gives:
+	Consider an arbitrary $i \in [p]$. Define $X_i = |\Sigma_i|$. Note that $X_i$ is a random variable with $\expt[X_i] \le (n/p) \cdot \pi = \ln n$. An application of Chernoff bound \eqref{eqn:chernoff2} gives:
 	\begin{eqnarray}
 		\Pr[X_i \ge 18 \ln n] \le \exp(- 3 \ln n) = 1/n^3. \nonumber
 	\end{eqnarray}
-	By union bound, the probability that this is true for at least one $i \in [p]$ is at most $p/n^3$. It thus follows that {\bf C1} holds with probability at least $1 - p/n^3$.
+	By union bound, the probability that {\bf C1} fails to hold --- namely,
+	$X_i \ge 18 \ln n$ for at least one $i \in [p]$ --- is at most $p/n^3$.
 
 	\vgap
 
 	Next, we consider {\bf C2}. First, by the above analysis, we can assert
 	\myeqn{
-        \Pr[s \le 18 p \cdot \ln n] \ge 1 - p/n^3 \nn
+        \Pr[s \ge 18 p \cdot \ln n] \le p/n^3 \nn
 	}
 	where the value of $s$ is given in \eqref{eqn:sort:s}.
-	Unless otherwise stated, the subsequent discussion assumes $s \le 18 p \cdot \ln n$.
+	Unless otherwise stated, the subsequent discussion assumes $s < 18 p \cdot \ln n$.
 
 	\vgap
 
-	Imagine that $S$ has been sorted in ascending order. Let us  partition the sorted list into $\lc p/64 \rc$ sub-lists --- call each sub-list a {\em bucket} --- such that each bucket has between $64 n/p$ and $128 n/p$ objects (think: why is it fair to assume such a partitioning?). Observe that {\em {\bf C2} holds if every bucket covers at least one boundary element}. Indeed, under this condition, no bucket can fall between two consecutive boundary elements; hence, for each $i \in [t]$, the set $S \cap (b_{i-1}, b_i]$ can contain elements from at most 2 buckets, implying $S \cap (b_{i-1}, b_i]$ has size at most $256 n/p$.
+	Imagine that $S$ has been sorted in ascending order. Let us  partition the sorted list into $\lc p/64 \rc$ sub-lists --- call each sub-list a {\em bucket} --- such that each bucket has between $64 n/p$ and $128 n/p$ objects (think: why is it fair to assume such a partitioning?). Here is an important observation:
+
+	\begin{center}
+        If every bucket covers at least one boundary element, {\bf C2} holds.
+	\end{center}
+
+	\noindent Indeed, under the above if-condition, no bucket can fall between two consecutive boundary elements; hence, for each $i \in [t]$, the set $S \cap (b_{i-1}, b_i]$ can contain elements from at most 2 buckets, implying $S \cap (b_{i-1}, b_i]$ has size at most $256 n/p$.
 
 	\vgap
 
-	Fix an arbitrary bucket $S_\mit{buk}$. Under the event $s \le 18p \cdot \ln n$, the bucket must include a boundary element if it has at least $18 \ln n$ --- which is at least $s/p$ --- elements from $S_\mit{sam}$ (as defined in \eqref{eqn:sort:S_sam}) because a boundary element is taken every $\lc s/p \rc$ consecutive elements in the sorted order of $S_\mit{sam}$.
+	Fix an arbitrary bucket $S_\mit{buk}$. Under the event $s < 18p \cdot \ln n$, the bucket must include a boundary element if it has at least $18 \ln n$ --- which is greater than $s/p$ --- elements from $S_\mit{sam}$ (as defined in \eqref{eqn:sort:S_sam}) because a boundary element is taken every $\lc s/p \rc$ consecutive elements in the sorted order of $S_\mit{sam}$.
 
 	\vgap
 
-	For each $j \in [|S_\mit{buk}|]$, define random variable $Y_j = 1$ if the $j$-th element of $S_\mit{buk}$ is sampled in the first phase of round 1, or 0 otherwise. Define
+	For each $j \in [|S_\mit{buk}|]$, define random variable $Y_j = 1$ if the $j$-th element of $S_\mit{buk}$ is sampled in the first phase of round 1, or 0 otherwise. Then,
 	\myeqn{
         Y &=& \sum_{j=1}^{|S_\mit{buk}|} Y_j. \nn
 	}
-	Note that $Y$ is the number of elements of $S_\mit{sam}$ that are contained in $S_\mit{buk}$. Clearly, $\expt[Y] \ge (64n / p) \cdot \pi = 64 \ln n$. We have:
+	is the number of elements of $S_\mit{sam}$ that are contained in $S_\mit{buk}$. Clearly, $\expt[Y] \ge (64n / p) \cdot \pi = 64 \ln n$.
+
+	\vgap
+
+	We can derive:
 	\begin{eqnarray}
 		\Pr[Y < 18 \ln n] &=& \Pr[Y \le (1 - 46/64) \cdot 64 \ln n] \nn \\
 		&\le& \Pr[Y \le (1 - 46/64)\expt[Y]] \nn \\
 		\textrm{(by Chernoff bound \eqref{eqn:chernoff1})} &\le& \exp\left(- \fr{46^2}{64^2} \cdot \fr{\expt[Y]}{3}\right) \nn \\
 		&\le& \exp\left(- \fr{46^2}{64^2} \cdot \fr{64 \ln n}{3}\right) \nn \\
 		&<& \exp(-3 \ln n) \nn \\
-		&\le& 1/n^3. \nn
+		&=& 1/n^3. \nn
 	\end{eqnarray}
-	This means that the probability that $S_\mit{buk}$ does not cover any boundary element is at most $1/n^3$. 	As there are $\lc p/64 \rc \le p$ buckets, the probability that
-	at least one bucket fails to cover any boundary element is at most $p/n^3$.
+	Therefore, the probability that $S_\mit{buk}$ does not cover any boundary element is at most $1/n^3$.
 
 	\vgap
 
-	We can now conclude that {\bf C2} holds with probability at least $1 - 2p/n^3$ (think: why does the constant 2 come from?).
+	As there are $\lc p/64 \rc \le p$ buckets, the probability that at least one bucket fails to cover any boundary element is at most $p/n^3$. We can now conclude that {\bf C2} fails to hold with probability at most $2p/n^3$ (think: why does the constant 2 come from?).
 
 	\vgap
 
-	Therefore, {\bf C1} and {\bf C2} hold at the same time with probability at least $1 - 3p/n^3$ which is at least $1 - 1/n^2$ because $n \ge 3p$.
+	Therefore, {\bf C1} and {\bf C2} hold at the same time with probability at least $1 - 3p/n^3$, which is at least $1 - 1/n^2$ because $n \ge 3p$.
 \end{proof}
 
 
