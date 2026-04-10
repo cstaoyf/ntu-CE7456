@@ -10,7 +10,7 @@
 \date{}
 
 
-%\def\A{\mathcal{A}}
+\def\A{\mathcal{A}}
 %\def\B{\mathcal{B}}
 \def\C{\mathcal{C}}
 %\def\D{\mathcal{D}}
@@ -207,7 +207,7 @@ The {\em Cartesian product} (CP) problem is defined as follows in the MPC model.
 
 \vgap
 
-Next, we will show how to solve the problem in one round with load $O(n / p^{1/t})$. Our description makes the following assumption: for every $S_i$ ($i \in [t]$), each element of $S_i$ is associated with a unique ID from $[|S_i|]$.
+Next, we will show how to solve the problem in one round with load $O(n / p^{1/t})$. Our description makes the following assumption: each element in $S_1, S_2, ..., S_t$ is associated with a unique ID from $[n]$.
 
 \extraspacing {\bf Algorithm.} Define
 \myeqn{
@@ -259,25 +259,26 @@ Next, we analyze how many elements are received by a machine. If a machine is no
 \myeqn{
     x_i = 1 + \left(y \mod \lf p^{1/t} \rf \right). \nn
 }
-There can be at most $1 + |R_i| / \lf p^{1/t} \rf = O(|R_i| / p^{1/t})$ such elements. Therefore, the total number of elements received by the machine is bounded by
+There can be at most $O(n / p^{1/t})$ such elements. Therefore, the total number of elements received by the machine is bounded by
 \myeqn{
     O\left(
         \sum_{i=1}^t
-        \fr{|R_i|}{p^{1/t}}
+        \fr{n}{p^{1/t}}
     \right)
     =
     O\left(
         \fr{n}{p^{1/t}}
-    \right). \nn
+    \right) \nn
 }
+where the last step used the fact that $t = O(1)$.
 
 \extraspacing {\bf A Lower Bound.} We prove that any algorithm solving the CP problem must incur a load of $\Omega(n / p^{1/t})$ in the worst case, regardless of how many rounds it performs.
 
 \vgap
 
-As a hard input, we set the size of each $S_i$ to be $n/t$, for all $i \in [t]$. The CP (Cartesian product) has a total size of $(n/t)^t$. Suppose that an algorithm can guarantee a load of $L$.  This means that, throughout the algorithm, each machine can see at most $L + \fr{n}{p}$ distinct elements in total and, hence, can produce at most $(L + \fr{n}{p})^t$ tuples in the CP. This yields:
+As a hard input, we set the size of each $S_i$ to $n/t$, for all $i \in [t]$. The CP (Cartesian product) has a total size of $(n/t)^t$. Suppose that an algorithm can guarantee a load of $L$.  This means that, throughout the algorithm, each machine can see at most $L + \fr{n}{p}$ distinct elements in total and, hence, can produce at most $(L + \fr{n}{p})^t$ tuples in the CP. This yields
 \myeqn{
-    t \cdot \left(L + \fr{n}{p} \right)^t
+    p \cdot \left(L + \fr{n}{p} \right)^t
     &\ge&
     \left(
         \fr{n}{t}
@@ -287,7 +288,35 @@ Solving the inequality gives $L = \Omega(n / p^{1/t})$.
 
 \vgap
 
-As a corollary, if each round is allowed to incur a load of $\Lambda$, then $\Omega(\fr{n / p^{1/t}}{\Lambda})$ rounds are needed to solve the LP problem. Think: how to match this round complexity?
+As a corollary, if each round is allowed to incur a load of $\Lambda$, then $\Omega(\fr{n / p^{1/t}}{\Lambda})$ rounds are needed to solve the LP problem. Think: how to match this round complexity using a randomized algorithm? (Hint: send a message with probability $1/\Lambda$ and apply Chernoff bounds.)
+
+\section{Reduction from EM to MPC} \label{sec:em2mpc}
+
+Next, we show how to turn an algorithm $\A$ under the MPC model into an algorithm $\A'$ in the EM model. Denote by $S$ the input set to the underlying problem, and let $n = |S|$. We consider that, given $p$ machines, the algorithm $\A$ solves the problem in $O(1)$ rounds while making sure that each machine uses at most $L(p)$ words of memory.
+
+\vgap
+
+Recall that the EM model is parameterized by the memory size $M$ and the block size $B$; . For simplicity, let us assume that $n$ is a multiple of $B$. The input is stored in a disk array of $n/B$ blocks initially.
+
+\vgap
+
+Set
+\myeqn{
+    p &=& \text{the largest integer satisfying $L(p) \le M$}. \nn
+}
+To apply $\A$, we consider the MPC model where
+\myitems{
+    \item there are $p$ machines;
+    \item machine 1 stores the first $L(p)$ elements of $S$ (which reside in the first $\lc L(p)/B \rc$ blocks of the input array), machine 2 stores the next $L(p)$ elements of $S$, and so on, with the last machine containing possibly fewer elements.
+}
+
+The crux of the reduction is to simulate the execution of $\A$ by  delivering the inter-machine messages I/O-efficiently using sorting. At all times, the memory content of each machine (in the MPC model) is stored in $\lc L(p)/B \rc$ blocks on the disk. To perform a round of $\A$, we do the following for each machine $i \in [p]$:
+\myitems{
+    \item load its memory in the MPC model into the memory of the EM model (this is doable because $L(p) \le M$),
+    \item run $\A$ on the machine,
+    \item write back its MPC memory to the disk, and
+    \item write to the disk the messages that the machine  intends to send other machines.
+}
 
 
 %\section{Remark} ksv10
@@ -306,9 +335,10 @@ As a corollary, if each round is allowed to incur a load of $\Lambda$, then $\Om
     }
     For any $0 < \gamma < 1$, it holds that
     \myeqn{
-        \Pr[X \le (1 - \gamma) \expt[X]] &\leq&  \exp(- \gamma^2 \cdot \expt[X] / 3). \label{eqn:chernoff2}
+        \Pr[X \le (1 - \gamma) \expt[X]] &\leq&  \exp(- \gamma^2 \cdot \expt[X] / 3) \label{eqn:chernoff2} \\
+        \Pr[X \le (1 + \gamma) \expt[X]] &\leq&  \exp(- \gamma^2 \cdot \expt[X] / 3). \label{eqn:chernoff3}
     }
 %\end{lemma}
-Proofs for \eqref{eqn:chernoff1} and \eqref{eqn:chernoff2} can be found in \cite{stl12}.
+Proofs for \eqref{eqn:chernoff1}-\eqref{eqn:chernoff3} can be found in \cite{stl12}. We need only \eqref{eqn:chernoff1} and \eqref{eqn:chernoff2} in this lecture.
 
 \end{document}
