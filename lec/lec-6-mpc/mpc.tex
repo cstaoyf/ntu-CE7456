@@ -302,7 +302,8 @@ Recall that the EM model is parameterized by the memory size $M$ and the block s
 
 Set
 \myeqn{
-    p &=& \text{the largest integer satisfying $L(p) \le M$}. \nn
+    p &=& \text{the largest integer satisfying $L(p) \le M$}.
+    \label{eqn:em2mpc:p}
 }
 To apply $\A$, we consider the MPC model where
 \myitems{
@@ -343,10 +344,24 @@ As $\A$ performs $h$ rounds in total, we thus obtain an EM algorithm with a tota
     h \cdot O\left(
         \fr{p \cdot L(p)}{B}
         \log_{M/B} \fr{p \cdot L(p)}{B}
-    \right). \nn
+    \right). \label{eqn:em2mpc:total-io}
 }
 
-As an application, consider the CP algorithm in Section~\ref{sec:cp}.
+As an application, consider the CP algorithm in Section~\ref{sec:cp}, for which $h = 1$ and $L(p) = O(n / p^{1/t})$. Thus, the value of $p$ from \eqref{eqn:em2mpc:p} is
+\myeqn{
+    p &=& \Theta((n/M)^t)) \nn
+}
+which yields
+\myeqn{
+    L(p) &=& \Theta(M). \nn
+}
+We thus obtain a CP algorithm in EM whose I/O cost --- derived from \eqref{eqn:em2mpc:total-io} --- is
+\myeqn{
+    O\left(
+        \fr{n^t}{M^{t-1} B}
+        \log_{M/B} \fr{n^t}{M^{t-1} B}
+    \right). \nn
+}
 
 %\section{Remark} ksv10
 
