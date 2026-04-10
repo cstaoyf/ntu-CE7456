@@ -60,7 +60,7 @@ We have seen two computational models so far: (i) the RAM model, which is suitab
 
 \vgap
 
-This lecture introduces the {\em massively parallel computation} (MPC) model \cite{bks17,ksv10} for studying algorithms designed to minimize parallel communication over a large number of machines. We will then illustrate the characteristics of the model through several representative algorithms.
+This lecture introduces the {\em massively parallel computation} (MPC) model \cite{bks17c,ksv10} for studying algorithms designed to minimize parallel communication over a large number of machines. We will then illustrate the characteristics of the model through several representative algorithms.
 
 \extraspacing {\bf Math Conventions.} Given an integer $x \ge 1$, we use $[x]$ to represent the set $\set{1, 2, ..., x}$.
 
@@ -328,7 +328,7 @@ I/Os.
 
 \vgap
 
-Before the next round, we deliver the messages for $\A$. This means moving a message of the form $(i, j, \mit{data})$ to the MPC memory of machine $j$ stored on disk. This can be done with sorting all messages by destination (i.e., the $j$-field). As there are $p \cdot L(p)$ messages in total, the sorting cost is
+Before the next round, we deliver the messages for $\A$. This means moving a message of the form $(i, j, \mit{data})$ to the MPC memory of machine $j$ stored on disk. This can be done with sorting all messages by destination (i.e., the $j$-field). As there are $p \cdot L(p)$ messages in total, the sorting performs
 \myeqn{
     O\left(
         \fr{p \cdot L(p)}{B}
@@ -359,9 +359,14 @@ We thus obtain a CP algorithm in EM whose I/O cost --- derived from \eqref{eqn:e
 \myeqn{
     O\left(
         \fr{n^t}{M^{t-1} B}
+        \cdot
         \log_{M/B} \fr{n^t}{M^{t-1} B}
     \right). \nn
 }
+
+\section{Remarks}
+
+The sorting algorithm in Section~\ref{sec:sort} is a variant of a popular algorithm named {\em Terasort}. The analysis was taken from \cite{tlx13}. The CP algorithm in Section~\ref{sec:sort} was designed in \cite{au11}. The EM-to-MPC reduction was developed in \cite{kbs16}.
 
 %\section{Remark} ksv10
 
