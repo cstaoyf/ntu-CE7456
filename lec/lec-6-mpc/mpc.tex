@@ -156,7 +156,7 @@ The algorithm incurs a load of $O(\fr{n}{p} + p \ln n) = O(n/p)$ when the follow
 
 	\vgap
 
-	Imagine that $S$ has been sorted in ascending order. Let us  partition the sorted list into $\lc p/64 \rc$ sub-lists --- call each sub-list a {\em bucket} --- such that each bucket has between $64 n/p$ and $128 n/p$ objects (think: why is it fair to assume such a partitioning?). Here is an important observation:
+	Imagine that $S$ has been sorted in ascending order. Let us partition the sorted list into at most $p/64$ sub-lists --- call each sub-list a {\em bucket} --- such that each bucket has between $\lc 64 n/p \rc$ and $\lc 128 n/p \rc$ elements (think: why is it fair to assume such a partitioning?). Here is an important observation:
 
 	\begin{center}
         If every bucket covers at least one boundary element, {\bf C2} holds.
@@ -191,7 +191,7 @@ The algorithm incurs a load of $O(\fr{n}{p} + p \ln n) = O(n/p)$ when the follow
 
 	\vgap
 
-	As there are $\lc p/64 \rc \le p$ buckets, the probability that at least one bucket fails to cover any boundary element is at most $p/n^3$. We can now conclude that {\bf C2} fails to hold with probability at most $2p/n^3$ (think: where does the constant 2 come from?).
+	As there are $p/64 < p$ buckets, the probability that at least one bucket fails to cover any boundary element is at most $p/n^3$. We can now conclude that {\bf C2} fails to hold with probability at most $2p/n^3$ (think: where does the constant 2 come from?).
 
 	\vgap
 
