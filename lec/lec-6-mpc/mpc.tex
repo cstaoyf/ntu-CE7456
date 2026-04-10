@@ -198,7 +198,7 @@ The algorithm incurs a load of $O(\fr{n}{p} + p \ln n) = O(n/p)$ when the follow
 	Therefore, {\bf C1} and {\bf C2} hold at the same time with probability at least $1 - 3p/n^3$, which is at least $1 - 1/n^2$ because $n \ge 3p$.
 \end{proof}
 
-\extraspacing {\bf A Lower Bound.} For any values of $p$ and $n$, any algorithm must incur a load of $\Omega(n/p)$ in the worst case, no matter how many rounds are performed (think: why?).
+\extraspacing {\bf A Lower Bound.} For any values of $p$ and $n$, any algorithm must incur a load of $n/p$ in the worst case, no matter how many rounds are performed (think: why?).
 
 \section{Cartesian Product} \label{sec:cp}
 
@@ -220,7 +220,7 @@ Conceptually, align machines 1, 2, ..., $p^*$ into a $t$-dimensional
 \myeqn{
     \underbrace{\lf p^{1/t} \rf \times \lf p^{1/t} \rf \times ... \times \lf p^{1/t} \rf}_t \nn
 }
-grid. Each machine in the grid can be labeled as a $t$-dimensional point $(x_1, x_2, ..., x_t)$ where $1 \le x_i \le \lf p^{1/t} \rf$ for all $i \in [t]$. We will refer to each $x_i$  as the machine's {\em coordinate} on dimension $i$.
+grid. Each machine in the grid can be labeled with a $t$-dimensional point $(x_1, x_2, ..., x_t)$ where $1 \le x_i \le \lf p^{1/t} \rf$ for all $i \in [t]$. We will refer to each $x_i$  as the machine's {\em coordinate} on dimension $i$.
 
 \vgap
 
@@ -233,13 +233,13 @@ Each machine examines the elements in its (initial) local storage as follows. Le
 
 \vgap
 
-For each $i \in [t]$, let $y_i$ be the ID of tuple $u_i \in S_i$, and define
+For each $i \in [t]$, let $y_i$ be the ID of tuple $u_i$, and define
 \myeqn{
     x_i = 1 + \left(y_i \mod \lf p^{1/t} \rf \right). \nn
 }
-Thus, the machine with coordinates $(x_1, x_2, ..., x_t)$ definitely receives all the $t$ tuples $u_1, u_2, ..., u_t$.
+Thus, by how our algorithm runs, the machine with coordinates $(x_1, x_2, ..., x_t)$ receives all of $u_1, u_2, ..., u_t$ and, hence, produces $(u_1, u_2, ..., u_t)$.
 
-\extraspacing {\bf Load Analysis.} Let us first discuss how many elements are sent by a machine. As mentioned, the machine sends an element $e \in S_i$ with ID $y$ to all machines whose coordinates on machine $i$ are equal to \eqref{eqn:cp:coord-on-i}. There are $(p^*)^{(t-1)/t} = O(p^{(t-1)/t})$ such machines. Since the machine has $n/p$ elements initially, it sends
+\extraspacing {\bf Load Analysis.} Let us first discuss how many elements are sent by a machine. As mentioned, the machine sends an element $e \in S_i$ with ID $y$ to all machines whose coordinates on dimension $i$ are equal to \eqref{eqn:cp:coord-on-i}. There are $(p^*)^{(t-1)/t} = O(p^{(t-1)/t})$ such machines. Since the machine has $n/p$ elements initially, it sends
 \myeqn{
     O \left(
         \fr{n}{p} \cdot p^{\fr{t-1}{t}}
@@ -254,7 +254,7 @@ elements.
 
 \vgap
 
-Next, we analyze how many elements are received by a machine. If a machine is not in the grid, it receives nothing. Now, consider a machine with coordinates $(x_1, x_2, ..., x_t)$. For each $i \in [t]$, the machine receives all the elements of $R_i$ whose coordinates $y$ satisfy
+Next, we analyze how many elements are received by a machine. If a machine is not on the grid, it receives nothing. Now, consider a machine with coordinates $(x_1, x_2, ..., x_t)$. For each $i \in [t]$, the machine receives all the elements of $R_i$ whose coordinates $y$ satisfy
 \myeqn{
     x_i = 1 + \left(y \mod \lf p^{1/t} \rf \right). \nn
 }
@@ -269,7 +269,7 @@ There can be at most $O(n / p^{1/t})$ such elements. Therefore, the total number
         \fr{n}{p^{1/t}}
     \right) \nn
 }
-where the last step used the fact that $t = O(1)$.
+where the last step used the fact $t = O(1)$.
 
 \extraspacing {\bf A Lower Bound.} We prove that any algorithm solving the CP problem must incur a load of $\Omega(n / p^{1/t})$ in the worst case, regardless of how many rounds it performs.
 
@@ -307,17 +307,17 @@ Set
 To apply $\A$, we conceive a setup under the MPC model where
 \myitems{
     \item there are $p$ machines;
-    \item machine 1 stores the first $L(p)$ elements of $S$ (which reside in the first $\lc L(p)/B \rc$ blocks of the input array), machine 2 stores the next $L(p)$ elements of $S$, and so on, with the last machine containing possibly fewer elements.
+    \item initially, machine 1 stores the first $L(p)$ elements of $S$ (which reside in the first $\lc L(p)/B \rc$ blocks of the input array), machine 2 stores the next $L(p)$ elements of $S$, and so on, with the last machine containing possibly fewer elements.
 }
 
 The crux of the reduction is to simulate the execution of $\A$ by  retaining, at all times, the memory content of each machine in the MPC model in $\lc L(p)/B \rc$ blocks on the disk. To perform a round of $\A$, we do the following for each machine $i \in [p]$:
 \myitems{
-    \item load its memory content in the MPC model into the memory of the EM model (this is doable because $L(p) \le M$),
+    \item load its memory content under the MPC model into the memory of the EM model (this is doable because $L(p) \le M$),
     \item run $\A$ on the machine,
     \item write back its MPC memory to the disk, and
-    \item write to the disk the messages that the machine  intends to send other machines.
+    \item write to the disk the messages that the machine  intends to send to other machines.
 }
-Specifically, each message from machine $i$ to machine $j$ has the form $(i, j, \mit{data})$, where $\mit{data}$ is a word. All the messages from $i$ occupy in total $O(L(p)/B)$ blocks on disk. Therefore, doing the above steps for all machines requires
+Specifically, each message from machine $i$ to machine $j$ has the form $(i, j, \mit{data})$, where $\mit{data}$ is a word. All the messages sent from $i$ occupy $O(L(p)/B)$ blocks on disk (because those messages need to fit in the machine's memory under the MPC model). Therefore, doing the above steps for all machines requires
 \myeqn{
     O\left(
         \fr{p \cdot L(p)}{B}
