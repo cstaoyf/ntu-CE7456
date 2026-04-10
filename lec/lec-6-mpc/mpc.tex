@@ -156,13 +156,13 @@ The algorithm incurs a load of $O(\fr{n}{p} + p \ln n) = O(n/p)$ when the follow
 
 	\vgap
 
-	Imagine that $S$ has been sorted in ascending order. Let us partition the sorted list into at most $p/64$ sub-lists --- call each sub-list a {\em bucket} --- such that each bucket has between $\lc 64 n/p \rc$ and $\lc 128 n/p \rc$ elements (think: why is it fair to assume such a partitioning?). Here is an important observation:
+	Imagine that $S$ has been sorted in ascending order. Let us partition the sorted list into at most $p/64$ sub-lists --- call each sub-list a {\em bucket} --- such that each bucket has between $\lc 64 n/p \rc$ and $2 \cdot \lc 64 n/p \rc$ elements (think: why is it fair to assume such a partitioning?). Here is an important observation:
 
 	\begin{center}
         If every bucket covers at least one boundary element, {\bf C2} holds.
 	\end{center}
 
-	\noindent Indeed, under the above if-condition, no bucket can fall between two consecutive boundary elements; hence, for each $i \in [t]$, the set $S \cap (b_{i-1}, b_i]$ can contain elements from at most 2 buckets, implying $S \cap (b_{i-1}, b_i]$ has size at most $256 n/p$.
+	\noindent Indeed, under the above if-condition, no bucket can fall between two consecutive boundary elements; hence, for each $i \in [t]$, the set $S \cap (b_{i-1}, b_i]$ can contain elements from at most 2 buckets, implying $S \cap (b_{i-1}, b_i]$ has size at most $4 \cdot \lc 64 n/p \rc$.
 
 	\vgap
 
