@@ -292,7 +292,7 @@ As a corollary, if each round is allowed to incur a load of $\Lambda$, then $\Om
 
 \section{Reduction from EM to MPC} \label{sec:em2mpc}
 
-Next, we show how to turn an algorithm $\A$ under the MPC model into an algorithm $\A'$ in the EM model. Denote by $S$ the input set to the underlying problem, and let $n = |S|$. We consider that, given $p$ machines, the algorithm $\A$ solves the problem in $O(1)$ rounds while making sure that each machine uses at most $L(p)$ words of memory.
+Next, we show how to turn an algorithm $\A$ under the MPC model into an algorithm $\A'$ in the EM model. Denote by $S$ the input set to the underlying problem, and let $n = |S|$. We consider that, given $p$ machines, the algorithm $\A$ solves the problem in $h$ rounds while making sure that each machine uses at most $L(p)$ words of memory.
 
 \vgap
 
@@ -310,14 +310,43 @@ To apply $\A$, we consider the MPC model where
     \item machine 1 stores the first $L(p)$ elements of $S$ (which reside in the first $\lc L(p)/B \rc$ blocks of the input array), machine 2 stores the next $L(p)$ elements of $S$, and so on, with the last machine containing possibly fewer elements.
 }
 
-The crux of the reduction is to simulate the execution of $\A$ by  delivering the inter-machine messages I/O-efficiently using sorting. At all times, the memory content of each machine (in the MPC model) is stored in $\lc L(p)/B \rc$ blocks on the disk. To perform a round of $\A$, we do the following for each machine $i \in [p]$:
+The crux of the reduction is to simulate the execution of $\A$ by  retaining, at all times, the memory content of each machine in the MPC model in $\lc L(p)/B \rc$ blocks on the disk. To perform a round of $\A$, we do the following for each machine $i \in [p]$:
 \myitems{
     \item load its memory in the MPC model into the memory of the EM model (this is doable because $L(p) \le M$),
     \item run $\A$ on the machine,
     \item write back its MPC memory to the disk, and
     \item write to the disk the messages that the machine  intends to send other machines.
 }
+Specifically, each message from machine $i$ to machine $j$ has the form $(i, j, \mit{data})$, where $\mit{data}$ is a word. All the messages from $i$ occupy in total $O(L(p)/B)$ blocks on disk. Therefore, doing the above steps for all machines requires
+\myeqn{
+    O\left(
+        \fr{p \cdot L(p)}{B}
+    \right) \nn
+}
+I/Os.
 
+\vgap
+
+Before the next round, we deliver the messages for $\A$. This means moving a message of the form $(i, j, \mit{data})$ to the MPC memory of machine $j$ stored on disk. This can be done with sorting all messages by destination (i.e., the $j$-field). As there are $p \cdot L(p)$ messages in total, the sorting cost is
+\myeqn{
+    O\left(
+        \fr{p \cdot L(p)}{B}
+        \log_{M/B} \fr{p \cdot L(p)}{B}
+    \right) \nn
+}
+I/Os.
+
+\vgap
+
+As $\A$ performs $h$ rounds in total, we thus obtain an EM algorithm with a total I/O cost of
+\myeqn{
+    h \cdot O\left(
+        \fr{p \cdot L(p)}{B}
+        \log_{M/B} \fr{p \cdot L(p)}{B}
+    \right). \nn
+}
+
+As an application, consider the CP algorithm in Section~\ref{sec:cp}.
 
 %\section{Remark} ksv10
 
