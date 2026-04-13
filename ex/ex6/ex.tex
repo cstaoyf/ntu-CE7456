@@ -55,6 +55,15 @@ Let $S$ be a set of $n$ elements given in a disk array. Let $\A$ be an algorithm
 
 (Hint: conceptually chop a block into smaller blocks.)
 
-\extraspacing {\bf Problem 4.} Consider the {\em triangle listing} problem: given an undirected graph $G = (V, E)$ with $m$ edges,
+\extraspacing {\bf Problem 4.} Consider the sorting problem under the MPC model discussed in class. You can assume that the input size $n$ is a multiple of the number $p$ of machines. Suppose that we impose a requirement on the output: the smallest $n/p$ elements must reside on machine 1, the next $n/p$ elements must reside on machine 2, and so on. Under the assumption $n \ge p^2 \ln n$, solve the problem with probability at least $1 - 1/n^2$ with load $O(n/p)$.
 
+\extraspacing {\bf Problem 5.} Consider the {\em triangle listing} problem: given an undirected graph $G = (V, E)$ with $m$ edges, find all the 3-cliques in $G$.
+
+\myitems{
+    \item Design an MPC algorithm to solve the problem in one-round with load $O(m / p^{1/3})$.
+
+    \item It is known that there is a constant-round MPC algorithm that solves the problem with load $O(m / p^{2/3})$. Design an EM algorithm for solving the problem in $\tO(m^{1.5} / (B \sqrt{M}) )$ I/Os, where $\tO(.)$ hides a factor polylogarithmic in $m$, $M$, and $B$. Your algorithm only needs to ``see'' each triangle  once in memory, rather than writing it to the disk.
+}
+
+\extraspacing {\bf Problem 6.}
 \end{document}
