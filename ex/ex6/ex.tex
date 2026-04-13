@@ -49,13 +49,13 @@ Prepared by Yufei Tao \\
 
 \vgap
 
-Let $S$ be a set of $n$ elements given in a disk array. Let $\A$ be an algorithm that takes $S$ as the input and performs $T(M, B)$ I/Os when $M \ge 100B$. Use $\A$ algorithm that performs $O(T(M, B/101))$ I/Os on $S$ when $M = 2B$.
+Let $S$ be a set of $n$ elements given in a disk array. Let $\A$ be an algorithm that takes $S$ as the input and performs $T(M, B)$ I/Os when $M \ge 100B$. Design an algorithm that computes the same information from $S$ as $\A$ in $O(T(M, B/101))$ I/Os when $M = 2B$.
 
 \vgap
 
 (Hint: conceptually chop a block into smaller blocks.)
 
-\extraspacing {\bf Problem 4.} Consider the sorting problem under the MPC model discussed in class. You can assume that the input size $n$ is a multiple of the number $p$ of machines. Suppose that we impose a requirement on the output: the smallest $n/p$ elements must reside on machine 1, the next $n/p$ elements must reside on machine 2, and so on. Under the assumption $n \ge p^2 \ln n$, solve the problem with probability at least $1 - 1/n^2$ with load $O(n/p)$.
+\extraspacing {\bf Problem 4.} Consider the sorting problem under the MPC model discussed in class. Assume that the input size $n$ is a multiple of the number $p$ of machines. Suppose that we impose a requirement on the output: the smallest $n/p$ elements must reside on machine 1, the next $n/p$ elements must reside on machine 2, and so on. Under the assumption $n \ge p^2 \ln n$, solve the problem with probability at least $1 - 1/n^2$ with load $O(n/p)$.
 
 \extraspacing {\bf Problem 5.} Consider the {\em triangle listing} problem: given an undirected graph $G = (V, E)$ with $m$ edges, find all the 3-cliques in $G$.
 
@@ -65,5 +65,5 @@ Let $S$ be a set of $n$ elements given in a disk array. Let $\A$ be an algorithm
     \item It is known that there is a constant-round MPC algorithm that solves the problem with load $O(m / p^{2/3})$. Design an EM algorithm for solving the problem in $\tO(m^{1.5} / (B \sqrt{M}) )$ I/Os, where $\tO(.)$ hides a factor polylogarithmic in $m$, $M$, and $B$. Your algorithm only needs to ``see'' each triangle  once in memory, rather than writing it to the disk.
 }
 
-\extraspacing {\bf Problem 6.}
+\extraspacing {\bf Problem 6.} In the MPC model, if a machine wants to broadcast a word to every other machine, it takes a load of $p$ naively. Describe an algorithm that performs the broadcasting in constant rounds with load $O(p^\eps)$ where $\eps$ can be any small positive constant.
 \end{document}
