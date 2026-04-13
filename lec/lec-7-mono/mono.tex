@@ -31,14 +31,42 @@
 \def\X{\mathcal{X}}
 \def\Y{\mathcal{Y}}
 \def\Z{\mathcal{Z}}
-\def\att{\mit{diffatt}}
-\def\agm{\mathit{AGM}}
-\def\boldatt{\mathbf{att}}
-\def\ext{\mathit{ext}}
-\def\In{\mathrm{IN}}
-\def\join{\mathit{join}}
-\def\Out{\mathrm{OUT}}
-\def\schema{\mathit{schema}}
+
+
+\def\bad{\mit{bad}}
+\def\bigmid {\, \Big\lvert \,}
+\def\capacity{\mit{cap}}
+\def\clean{\mit{clean}}
+\def\con{\mit{con}}
+\def\cost{\mit{cost}}
+\def\cut{\mit{cut}}
+\def\det{\mit{det}}
+\def\dis{\textrm{DIS}}
+\def\dom{\succ}
+%\def\domby{\prec}
+\def\dombyeq{\preceq}
+\def\domeq{\succeq}
+\def\err{\mit{err}}
+\def\errate{\mit{err}\textrm{-}\mit{rate}}
+\def\good{\mit{good}}
+\def\lab{\mit{label}}
+\def\loc{\textrm{loc}}
+\def\middle{\mit{mid}}
+\def\mono{\mathbb{H}_\mit{mon}}
+\def\neg{\mit{neg}}
+\def\newstar{\circledast}
+\def\pos{\mit{pos}}
+\def\ran{\mit{ran}}
+\def\rest{\mit{rest}}
+\def\rpe{\mathrm{RPE}}
+\def\siml{\mathit{sim}}
+\def\sink{\sqsupset}
+\def\src{\sqsubset}
+\def\starnum{\mathfrak{s}}
+\def\totalcost{\mit{family\textrm{-}cost}}
+\def\totalerr{\mit{family\textrm{-}err}}
+\def\weight{\mit{weight}}
+\def\werr{\mit{w}\textrm{-}\mit{err}}
 
 \def\extraspacing{\vspace{4mm} \noindent}
 \def\vgap{\vspace{4mm}}
@@ -50,343 +78,74 @@
     \begin{center}
         \vspace{3mm}
     {\Large
-    (CE7456 Lecture Notes 14) Massively Parallel Computation} \\[2mm]
+    (CE7456 Lecture Notes 15) Monotone Classification} \\[2mm]
     {\large Yufei Tao}
     \vspace{3mm}
     \end{center}
 }
 
-We have seen two computational models so far: (i) the RAM model, which is suitable when the data fit in main memory, and (ii) the EM model, which is suitable when the data fit on the disk (of one machine). In practice, many applications need to process datasets so large that they must be stored on multiple machines. The performance bottleneck in processing such data --- e.g., in systems like Hadoop and Spark --- is neither CPU computation nor I/O access; rather, it is typically the communication across machines. The RAM and EM models are no longer appropriate for studying algorithms in such scenarios.
+In this last lecture of the course, we discuss a problem from active learning named {\em monotone classification}.
+
+
+\extraspacing {\bf Math Conventions.} For an integer $x \ge 1$, the notation $[x]$ represents the set $\set{1, 2, ..., x}$. Given a predicate $Q$, the notation $\mathbbm{1}_Q$ equals 1 if $Q$ holds or 0 otherwise.
+
+\section{Problem Definition} \label{sec:prob}
+
+The input is a multiset $P$ of $n$ points in $\real^d$ for some integer $d \ge 1$. The multiset may contain repeated points, that is, distinct elements with identical coordinates. Each element $p \in P$ carries a label from $\set{-1, 1}$, which is represented as $\lab(p)$.
 
 \vgap
 
-This lecture introduces the {\em massively parallel computation} (MPC) model \cite{bks17c,ksv10} for studying algorithms designed to minimize parallel communication over a large number of machines. We will then illustrate the characteristics of the model through several representative algorithms.
-
-\extraspacing {\bf Math Conventions.} Given an integer $x \ge 1$, we use $[x]$ to represent the set $\set{1, 2, ..., x}$.
-
-\section{The MPC Model} \label{sec:model}
-
-In this model, we have $p$ share-nothing machines that are interconnected in a network. Denote by $S$ the input set of elements, and let $n = |S|$. In the beginning, each machine stores at most $n/p$ elements of $S$; an algorithm has no control over how elements are distributed across the machines. As a standard assumption, the values of $p$ and $n$ satisfy $p < n^{1-\eps}$, where $\eps$ is a positive constant less than 1.
-
+A {\em classifier} is a function $h: \real^d \rightarrow \set{-1, 1}$. We say that $h$ {{\em correctly classifies}} an element $p \in P$ if $h(p) = \lab(p)$, or {\em misclassifies} $p$, otherwise. The {\em error} of $h$ on $P$ is defined as
+\myeqn{
+    \err_P(h) &=& \sum_{p \in P} \mathbbm{1}_{h(p) \neq \lab(p)} \label{eqn:err-classifier}
+}
+that is, the number of elements in $P$ misclassified by $h$. A classifier $h$ is {\em monotone} if $h(p) \ge h(q)$ holds for any two points $p, q \in \real^d$ satisfying $p \dom q$.
 
 \vgap
 
-An algorithm executes in {\em rounds}, each having two phases:
+Define
+\myeqn{
+    \mono &=& \text{the set of all monotone classifiers} \label{eqn:monoclass} \\
+% }
+% Set
+% \myeqn{
+    k^* &=&
+    \min_{h \in \mono} \err_P(h). \label{eqn:k-star}
+}
+We call $k^*$ the {\em optimal monotone error of $P$}. A classifier $h \in \mono$ is
 \myitems{
-    \item in the first phase, each machine performs local computation;
-    \item in the second phase, the machines exchange messages (every message should have been prepared in the first phase).
+    \item {{\em optimal}} on $P$ if $\err_P(h) = k^*$;
+
+    \item {\em $c$-approximate} on $P$ if $\err_P(h) \le c \cdot k^*$ where $c \ge 1$ is the {{\em approximation ratio}} of $h$.
 }
-An algorithm can perform any number of rounds as needed. Upon termination, the final output must be available on the machines in the form specified by the problem definition.
+
+\myfigg{
+    \hspace{20mm}
+    \includegraphics[height=55mm]{./artwork/ds}
+}{An input set $P$ for Problem 1 \label{fig:intro-ds}}
+
+\begin{example}
+    Figure~\ref{fig:intro-ds} shows a 2D input $P$ where a black (resp., white) point has label 1 (resp., $-1$). Consider the monotone classifier $h$ that maps (i) all the black points to 1 except $p_1$, and (ii) all the white points to $-1$ except $p_{11}$ and $p_{15}$. Thus, $\err_P(h) = 3$. No other monotone classifier has a smaller error on $P$ and, hence, $k^* = 3$. Consider the classifier $h^\pos$ that maps the entire $P$ to $1$. \rev{It can be verified} that $\err_P(h^\pos) = \rev{8}$; \rev{hence,} $h^\pos$ is $\rev{(8/3)}$-approximate on $P$. %\qed
+\end{example}
+
+The goal of an algorithm $\A$ is to find a classifier from $\mono$ whose error on $P$ is small. In the beginning, the labels of the elements in $P$ are hidden. There exists an {\em oracle} that $\A$ can query for labels. Specifically, in each {\em probe}, the algorithm selects an element $p \in P$ and receives $\lab(p)$ from the oracle. Its {\em cost} is the total number of elements probed.
 
 \vgap
 
-The {\em load of a round} is the largest number of words communicated (sent and received combined) by a machine in that round; specifically, if machine $i \in [p]$ communicates $\ell_i$ words in this round, then the round has a load of $\max_{i=1}^p \ell_i$. The (total) {\em load} of the algorithm is the sum of the loads of all the rounds.
-
-\vgap
-
-With load $n$, any problem can be solved trivially in one round by simply sending all data to one machine. In practice, a good algorithm ought to perform a small number of rounds and incur a small load. Accordingly, two interesting questions arise in theory:
-\myitems{
-    \item ({\bf Load complexity}) What is the smallest load for solving a problem within a given number of rounds?
-
-    \item ({\bf Round complexity}) What is the smallest number of rounds for solving a problem when each round can incur no more than a given load?
-}
-
-\section{Sorting} \label{sec:sort}
-
-The sorting problem is defined as follows in the MPC model. Let $S$ be a set of $n$ integers, initially distributed across $p$ machines in an arbitrary manner, subject to the constraint that each machine has at most $n/p$ elements. The goal is to re-distribute the elements across the machines such that the elements on machine $i$ are smaller than those on machine $j$, for any $1 \le i < j \le p$.
-
-\vgap
-
-Assuming $n \ge p^2 \ln n$, we show how to solve the problem in 2 rounds, achieving a load of $O(n/p)$ with probability at least $1 - 1/n^2$.
-
-\extraspacing {\bf Algorithm.} For each $i \in [p]$, denote by $S_i$ the set of elements stored on machine $i$ initially. Set
-\myeqn{
-    \pi = (p / n) \cdot \ln n
-}
-In the first phase of round 1, each machine generates a sample set $\Sigma_i \subseteq S_i$ as follows: for each element of $S_i$, independently toss a coin with probability $\pi$ of heads and add the element to $\Sigma_i$ if the coin comes up heads.
-
-\vgap
-
-In the second phase of round 1, machine $i \in [p]$ sends $\Sigma_i$ to every other machine.
-
-\vgap
-
-In the first phase of round 2, each machine collects
-\myeqn{
-    S_\mit{sam} &=& \bigcup_{j=1}^p \Sigma_j. \label{eqn:sort:S_sam}
-}
-Set
-\myeqn{
-    s = |S_\mit{sam}|. \label{eqn:sort:s}
-}
-The machine identifies $p - 1$ elements $b_1, b_2, ..., b_{p-1}$ where $b_j$ ($1 \le j \le p-1$) is the $j \cdot \lc s/p \rc$-th smallest element in $S_\mit{sam}$. In addition, define $b_0 = -\infty$ and $b_p = \infty$. We refer to $b_0, b_1, ..., b_p$ as the {\em boundary elements}.
-
-\vgap
-
-In the second phase of round 2, machine $i \in [p]$ sends to machine $j \in [p]$ the elements in $S_i \cap (b_{j-1}, b_j]$.
-
-\extraspacing {\bf Analysis.}
-The algorithm incurs a load of $O(\fr{n}{p} + p \ln n) = O(n/p)$ when the following two conditions are met (think: why?):
-\myitems{
-    \item {{\bf C1:}} $|\Sigma_i| = O(\ln n)$ for all $i \in [p]$.
-    %\item {{\bf C2:}} $s = O(m)$.
-	\item {{\bf C2:}} $S \cap (b_{i-1}, b_i]$ has $O(n/p)$ elements for all $i \in [p]$.
-}
-
-\begin{theorem} \label{thm:sort}
-	When $n \ge \max\{30, p \ln n\}$, {\bf C1} and {\bf C2} hold simultaneously with probability at least $1 - 1/n^2$.
-\end{theorem}
-
-\begin{proof}
-	Consider an arbitrary $i \in [p]$. Define $X_i = |\Sigma_i|$. Note that $X_i$ is a random variable with $\expt[X_i] \le (n/p) \cdot \pi = \ln n$. An application of Chernoff bound \eqref{eqn:chernoff2} gives:
-	\begin{eqnarray}
-		\Pr[X_i \ge 18 \ln n] \le \exp(- 3 \ln n) = 1/n^3. \nonumber
-	\end{eqnarray}
-	By union bound, the probability that {\bf C1} fails to hold --- namely,
-	$X_i \ge 18 \ln n$ for at least one $i \in [p]$ --- is at most $p/n^3$.
-
-	\vgap
-
-	Next, we consider {\bf C2}. First, by the above analysis, we can assert
-	\myeqn{
-        \Pr[s \ge 18 p \cdot \ln n] \le p/n^3 \nn
-	}
-	where the value of $s$ is given in \eqref{eqn:sort:s}.
-	Unless otherwise stated, the subsequent discussion assumes $s < 18 p \cdot \ln n$.
-
-	\vgap
-
-	Imagine that $S$ has been sorted in ascending order. Let us partition the sorted list into at most $p/64$ sub-lists --- call each sub-list a {\em bucket} --- such that each bucket has between $\lc 64 n/p \rc$ and $2 \cdot \lc 64 n/p \rc$ elements (think: why is it fair to assume such a partitioning?). Here is an important observation:
-
-	\begin{center}
-        If every bucket covers at least one boundary element, {\bf C2} holds.
-	\end{center}
-
-	\noindent Indeed, under the above if-condition, no bucket can fall between two consecutive boundary elements; hence, for each $i \in [t]$, the set $S \cap (b_{i-1}, b_i]$ can contain elements from at most 2 buckets, implying $S \cap (b_{i-1}, b_i]$ has size at most $4 \cdot \lc 64 n/p \rc$.
-
-	\vgap
-
-	Fix an arbitrary bucket $S_\mit{buk}$. Under the event $s < 18p \cdot \ln n$, the bucket must include a boundary element if it has at least $18 \ln n$ --- which is greater than $s/p$ --- elements from $S_\mit{sam}$ (as defined in \eqref{eqn:sort:S_sam}) because a boundary element is taken every $\lc s/p \rc$ consecutive elements in the sorted order of $S_\mit{sam}$.
-
-	\vgap
-
-	For each $j \in [|S_\mit{buk}|]$, define random variable $Y_j = 1$ if the $j$-th element of $S_\mit{buk}$ is sampled in the first phase of round 1, or 0 otherwise. Then,
-	\myeqn{
-        Y &=& \sum_{j=1}^{|S_\mit{buk}|} Y_j. \nn
-	}
-	is the number of elements of $S_\mit{sam}$ that are contained in $S_\mit{buk}$. Clearly, $\expt[Y] \ge (64n / p) \cdot \pi = 64 \ln n$.
-
-	\vgap
-
-	We can derive:
-	\begin{eqnarray}
-		\Pr[Y < 18 \ln n] &=& \Pr[Y \le (1 - 46/64) \cdot 64 \ln n] \nn \\
-		&\le& \Pr[Y \le (1 - 46/64)\expt[Y]] \nn \\
-		\textrm{(by Chernoff bound \eqref{eqn:chernoff1})} &\le& \exp\left(- \fr{46^2}{64^2} \cdot \fr{\expt[Y]}{3}\right) \nn \\
-		&\le& \exp\left(- \fr{46^2}{64^2} \cdot \fr{64 \ln n}{3}\right) \nn \\
-		&<& \exp(-3 \ln n) \nn \\
-		&=& 1/n^3. \nn
-	\end{eqnarray}
-	Therefore, the probability that $S_\mit{buk}$ does not cover any boundary element is at most $1/n^3$.
-
-	\vgap
-
-	As there are $p/64 < p$ buckets, the probability that at least one bucket fails to cover any boundary element is at most $p/n^3$. We can now conclude that {\bf C2} fails to hold with probability at most $2p/n^3$ (think: where does the constant 2 come from?).
-
-	\vgap
-
-	Therefore, {\bf C1} and {\bf C2} hold at the same time with probability at least $1 - 3p/n^3$, which is at least $1 - 1/n^2$ because $n \ge 3p$.
-\end{proof}
-
-\extraspacing {\bf A Lower Bound.} For any values of $p$ and $n$, any algorithm must incur a load of $n/p$ in the worst case, no matter how many rounds are performed (think: why?).
-
-\section{Cartesian Product} \label{sec:cp}
-
-The {\em Cartesian product} (CP) problem is defined as follows in the MPC model. Let $S_1, S_2, ..., S_t$ be $t$ sets of elements, where $t$ is a constant integer at least 2. Let $n = \sum_{i=1}^t |S_i|$. The elements of $S_1, ..., S_t$ are initially distributed across $p$ machines in an arbitrary manner, subject to the constraint that each machine has at most $n/p$ elements. The goal is to produce each $t$-tuple $(u_1, u_2, ..., u_t) \in S_1 \times S_2 \times ... \times S_t$ on at least one machine.
-
-\vgap
-
-Next, we will show how to solve the problem in one round with load $O(n / p^{1/t})$. Our description makes the following assumption: each element in $S_1, S_2, ..., S_t$ is associated with a unique ID from $[n]$.
-
-\extraspacing {\bf Algorithm.} Define
-\myeqn{
-    p^* = \lf p^{1/t} \rf^t. \nn
-}
-Note that $p^* > (p^{1/t} / 2)^t = p^t / 2^t = \Omega(p^t)$.
-
-\vgap
-
-Conceptually, align machines 1, 2, ..., $p^*$ into a $t$-dimensional
-\myeqn{
-    \underbrace{\lf p^{1/t} \rf \times \lf p^{1/t} \rf \times ... \times \lf p^{1/t} \rf}_t \nn
-}
-grid. Each machine in the grid can be labeled with a $t$-dimensional point $(x_1, x_2, ..., x_t)$ where $1 \le x_i \le \lf p^{1/t} \rf$ for all $i \in [t]$. We will refer to each $x_i$  as the machine's {\em coordinate} on dimension $i$.
-
-\vgap
-
-Each machine examines the elements in its (initial) local storage as follows. Let $e$ be such an element; assume that $e$ originates from $S_i$ (for some $i \in [t]$) and carries an ID $y$. The machine sends $e$ to every machine in the grid whose coordinate on dimension $i$ equals
-\myeqn{
-    1 + \left(y \mod \lf p^{1/t} \rf \right). \label{eqn:cp:coord-on-i}
-}
-
-\extraspacing {\bf Correctness.} We prove that each $(u_1, u_2, ..., u_t) \in S_1 \times S_2 \times ... \times S_t$ is produced on at least one machine.
-
-\vgap
-
-For each $i \in [t]$, let $y_i$ be the ID of tuple $u_i$, and define
-\myeqn{
-    x_i = 1 + \left(y_i \mod \lf p^{1/t} \rf \right). \nn
-}
-Thus, by how our algorithm runs, the machine with coordinates $(x_1, x_2, ..., x_t)$ receives all of $u_1, u_2, ..., u_t$ and, hence, produces $(u_1, u_2, ..., u_t)$.
-
-\extraspacing {\bf Load Analysis.} Let us first discuss how many elements are sent by a machine. As mentioned, the machine sends an element $e \in S_i$ with ID $y$ to all machines whose coordinates on dimension $i$ are equal to \eqref{eqn:cp:coord-on-i}. There are $(p^*)^{(t-1)/t} = O(p^{(t-1)/t})$ such machines. Since the machine has $n/p$ elements initially, it sends
-\myeqn{
-    O \left(
-        \fr{n}{p} \cdot p^{\fr{t-1}{t}}
-    \right)
-    =
-    O \left(
-        \fr{n}{p^{1/t}}
-    \right)
-    \nn
-}
-elements.
-
-\vgap
-
-Next, we analyze how many elements are received by a machine. If a machine is not on the grid, it receives nothing. Now, consider a machine with coordinates $(x_1, x_2, ..., x_t)$. For each $i \in [t]$, the machine receives all the elements of $R_i$ whose coordinates $y$ satisfy
-\myeqn{
-    x_i = 1 + \left(y \mod \lf p^{1/t} \rf \right). \nn
-}
-There can be at most $O(n / p^{1/t})$ such elements. Therefore, the total number of elements received by the machine is bounded by
-\myeqn{
-    O\left(
-        \sum_{i=1}^t
-        \fr{n}{p^{1/t}}
-    \right)
-    =
-    O\left(
-        \fr{n}{p^{1/t}}
-    \right) \nn
-}
-where the last step used the fact $t = O(1)$.
-
-\extraspacing {\bf A Lower Bound.} We prove that any algorithm solving the CP problem must incur a load of $\Omega(n / p^{1/t})$ in the worst case, regardless of how many rounds it performs.
-
-\vgap
-
-As a hard input, we set the size of each $S_i$ to $n/t$, for all $i \in [t]$. The CP (Cartesian product) has a total size of $(n/t)^t$. Suppose that an algorithm can guarantee a load of $L$.  This means that, throughout the algorithm, each machine can see at most $L + \fr{n}{p}$ distinct elements in total and, hence, can produce at most $(L + \fr{n}{p})^t$ tuples in the CP. This yields
-\myeqn{
-    p \cdot \left(L + \fr{n}{p} \right)^t
-    &\ge&
-    \left(
-        \fr{n}{t}
-    \right)^t. \nn
-}
-Solving the inequality gives $L = \Omega(n / p^{1/t})$.
-
-\vgap
-
-As a corollary, if each round is allowed to incur a load of $\Lambda$, then $\Omega(\fr{n / p^{1/t}}{\Lambda})$ rounds are needed to solve the LP problem. Think: how to match this round complexity using a randomized algorithm? (Hint: send a message with probability $1/\Lambda$ and apply Chernoff bounds.)
-
-\section{Reduction from EM to MPC} \label{sec:em2mpc}
-
-Next, we show how to turn an algorithm $\A$ under the MPC model into an algorithm $\A'$ in the EM model. Denote by $S$ the input set to the underlying problem, and let $n = |S|$. Suppose that, given $p$ machines, the algorithm $\A$ solves the problem in $h$ rounds while making sure that each machine uses at most $L(p)$ words of memory.
-
-\vgap
-
-Recall that the EM model is parameterized by the memory size $M$ and the block size $B$. The input is stored in a disk array of $\lc n/B \rc$ blocks initially.
-
-\vgap
-
-Set
-\myeqn{
-    p &=& \text{the largest integer satisfying $L(p) \le M$}.
-    \label{eqn:em2mpc:p}
-}
-To apply $\A$, we conceive a setup under the MPC model where
-\myitems{
-    \item there are $p$ machines;
-    \item initially, machine 1 stores the first $L(p)$ elements of $S$ (which reside in the first $\lc L(p)/B \rc$ blocks of the input array), machine 2 stores the next $L(p)$ elements of $S$, and so on, with the last machine containing possibly fewer elements.
-}
-
-The crux of the reduction is to simulate the execution of $\A$ by  retaining, at all times, the memory content of each machine in the MPC model in $\lc L(p)/B \rc$ blocks on the disk. To perform a round of $\A$, we do the following for each machine $i \in [p]$:
-\myitems{
-    \item load its memory content under the MPC model into the memory of the EM model (this is doable because $L(p) \le M$),
-    \item run $\A$ on the machine,
-    \item write back its MPC memory to the disk, and
-    \item write to the disk the messages that the machine  intends to send to other machines.
-}
-Specifically, each message from machine $i$ to machine $j$ has the form $(i, j, \mit{data})$, where $\mit{data}$ is a word. All the messages sent from $i$ occupy $O(L(p)/B)$ blocks on disk (because those messages need to fit in the machine's memory under the MPC model). Therefore, doing the above steps for all machines requires
-\myeqn{
-    O\left(
-        \fr{p \cdot L(p)}{B}
-    \right) \nn
-}
-I/Os.
-
-\vgap
-
-Before the next round, we deliver the messages for $\A$. This means moving a message of the form $(i, j, \mit{data})$ to the MPC memory of machine $j$ stored on disk. This can be done with sorting all messages by destination (i.e., the $j$-field). As there are $p \cdot L(p)$ messages in total, the sorting performs
-\myeqn{
-    O\left(
-        \fr{p \cdot L(p)}{B}
-        \log_{M/B} \fr{p \cdot L(p)}{B}
-    \right) \nn
-}
-I/Os.
-
-\vgap
-
-As $\A$ performs $h$ rounds in total, we thus obtain an EM algorithm with a total I/O cost of
-\myeqn{
-    h \cdot O\left(
-        \fr{p \cdot L(p)}{B}
-        \log_{M/B} \fr{p \cdot L(p)}{B}
-    \right). \label{eqn:em2mpc:total-io}
-}
-
-As an application, consider the CP algorithm in Section~\ref{sec:cp}, for which $h = 1$ and $L(p) = O(n / p^{1/t})$. Thus, the value of $p$ from \eqref{eqn:em2mpc:p} is
-\myeqn{
-    p &=& \Theta((n/M)^t)) \nn
-}
-which yields
-\myeqn{
-    L(p) &=& \Theta(M). \nn
-}
-We thus obtain a CP algorithm in EM whose I/O cost --- derived from \eqref{eqn:em2mpc:total-io} --- is
-\myeqn{
-    O\left(
-        \fr{n^t}{M^{t-1} B}
-        \cdot
-        \log_{M/B} \fr{n^t}{M^{t-1} B}
-    \right). \nn
+In one extreme, by probing the whole $P$, \rev{$\A$ pays a cost of $n$}, after which it can find an optimal monotone classifier on $P$ with \rev{polynomial-time} computation\footnote{Once all the point labels are available, an optimal monotone classifier can be found in time polynomial in $n$ and $d$; see \cite{ahkw06,s13b}.}. In the other extreme, by probing nothing, \rev{$\A$ pays a cost of 0} but has to return a classifier based purely on the point coordinates; such a classifier could be very erroneous on $P$. The intellectual challenge is to understand the lowest cost to ensure the optimal monotone error $k^*$ or an error higher than $k^*$ by a small multiplicative factor.
+
+\boxminipg{0.95\linewidth}{
+\begin{problem} \label{def:intro-prob1}
+    {\em (\textsc{Monotone Classification with Relative Precision Guarantees})} Given a real value $\eps \ge 0$, find a monotone classifier whose error on $P$ is at most $(1+\eps) k^*$. The efficiency of an algorithm is measured by the number of elements probed.
+\end{problem}
 }
 
 \section{Remarks}
-
-The sorting algorithm in Section~\ref{sec:sort} is a variant of a popular algorithm named {\em Terasort}. The analysis was taken from \cite{tlx13}. The CP algorithm in Section~\ref{sec:sort} was designed in \cite{au11}. The EM-to-MPC reduction was developed in \cite{kbs16}.
 
 %\section{Remark} ksv10
 
 \bibliographystyle{plainurl}% the mandatory bibstyle
 \bibliography{ref}
 
-\appendix
-
-\section*{Appendix: Chernoff Bounds}
-
-%\begin{lemma} \label{lmm::chernoff}
-    Let $X_1, X_2, ..., X_f$ be independent Bernoulli random variables that are identically distributed. Define $X = \sum_{i \in [f]} X_i$. For any $\gamma \geq 2$, it holds that
-    \myeqn{
-        \Pr[X \geq \gamma \cdot \expt[X]] &\leq&  \exp(-\gamma \cdot \expt[X] / 6). \label{eqn:chernoff1}
-    }
-    For any $0 < \gamma < 1$, it holds that
-    \myeqn{
-        \Pr[X \le (1 - \gamma) \expt[X]] &\leq&  \exp(- \gamma^2 \cdot \expt[X] / 3) \label{eqn:chernoff2} \\
-        \Pr[X \le (1 + \gamma) \expt[X]] &\leq&  \exp(- \gamma^2 \cdot \expt[X] / 3). \label{eqn:chernoff3}
-    }
-%\end{lemma}
-Proofs for \eqref{eqn:chernoff1}-\eqref{eqn:chernoff3} can be found in \cite{stl12}. We need only \eqref{eqn:chernoff1} and \eqref{eqn:chernoff2} in this lecture.
 
 \end{document}
