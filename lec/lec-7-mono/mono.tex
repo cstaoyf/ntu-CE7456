@@ -123,11 +123,7 @@ We call $k^*$ the {\em optimal monotone error of $P$}. A classifier $h \in \mono
 
 \vgap
 
-The goal of an algorithm $\A$ is to find a classifier from $\mono$ whose error on $P$ is small. In the beginning, the labels of the elements in $P$ are hidden. There exists an {\em oracle} that $\A$ can query for labels. Specifically, in each {\em probe}, the algorithm selects an element $p \in P$ and receives $\lab(p)$ from the oracle. Its {\em cost} is the total number of elements probed.
-
-\vgap
-
-In one extreme, by probing the whole $P$, {$\A$ pays a cost of $n$}, after which it can find an optimal monotone classifier on $P$ with {polynomial-time} computation. In the other extreme, by probing nothing, {$\A$ pays a cost of 0} but has to return a classifier based purely on the point coordinates; such a classifier could be very erroneous on $P$. The intellectual challenge is to find a monotone classifier whose error is close to $k^*$ by probing as few points as possible.
+The goal of an algorithm $\A$ is to find a classifier from $\mono$ whose error on $P$ is small. In the beginning, the labels of the elements in $P$ are hidden. There exists an {\em oracle} that $\A$ can query for labels. Specifically, in each {\em probe}, the algorithm selects an element $p \in P$ and receives $\lab(p)$ from the oracle. Its {\em cost} is the total number of elements probed. The intellectual challenge is to find a monotone classifier whose error is close to $k^*$ by probing as few points as possible.
 
 \vgap
 
@@ -178,10 +174,6 @@ The following proposition states a useful property of the classifier $h_\rpe$, e
 %\vgap
 
 \ttt{RPE} can also be understood as the following labeling process. After learning the label of a random element $z \in P$, we decide to map $z$ to $\lab(z)$. If $\lab(z) = 1$, by monotonicity, we are obliged to map all elements $p \in P$ satisfying $p \domeq z$ to $1$; conversely, if $\lab(z) = -1$, we must map all elements $p \in P$ satisfying $z \domeq p$ to $-1$. The elements that have their labels thus mapped are removed from $P$. The process is then repeated on the remaining elements.
-
-\vgap
-
-    Let us illustrate \ttt{RPE} on the input $P$ in Figure~\ref{fig:intro-ds}. Assume that the algorithm randomly probes $p_1$ first. Acquiring $\lab(p_1) = 1$, it eliminates the entire $P$ except $p_6, p_7$, and $p_8$. Suppose that \ttt{RPE} then randomly probes $p_8$. Acquiring $\lab(p_8) = -1$, it removes all the remaining points in $P$. With $Z = \{p_1, p_8\}$, the classifier $h_\rpe$ in \eqref{eqn:rpe-classifier} maps all the points to label 1 except $p_6, p_7$, and $p_8$. Its error on $P$ is $\err_P(h_\rpe) = 5$.
 
 \vgap
 
@@ -257,17 +249,7 @@ Lemma~\ref{lmm:rpe:inf-set} indicates
         \label{eqn:rpe:good-bad-equal}
     }
 
-%    \begin{example}
-        Let $P$ be the set of points in Figure~\ref{fig:intro-ds}, and $h$ be the classifier that maps all the black points to 1 except $p_1$ and all the white points to $-1$ except $p_{11}$ and $p_{15}$. Thus, $p_1$, $p_{11}$, and $p_{15}$ are $h$-bad, while the other points of $P$ are $h$-good. The following are some representative influence sets.
-        \myeqn{
-            I_\bad(p_{15}) &=& \set{p_4, p_9, p_{10}, p_{12}, p_{13}, p_{14}, p_{16}} \nn \\
-            I_\bad(p_1) &=& \set{p_2, p_3, p_5} \nn \\
-            I_\good(p_3) &=& \set{p_1} \nn \\
-            I_\good(p_9) &=& \set{p_{11}, p_{15}}. \nn
-        }
- %   \end{example}
-
-    \vgap
+%    \vgap
 
     \ttt{RPE} is an iterative algorithm. We refer to Lines 3-5 {of its pseudocode} as an {\em iteration}. Let $z$ be the point probed in the first iteration (at Line 3). The revelation of $\lab(z)$ instructs the algorithm to remove $z$ and possibly some other elements from $P$ (at Line 4 or 5). Define
     \myeqn{

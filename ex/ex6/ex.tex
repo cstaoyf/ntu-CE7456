@@ -1,0 +1,78 @@
+%\documentclass{...}
+
+\input{./def/yf-formatting}
+
+\usepackage{amsfonts, amsmath, amssymb, amsthm}
+\usepackage{comment}
+\usepackage{graphicx}
+\usepackage{ifthen}
+\usepackage{latexsym}
+%\usepackage{times}
+\usepackage[normalem]{ulem}
+
+\input{./def/yf-def}
+
+\def\agm{\mathit{AGM}}
+\def\In{\text{IN}}
+\def\out{\text{OUT}}
+\def\E{\mathcal{E}}
+\def\H{\mathcal{H}}
+\def\Q{\mathcal{Q}}
+\def\T{\mathcal{T}}
+\def\V{\mathcal{V}}
+\def\W{\mathscr{W}}
+
+\newboolean{solver}\setboolean{solver}{true}
+%\newboolean{solver}\setboolean{solver}{false}
+\ifthenelse{\boolean{solver}}{\includecomment{sol}}{\excludecomment{sol}}
+
+\def\vgap{\vspace{2mm}}
+
+\begin{document}
+
+\section*{CE7456: Exercise List 5}
+Prepared by Yufei Tao \\
+
+% \begin{center}
+%     \uline{Classroom Discussion}
+% \end{center}
+
+\boxminipg{0.95\linewidth}{
+    These exercises are designed to help you practice the techniques taught in class. Attempt them ``at your own risk'' because they are research-oriented and can be rather challenging. Solutions will not be provided in written form. I will be happy to act as a collaborator and sounding board --- I look forward to discussing your creative approaches, refining your key steps, and walking through your attempted solutions with you.
+}
+
+\extraspacing {\bf Problem 1 (Tightness of the AGM Bound for Subgraph Enumeration).} Let $P$ be a connected undirected graph that has a constant size. Denote by $\rho$ the fractional edge cover number of $P$. Prove: for any sufficiently large number $m$, there is an undirected graph with $m$ edges that contains $\Omega(m^\rho)$ occurrences of $P$.
+
+\extraspacing {\bf Problem 2.} Let $\Q$ be a join whose schema graph $\H = (\V, \E)$ has a constant size. Take any fractional edge cover $\W$ of $\H$. Prove: the AGM value of $\Q$ under $\W$ is either 0 or at least 1.
+
+\extraspacing {\bf Problem 3.} Let $\Q$ be a join whose schema graph $\H = (\V, \E)$ has a constant size. Take any fractional edge cover $\W$ of $\H$. Prove: if the AGM value of $\Q$ under $\W$ is 1, then for every attribute $A \in \V$, there is a relation $R \in \Q$ satisfying
+\myitems{
+    \item $A$ belongs to the schema of $R$;
+    \item $|R| = 1$.
+}
+
+\extraspacing {\bf Problem 4.} Let $\Q$ be a join whose schema graph $\H = (\V, \E)$ has a constant size. Suppose that, for any box $B$ and any relation $R \in \Q$, we can perform the following operations in constant time:
+\myitems{
+    \item find the size of $R(B)$;
+    \item find the only tuple in $R(B)$ if $|R(B)| = 1$.
+}
+Describe an algorithm to satisfy assumption {\bf A4} in the lecture notes: obtain the result of $\Q(B)$ in constant time when $\agm_{\W^*}(B) \le 1$.
+
+\extraspacing {\bf Problem 5.} Let us first introduce {\em orthogonal range searching} on multi-dimentional points. Let $P$ be a set of $n$ points in $\real^d$, where the dimensionality $d$ is a constant. In $O(n \polylog n)$ time, we can build a data structure such that, for any axis-parallel rectangle $q$, can
+\myitems{
+    \item report $|P \cap q|$ in $O(\polylog n)$ time;
+    \item report $P \cap q$ in $O(\polylog n + k)$ time, where $k = |P \cap q|$.
+}
+
+Let $\Q$ be a join whose schema graph $\H = (\V, \E)$ has a constant size. Describe how to apply the box-tree technique to compute $\Q$ in
+\myeqn{
+    O(\In \polylog \In + \agm_{\W^*} \polylog \In) \nn
+}
+time, where $\In$ is the input size of $\Q$, and $\agm_{\W^*}$ is the AGM bound of $\Q$. You can make assumption {\bf A3} but should remove assumptions {\bf A1}, {\bf A2}, and {\bf A4}.
+
+\extraspacing {\bf Problem 6*.} Repeat Problem 5, but this time you should remove assumption {\bf A3} as well.
+
+\vgap
+
+Hint: You only need an oracle to tell you whether $\agm_{\W^*}(B) \le 1$. But there is still an obstacle: the RAM model does not allow you to compute $x^y$ in constant time.
+\end{document}
