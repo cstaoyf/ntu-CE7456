@@ -1,4 +1,3 @@
-@string{aaai = "{AAAI}"}
 @string{acmcs = "ACM Comp. Surv."}
 @string{acmgis = "{GIS}"}
 @string{alenex = "Workshop on Algorithm Engineering and Experiments ({ALENEX})"}
@@ -30,20 +29,20 @@
 @string{itcs = "{ITCS}"}
 @string{jacm = "{JACM}"}
 @string{jcss = "{JCSS}"}
+@string{kdd = "{SIGKDD}"}
 @string{latin = "{LATIN}"}
 @string{mdm = "{MDM}"}
 @string{mobide = "{MobiDE}"}
+@string{nips = "{NeurIPS}"}
 @string{osdi = "{OSDI}"}
 @string{sac = "{ACM} Symposium on Applied Computing ({SAC})"}
 @string{sdm = "{SDM}"}
-@string{siamj = "SIAM J. of Comp."}
-@string{kdd = "{SIGKDD}"}
-@string{nips = "{NIPS}"}
 @string{pakdd = "{PAKDD}"}
 @string{pami = "{PAMI}"}
 @string{pods = "{PODS}"}
 @string{ppopp = "{PPOPP}"}
 @string{pvldb = "{PVLDB}"}
+@string{sicomp = "{SIAM J. Comp.}"}
 @string{sigmetric = "{SIGMETRICS}"}
 @string{sigmod = "{SIGMOD}"}
 @string{socg = "{S}o{CG}"}
@@ -67,7 +66,6 @@
 @string{vldb = "{VLDB}"}
 @string{vldbj = "{VLDB J.}"}
 @string{wea = "Workshop on Experimental Algorithms ({WEA})"}
-@string{aaai = "Proceedings of AAAI Conference on Artificial Intelligence ({AAAI})"}
 @string{acmcs = "ACM Computing Surveys"}
 @string{acmgis = "Proceedings of ACM Symposium on Advances in Geographic Information Systems ({GIS})"}
 @string{alenex = "Proceedings of Workshop on Algorithm Engineering and Experiments ({ALENEX})"}
@@ -119,7 +117,7 @@
 @string{kdd = "Proceedings of ACM Knowledge Discovery and Data Mining ({SIGKDD})"}
 @string{sac = "Proceedings of {ACM} Symposium on Applied Computing ({SAC})"}
 @string{sdm = "SIAM International Conference on Data Mining (SDM)"}
-@string{siamj = "SIAM Journal of Computing"}
+@string{sicomp = "SIAM Journal of Computing"}
 @string{sigmetric = "Proceedings of International Conference on Measurements and Modeling of Computer Systems ({SIGMETRICS})"}
 @string{sigmod = "Proceedings of ACM Management of Data ({SIGMOD})"}
 @string{socg = "Proceedings of Symposium on Computational Geometry ({S}o{CG})"}
@@ -143,6 +141,10 @@
 @string{wads = "Algorithms and Data Structures Workshop ({WADS})"}
 @string{www = "Proceedings of International World Wide Web Conferences ({WWW})"}
 @string{wea = "Proceedings of Workshop on Experimental Algorithms ({WEA})"}
+@string{acmcs = "ACM Comp. Surv."}
+@string{acmgis = "{GIS}"}
+@string{alenex = "Workshop on Algorithm Engineering and Experiments ({ALENEX})"}
+@string{bioinf = "{Bioinformatics}"}
 @article{a03,
 	title        = {The Buffer Tree: A Technique for Designing Batched External Data Structures},
 	author       = {Lars Arge},
@@ -151,14 +153,6 @@
 	volume       = 37,
 	number       = 1,
 	pages        = {1--24}
-}
-@incollection{a04,
-	title        = {Range Searching},
-	author       = {Pankaj K. Agarwal},
-	year         = 2004,
-	booktitle    = {Handbook of Discrete and Computational Geometry, 2nd Ed},
-	publisher    = {Chapman and Hall/CRC},
-	pages        = {809--837}
 }
 @inproceedings{a05,
 	title        = {On k-Anonymity and the Curse of Dimensionality},
@@ -178,7 +172,7 @@
 	title        = {Quantum Walk Algorithm for Element Distinctness},
 	author       = {Andris Ambainis},
 	year         = 2007,
-	journal      = siamj,
+	journal      = sicomp,
 	volume       = 37,
 	number       = 1,
 	pages        = {210--239}
@@ -189,14 +183,6 @@
 	year         = 2008,
 	booktitle    = esa,
 	pages        = {41--51}
-}
-@article{a81,
-	title        = {On the Number of Subgraphs of Prescribed Type of Graphs with a Given Number of Edges},
-	author       = {Noga Alon},
-	year         = 1981,
-	journal      = {Israel Journal of Mathematics},
-	volume       = 38,
-	pages        = {116--130}
 }
 @inproceedings{a96,
 	title        = {External-Memory Algorithms with Applications in GIS},
@@ -240,7 +226,7 @@
 	title        = {An Optimal Dynamic Data Structure for Stabbing-Semigroup Queries},
 	author       = {Pankaj K. Agarwal and Lars Arge and Haim Kaplan and Eyal Molad and Robert Endre Tarjan and Ke Yi},
 	year         = 2012,
-	journal      = siamj,
+	journal      = sicomp,
 	volume       = 41,
 	number       = 1,
 	pages        = {104--127}
@@ -280,6 +266,12 @@
 	booktitle    = esa,
 	pages        = {7--18}
 }
+@book{ab99,
+	title        = {Neural Network Learning: Theoretical Foundations},
+	author       = {Martin Anthony and Peter L. Bartlett},
+	year         = 1999,
+	publisher    = {Cambridge University Press}
+}
 @article{aba+09,
 	title        = {HadoopDB: An Architectural Hybrid of MapReduce and DBMS Technologies for Analytical Workloads},
 	author       = {Azza Abouzeid and Kamil Bajda-Pawlikowski and Daniel J. Abadi and Alexander Rasin and Avi Silberschatz},
@@ -304,15 +296,6 @@
 	volume       = 1,
 	pages        = {189--200}
 }
-@article{abg+02,
-	title        = {Box-Trees and {R}-Trees with Near-Optimal Query Time},
-	author       = {Pankaj K. Agarwal and Mark de Berg and Joachim Gudmundsson and Mikael Hammar and Herman J. Haverkort},
-	year         = 2002,
-	journal      = dcg,
-	volume       = 28,
-	number       = 3,
-	pages        = {291--312}
-}
 @inproceedings{abhy04,
 	title        = {The Priority {R}-Tree: A Practically Efficient and Worst-Case Optimal {R}-Tree},
 	author       = {Lars Arge and Mark de Berg and Herman J. Haverkort and Ke Yi},
@@ -324,7 +307,7 @@
 	title        = {Learning a Hidden Matching},
 	author       = {Noga Alon and Richard Beigel and Simon Kasif and Steven Rudich and Benny Sudakov},
 	year         = 2004,
-	journal      = siamj,
+	journal      = sicomp,
 	volume       = 33,
 	number       = 2,
 	pages        = {487--501}
@@ -359,13 +342,6 @@
 	booktitle    = socg,
 	pages        = {139--147}
 }
-@inproceedings{abs21,
-	title        = {Box Covers and Domain Orderings for Beyond Worst-Case Join Processing},
-	author       = {Kaleb Alway and Eric Blais and Semih Salihoglu},
-	year         = 2021,
-	booktitle    = icdt,
-	pages        = {3:1--3:23}
-}
 @article{abt04,
 	title        = {On external-memory MST, {SSSP} and multi-way planar graph separation},
 	author       = {Lars Arge and Gerth St{\o}lting Brodal and Laura Toma},
@@ -392,13 +368,6 @@
 	volume       = 15,
 	number       = 2,
 	pages        = {121--142}
-}
-@inproceedings{abw15,
-	title        = {If the Current Clique Algorithms are Optimal, So is Valiant's Parser},
-	author       = {Amir Abboud and Arturs Backurs and Virginia Vassilevska Williams},
-	year         = 2015,
-	booktitle    = focs,
-	pages        = {98--117}
 }
 @inproceedings{abz11,
 	title        = {Ordered and Unordered Top-K Range Reporting in Large Data Sets},
@@ -471,13 +440,6 @@
 	booktitle    = pods,
 	pages        = {137--146}
 }
-@inproceedings{adh+08,
-	title        = {Biomolecular network motif counting and discovery by color coding},
-	author       = {Noga Alon and Phuong Dao and Iman Hajirasouliha and Fereydoun Hormozdiari and S{\"{u}}leyman Cenk Sahinalp},
-	year         = 2008,
-	booktitle    = {Proceedings 16th International Conference on Intelligent Systems for Molecular Biology (ISMB), Toronto, Canada, July 19-23, 2008},
-	pages        = {241--249}
-}
 @inproceedings{adsu15,
 	title        = {Bounds for Overlapping Interval Join on MapReduce},
 	author       = {Foto N. Afrati and Shlomi Dolev and Shantanu Sharma and Jeffrey D. Ullman},
@@ -548,29 +510,6 @@
 	volume       = 40,
 	number       = 1
 }
-@inproceedings{ag09,
-	title        = {Balanced Hashing, Color Coding and Approximate Counting},
-	author       = {Noga Alon and Shai Gutner},
-	year         = 2009,
-	booktitle    = {Proceedings of International Workshop on Parameterized and Exact Computation ({IWPEC})},
-	pages        = {1--16}
-}
-@article{ag10,
-	title        = {Balanced families of perfect hash functions and their applications},
-	author       = {Noga Alon and Shai Gutner},
-	year         = 2010,
-	journal      = {{ACM} Trans. Algorithms},
-	volume       = 6,
-	number       = 3,
-	pages        = {54:1--54:12}
-}
-@inproceedings{agi+19,
-	title        = {Faster Algorithms for All-Pairs Bounded Min-Cuts},
-	author       = {Amir Abboud and Loukas Georgiadis and Giuseppe F. Italiano and Robert Krauthgamer and Nikos Parotsidis and Ohad Trabelsi and Przemyslaw Uznanski and Daniel Wolleb{-}Graf},
-	year         = 2019,
-	booktitle    = icalp,
-	pages        = {7:1--7:15}
-}
 @inproceedings{agk06,
 	title        = {Efficient Exact Set-Similarity Joins},
 	author       = {Arvind Arasu and Venkatesh Ganti and Raghav Kaushik},
@@ -615,13 +554,6 @@
 	number       = 4,
 	pages        = {1737--1767}
 }
-@inproceedings{agpr99,
-	title        = {Join Synopses for Approximate Query Answering},
-	author       = {Swarup Acharya and Phillip B. Gibbons and Viswanath Poosala and Sridhar Ramaswamy},
-	year         = 1999,
-	booktitle    = sigmod,
-	pages        = {275--286}
-}
 @inproceedings{agr17,
 	title        = {Debunking the Myths of Influence Maximization: An In-Depth Benchmarking Study},
 	author       = {Akhil Arora and Sainyam Galhotra and Sayan Ranu},
@@ -640,7 +572,7 @@
 	title        = {On Approximating the Depth and Related Problems},
 	author       = {Boris Aronov and Sariel Har-Peled},
 	year         = 2008,
-	journal      = siamj,
+	journal      = sicomp,
 	volume       = 38,
 	number       = 3,
 	pages        = {899--921}
@@ -660,6 +592,14 @@
 	year         = 2006,
 	booktitle    = {CIAA},
 	pages        = {69--77}
+}
+@inproceedings{ahkw06,
+	title        = {Weighted isotonic regression under the \emph{L}\({}_{\mbox{1}}\) norm},
+	author       = {Stanislav Angelov and Boulos Harb and Sampath Kannan and Li{-}San Wang},
+	year         = 2006,
+	booktitle    = soda,
+	publisher    = {{ACM} Press},
+	pages        = {783--791}
 }
 @book{ahv95,
 	title        = {Foundations of Databases},
@@ -701,7 +641,7 @@
 	title        = {Testing k-colorability},
 	author       = {Noga Alon and Michael Krivelevich},
 	year         = 2002,
-	journal      = siamj,
+	journal      = sicomp,
 	volume       = 15,
 	number       = 2,
 	pages        = {211--227}
@@ -722,28 +662,12 @@
 	number       = 2,
 	pages        = {309--325}
 }
-@article{akl+23,
-	title        = {OptORAMa: Optimal Oblivious {RAM}},
-	author       = {Gilad Asharov and Ilan Komargodski and Wei{-}Kai Lin and Kartik Nayak and Enoch Peserico and Elaine Shi},
-	year         = 2023,
-	journal      = jacm,
-	volume       = 70,
-	number       = 1,
-	pages        = {4:1--4:70}
-}
 @inproceedings{akl93,
 	title        = {A General Lower Bound on the {I/O}-Complexity of Comparison-based Algorithms},
 	author       = {Lars Arge and Mikael Knudsen and Kirsten Larsen},
 	year         = 1993,
 	booktitle    = wads,
 	pages        = {83--94}
-}
-@article{akls22,
-	title        = {Listing 4-Cycles},
-	author       = {Amir Abboud and Seri Khoury and Oree Leibowitz and Ron Safier},
-	year         = 2022,
-	journal      = {CoRR},
-	volume       = {abs/2211.10022}
 }
 @article{ako04,
 	title        = {Replacing suffix trees with enhanced suffix arrays},
@@ -771,13 +695,6 @@
 	volume       = 57,
 	number       = 4,
 	pages        = {1008--1037}
-}
-@inproceedings{akz19,
-	title        = {Distributed and Streaming Linear Programming in Low Dimensions},
-	author       = {Sepehr Assadi and Nikolai Karpov and Qin Zhang},
-	year         = 2019,
-	booktitle    = pods,
-	pages        = {236--253}
 }
 @article{al62,
 	title        = {An algorithm for the organization of information},
@@ -859,13 +776,6 @@
 	booktitle    = icalp,
 	pages        = {146--157}
 }
-@inproceedings{an16,
-	title        = {Data Structure Lower Bounds for Document Indexing Problems},
-	author       = {Peyman Afshani and Jesper Sindahl Nielsen},
-	year         = 2016,
-	booktitle    = icalp,
-	pages        = {93:1--93:15}
-}
 @inproceedings{anoy14,
 	title        = {Parallel algorithms for geometric graph problems},
 	author       = {Alexandr Andoni and Aleksandar Nikolov and Krzysztof Onak and Grigory Yaroslavtsev},
@@ -887,14 +797,11 @@
 	booktitle    = sigmod,
 	pages        = {821--834}
 }
-@article{ar91,
-	title        = {Deferred Data Structure for the Nearest Neighbor Problem},
-	author       = {Alok Aggarwal and Prabhakar Raghavan},
-	year         = 1991,
-	journal      = ipl,
-	volume       = 40,
-	number       = 3,
-	pages        = {119--122}
+@inproceedings{ap24,
+	title        = {No Dimensional Sampling Coresets for Classification},
+	author       = {Meysam Alishahi and Jeff M. Phillips},
+	year         = 2024,
+	booktitle    = icml
 }
 @inproceedings{ars97,
 	title        = {A One-Pass Algorithm for Accurately Estimating Quantiles for Disk-Resident Data},
@@ -930,7 +837,7 @@
 	title        = {A Characterization of the (Natural) Graph Properties Testable with One-Sided Error},
 	author       = {Noga Alon and Asaf Shapira},
 	year         = 2008,
-	journal      = siamj,
+	journal      = sicomp,
 	volume       = 37,
 	number       = 6,
 	pages        = {1703--1727}
@@ -939,19 +846,10 @@
 	title        = {Every Monotone Graph Property Is Testable},
 	author       = {Noga Alon and Asaf Shapira},
 	year         = 2008,
-	journal      = siamj,
+	journal      = sicomp,
 	volume       = 38,
 	number       = 2,
 	pages        = {505--522}
-}
-@article{asg+18,
-	title        = {Sublinear-Time Algorithms for Counting Star Subgraphs via Edge Sampling},
-	author       = {Maryam Aliakbarpour and Amartya Shankha Biswas and Themis Gouleakis and John Peebles and Ronitt Rubinfeld and Anak Yodpinyanee},
-	year         = 2018,
-	journal      = {Algorithmica},
-	volume       = 80,
-	number       = 2,
-	pages        = {668--697}
 }
 @inproceedings{asm+12,
 	title        = {Fuzzy Joins Using MapReduce},
@@ -1029,7 +927,7 @@
 	title        = {Optimal External Memory Interval Management},
 	author       = {Lars Arge and Jeffrey Scott Vitter},
 	year         = 2003,
-	journal      = siamj,
+	journal      = sicomp,
 	volume       = 32,
 	number       = 6,
 	pages        = {1488--1508}
@@ -1077,28 +975,12 @@
 	number       = 3,
 	pages        = {6--12}
 }
-@inproceedings{aw21,
-	title        = {A Refined Laser Method and Faster Matrix Multiplication},
-	author       = {Josh Alman and Virginia Vassilevska Williams},
-	year         = 2021,
-	booktitle    = soda,
-	pages        = {522--539}
-}
 @inproceedings{ay04,
 	title        = {A Condensation Approach to Privacy Preserving Data Mining},
 	author       = {Charu C. Aggarwal and Philip S. Yu},
 	year         = 2004,
 	booktitle    = edbt,
 	pages        = {183--199}
-}
-@article{ayz95,
-	title        = {Color-Coding},
-	author       = {Noga Alon and Raphael Yuster and Uri Zwick},
-	year         = 1995,
-	journal      = jacm,
-	volume       = 42,
-	number       = 4,
-	pages        = {844--856}
 }
 @article{ayz97,
 	title        = {Finding and Counting Given Length Cycles},
@@ -1145,21 +1027,6 @@
 	volume       = 47,
 	pages        = {23:1--23:14}
 }
-@inproceedings{b19,
-	title        = {Faster Subgraph Counting in Sparse Graphs},
-	author       = {Marco Bressan},
-	year         = 2019,
-	booktitle    = {14th International Symposium on Parameterized and Exact Computation, {IPEC} 2019, September 11-13, 2019, Munich, Germany},
-	pages        = {6:1--6:15}
-}
-@article{b21,
-	title        = {Faster algorithms for counting subgraphs in sparse graphs},
-	author       = {Marco Bressan},
-	year         = 2021,
-	journal      = {Algorithmica},
-	publisher    = {Springer},
-	pages        = {1--28}
-}
 @article{b70,
 	title        = {Space/Time Trade-offs in Hash Coding with Allowable Errors},
 	author       = {Burton H. Bloom},
@@ -1188,15 +1055,6 @@
 	volume       = 6,
 	number       = 3,
 	pages        = {80--82}
-}
-@article{b79,
-	title        = {Decomposable Searching Problems},
-	author       = {Jon Louis Bentley},
-	year         = 1979,
-	journal      = ipl,
-	volume       = 8,
-	number       = 5,
-	pages        = {244--251}
 }
 @article{b80,
 	title        = {Multidimensional Divide-and-Conquer},
@@ -1237,13 +1095,6 @@
 	volume       = 82,
 	number       = 2,
 	pages        = {245--259}
-}
-@inproceedings{bbcg08,
-	title        = {Efficient semi-streaming algorithms for local triangle counting in massive graphs},
-	author       = {Luca Becchetti and Paolo Boldi and Carlos Castillo and Aristides Gionis},
-	year         = 2008,
-	booktitle    = kdd,
-	pages        = {16--24}
 }
 @inproceedings{bbcl14,
 	title        = {Maximizing Social Influence in Nearly Optimal Time},
@@ -1320,13 +1171,6 @@
 	number       = 2,
 	pages        = {168--183}
 }
-@article{bcm22,
-	title        = {Tight Fine-Grained Bounds for Direct Access on Join Queries},
-	author       = {Karl Bringmann and Nofar Carmeli and Stefan Mengel},
-	year         = 2022,
-	journal      = {CoRR},
-	volume       = {abs/2201.02401}
-}
 @article{bcp08,
 	title        = {Efficient sort-based skyline evaluation},
 	author       = {Ilaria Bartolini and Paolo Ciaccia and Marco Patella},
@@ -1357,20 +1201,6 @@
 	volume       = 15,
 	number       = 4,
 	pages        = {327--350}
-}
-@inproceedings{bdes13,
-	title        = {Windows into relational events: Data structures for contiguous subsequences of edges},
-	author       = {Bannister, Michael J and DuBois, Christopher and Eppstein, David and Smyth, Padhraic},
-	year         = 2013,
-	booktitle    = soda,
-	pages        = {856--864}
-}
-@inproceedings{bdg07,
-	title        = {On Acyclic Conjunctive Queries and Constant Delay Enumeration},
-	author       = {Guillaume Bagan and Arnaud Durand and Etienne Grandjean},
-	year         = 2007,
-	booktitle    = {Computer Science Logic},
-	pages        = {208--222}
 }
 @inproceedings{bdj+05,
 	title        = {{OLAP} Over Uncertain and Imprecise Data},
@@ -1409,14 +1239,6 @@
 	number       = 12,
 	pages        = {1272--1283}
 }
-@inproceedings{ber21,
-	title        = {Towards a Decomposition-Optimal Algorithm for Counting and Sampling Arbitrary Motifs in Sublinear Time},
-	author       = {Amartya Shankha Biswas and Talya Eden and Ronitt Rubinfeld},
-	year         = 2021,
-	booktitle    = {{APPROX-RANDOM}},
-	volume       = 207,
-	pages        = {55:1--55:19}
-}
 @book{bey98,
 	title        = {Online Computation and Competitive Analysis},
 	author       = {Allan Borodin and Ran El-Yaniv},
@@ -1442,13 +1264,6 @@
 	booktitle    = isaac,
 	pages        = {173--182}
 }
-@inproceedings{bfk19,
-	title        = {A Fine-Grained Analogue of Schaefer's Theorem in {P:} Dichotomy of Exists{\^{}}k-Forall-Quantified First-Order Graph Properties},
-	author       = {Karl Bringmann and Nick Fischer and Marvin Kunnemann},
-	year         = 2019,
-	booktitle    = {Computational Complexity Conference},
-	pages        = {31:1--31:27}
-}
 @article{bfkp16,
 	title        = {Triangle Counting in Dynamic Graph Streams},
 	author       = {Laurent Bulteau and Vincent Froese and Konstantin Kutzkov and Rasmus Pagh},
@@ -1464,6 +1279,14 @@
 	year         = 2006,
 	booktitle    = pods,
 	pages        = {253--262}
+}
+@inproceedings{bfl+21,
+	title        = {Efficient Coreset Constructions via Sensitivity Sampling},
+	author       = {Vladimir Braverman and Dan Feldman and Harry Lang and Adiel Statman and Samson Zhou},
+	year         = 2021,
+	booktitle    = {Asian Conference on Machine Learning ({ACML})},
+	volume       = 157,
+	pages        = {948--963}
 }
 @inproceedings{bfm+07,
 	title        = {In Transit to Constant Time Shortest-Path Queries in Road Networks},
@@ -1482,18 +1305,10 @@
 	title        = {Optimal Search in Trees},
 	author       = {Yosi Ben{-}Asher and Eitan Farchi and Ilan Newman},
 	year         = 1999,
-	journal      = siamj,
+	journal      = sicomp,
 	volume       = 28,
 	number       = 6,
 	pages        = {2090--2102}
-}
-@article{bfnn19,
-	title        = {Parameterized aspects of triangle enumeration},
-	author       = {Matthias Bentert and Till Fluschnik and Andre Nichterlein and Rolf Niedermeier},
-	year         = 2019,
-	journal      = jcss,
-	volume       = 103,
-	pages        = {61--77}
 }
 @inproceedings{bfo13,
 	title        = {Inducing Suffix and Lcp Arrays in External Memory},
@@ -1554,13 +1369,6 @@
 	number       = 4,
 	pages        = {210--213}
 }
-@inproceedings{bgl17,
-	title        = {A Dichotomy for Regular Expression Membership Testing},
-	author       = {Karl Bringmann and Allan Gronlund and Kasper Green Larsen},
-	year         = 2017,
-	booktitle    = focs,
-	pages        = {307--318}
-}
 @article{bgm10,
 	title        = {Incremental XPath evaluation},
 	author       = {Henrik Bjorklund and Wouter Gelade and Wim Martens},
@@ -1588,14 +1396,6 @@
 	number       = 1,
 	pages        = {6:1--6:33}
 }
-@article{bgss16,
-	title        = {Near-optimal online multiselection in internal and external memory},
-	author       = {J{\'{e}}r{\'{e}}my Barbay and Ankur Gupta and Srinivasa Rao Satti and Jonathan Sorenson},
-	year         = 2016,
-	journal      = {J. Discrete Algorithms},
-	volume       = 36,
-	pages        = {3--17}
-}
 @inproceedings{bgw00,
 	title        = {Range Searching Over Tree Cross Products},
 	author       = {Adam L. Buchsbaum and Michael T. Goodrich and Jeffery Westbrook},
@@ -1603,20 +1403,13 @@
 	booktitle    = esa,
 	pages        = {120--131}
 }
-@inproceedings{bhg+21,
-	title        = {New Techniques and Fine-Grained Hardness for Dynamic Near-Additive Spanners},
-	author       = {Thiago Bergamaschi and Monika Henzinger and Maximilian Probst Gutenberg and Virginia Vassilevska Williams and Nicole Wein},
-	year         = 2021,
-	booktitle    = soda,
-	pages        = {1836--1855}
-}
 @article{bhlp11,
 	title        = {Tolerating the community detection resolution limit with edge weighting},
 	author       = {Jonathan W. Berry and Bruce Hendrickson and Randall A. LaViolette and Cynthia A. Phillips},
 	year         = 2011,
 	journal      = {Phys. Rev. E},
 	volume       = 83,
-	number       = 5,
+	number       = {},
 	pages        = {056119}
 }
 @inproceedings{bhlz10,
@@ -1656,28 +1449,12 @@
 	booktitle    = focs,
 	pages        = {617--626}
 }
-@article{bkk17,
-	title        = {Counting Thin Subgraphs via Packings Faster than Meet-in-the-Middle Time},
-	author       = {Andreas Bjorklund and Petteri Kaski and Lukasz Kowalik},
-	year         = 2017,
-	journal      = talg,
-	volume       = 13,
-	number       = 4,
-	pages        = {48:1--48:26}
-}
 @inproceedings{bkmt95,
 	title        = {New Upper Bounds for Generalized Intersection Searching Problems},
 	author       = {Panayiotis Bozanis and Nectarios Kitsios and Christos Makris and Athanasios K. Tsakalidis},
 	year         = 1995,
 	booktitle    = icalp,
 	pages        = {464--474}
-}
-@inproceedings{bkp14,
-	title        = {Internal {DLA:} Efficient Simulation of a Physical Growth Model},
-	author       = {Karl Bringmann and Fabian Kuhn and Konstantinos Panagiotou and Ueli Peter and Henning Thomas},
-	year         = 2014,
-	booktitle    = icalp,
-	pages        = {247--258}
 }
 @inproceedings{bks01,
 	title        = {The Skyline Operator},
@@ -1792,13 +1569,6 @@
 	booktitle    = icde,
 	pages        = {517--528}
 }
-@inproceedings{blsz19,
-	title        = {Approximate Counting of k-Paths: Deterministic and in Polynomial Space},
-	author       = {Andreas Bj{\"{o}}rklund and Daniel Lokshtanov and Saket Saurabh and Meirav Zehavi},
-	year         = 2019,
-	booktitle    = icalp,
-	pages        = {24:1--24:15}
-}
 @article{bm80,
 	title        = {Efficient Worst-Case Data Structures for Range Searching},
 	author       = {Jon Louis Bentley and Hermann A. Maurer},
@@ -1857,20 +1627,6 @@
 	year         = 2006,
 	booktitle    = icde
 }
-@inproceedings{bps20,
-	title        = {Linear Time Subgraph Counting, Graph Degeneracy, and the Chasm at Size Six},
-	author       = {Suman K. Bera and Noujan Pashanasangi and C. Seshadhri},
-	year         = 2020,
-	booktitle    = itcs,
-	pages        = {38:1--38:20}
-}
-@inproceedings{bps21,
-	title        = {Near-Linear Time Homomorphism Counting in Bounded Degeneracy Graphs: The Barrier of Long Induced Cycles},
-	author       = {Suman K. Bera and Noujan Pashanasangi and C. Seshadhri},
-	year         = 2021,
-	booktitle    = soda,
-	pages        = {2315--2332}
-}
 @article{bpv04,
 	title        = {Incremental validation of {XML} documents},
 	author       = {Andrey Balmin and Yannis Papakonstantinou and Victor Vianu},
@@ -1879,13 +1635,6 @@
 	volume       = 29,
 	number       = 4,
 	pages        = {710--751}
-}
-@inproceedings{bpwz14,
-	title        = {Listing Triangles},
-	author       = {Andreas Bjorklund and Rasmus Pagh and Virginia Vassilevska Williams and Uri Zwick},
-	year         = 2014,
-	booktitle    = icalp,
-	pages        = {223--234}
 }
 @article{br94,
 	title        = {Improved Approximations for the Steiner Tree Problem},
@@ -1903,19 +1652,11 @@
 	journal      = {CoRR}
 }
 @inproceedings{bs20,
-	title        = {How the degeneracy helps for triangle counting in graph streams},
+	title        = {How the Degeneracy Helps for Triangle Counting in Graph Streams},
 	author       = {Suman K. Bera and C. Seshadhri},
-	year         = {2020 (to appear)},
+	year         = 2020,
 	booktitle    = pods,
 	pages        = {457--467}
-}
-@article{bs74,
-	title        = {Cycles of even length in graphs},
-	author       = {A. Bondy and M. Simonovits},
-	year         = 1974,
-	journal      = {Journal of Combinatorial Theory},
-	volume       = 16,
-	pages        = {97--105}
 }
 @article{bs80,
 	title        = {Decomposable Searching Problems {I}: Static-to-Dynamic Transformation},
@@ -1956,6 +1697,15 @@
 	booktitle    = icalp,
 	pages        = {256--267}
 }
+@article{bt96,
+	title        = {On the Fourier Spectrum of Monotone Functions},
+	author       = {Nader H. Bshouty and Christino Tamon},
+	year         = 1996,
+	journal      = jacm,
+	volume       = 43,
+	number       = 4,
+	pages        = {747--770}
+}
 @incollection{bu16,
 	title        = {Active Learning - Modern Learning Theory},
 	author       = {Maria{-}Florina Balcan and Ruth Urner},
@@ -1994,26 +1744,6 @@
 	booktitle    = icde,
 	pages        = {481--492}
 }
-@article{bw12,
-	title        = {Regularity Lemmas and Combinatorial Algorithms},
-	author       = {
-		Nikhil Bansal and
-
-		Ryan Williams
-	},
-	year         = 2012,
-	journal      = {Theory Comput.},
-	volume       = 8,
-	number       = 1,
-	pages        = {69--94}
-}
-@inproceedings{bw17,
-	title        = {Clique-Based Lower Bounds for Parsing Tree-Adjoining Grammars},
-	author       = {Karl Bringmann and Philip Wellnitz},
-	year         = 2017,
-	booktitle    = cpm,
-	pages        = {12:1--12:14}
-}
 @article{bz07,
 	title        = {Short cycle connectivity},
 	author       = {V. Batagelj and M. Zaversnik},
@@ -2026,7 +1756,7 @@
 	title        = {Random Sampling, Halfspace Range Reporting, and Construction of ($<$= k)-Levels in Three Dimensions},
 	author       = {Timothy M. Chan},
 	year         = 2000,
-	journal      = siamj,
+	journal      = sicomp,
 	volume       = 30,
 	number       = 2,
 	pages        = {561--575}
@@ -2041,7 +1771,7 @@
 	title        = {Semi-Online Maintenance of Geometric Optima and Measures},
 	author       = {Timothy M. Chan},
 	year         = 2003,
-	journal      = siamj,
+	journal      = sicomp,
 	volume       = 32,
 	number       = 3,
 	pages        = {700--716}
@@ -2054,13 +1784,13 @@
 	pages        = {1196--1202}
 }
 @article{c09,
-	title        = {Graph Twiddling in a MapReduce World},
-	author       = {Jonathan Cohen},
+	title        = {On Coresets for k-Median and k-Means Clustering in Metric and Euclidean Spaces and Their Applications},
+	author       = {Ke Chen},
 	year         = 2009,
-	journal      = {Computing in Science and Engineering},
-	volume       = 11,
-	number       = 4,
-	pages        = {29--41}
+	journal      = sicomp,
+	volume       = 39,
+	number       = 3,
+	pages        = {923--947}
 }
 @article{c10,
 	title        = {A dynamic data structure for 3-D convex hulls and 2-D nearest neighbor queries},
@@ -2083,27 +1813,10 @@
 	title        = {More Algorithms for All-Pairs Shortest Paths in Weighted Graphs},
 	author       = {Timothy M. Chan},
 	year         = 2010,
-	journal      = siamj,
+	journal      = sicomp,
 	volume       = 39,
 	number       = 5,
 	pages        = {2075--2089}
-}
-@article{c12,
-	title        = {Optimal Partition Trees},
-	author       = {Timothy M. Chan},
-	year         = 2012,
-	journal      = dcg,
-	volume       = 47,
-	number       = 4,
-	pages        = {661--690}
-}
-@article{c19,
-	title        = {Hardness of {RNA} folding problem with four symbols},
-	author       = {Yi{-}Jun Chang},
-	year         = 2019,
-	journal      = {Theor. Comput. Sci.},
-	volume       = 757,
-	pages        = {11--26}
 }
 @inproceedings{c71,
 	title        = {The Complexity of Theorem-Proving Procedures},
@@ -2125,7 +1838,7 @@
 	title        = {Filtering Search: A New Approach to Query-Answering},
 	author       = {Bernard Chazelle},
 	year         = 1986,
-	journal      = siamj,
+	journal      = sicomp,
 	volume       = 15,
 	number       = 3,
 	pages        = {703--724}
@@ -2134,7 +1847,7 @@
 	title        = {A Functional Approach to Data Structures and Its Use in Multidimensional Searching},
 	author       = {Bernard Chazelle},
 	year         = 1988,
-	journal      = siamj,
+	journal      = sicomp,
 	volume       = 17,
 	number       = 3,
 	pages        = {427--462}
@@ -2160,18 +1873,10 @@
 	title        = {An Optimal Algorithm for Intersecting Three-Dimensional Convex Polyhedra},
 	author       = {Bernard Chazelle},
 	year         = 1992,
-	journal      = siamj,
+	journal      = sicomp,
 	volume       = 21,
 	number       = 4,
 	pages        = {671--696}
-}
-@article{c93,
-	title        = {An Optimal Convex Hull Algorithm in Any Fixed Dimension},
-	author       = {Bernard Chazelle},
-	year         = 1993,
-	journal      = dcg,
-	volume       = 10,
-	pages        = {377--409}
 }
 @article{c95,
 	title        = {Las Vegas Algorithms for Linear and Integer Programming when the Dimension is Small},
@@ -2208,9 +1913,9 @@
 }
 @article{c99,
 	title        = {Remarks on k-level algorithms in the plane},
-	author       = {Timothy M. Chan},
-	year         = 1999,
-	journal      = {Technical Report}
+	author       = {Timothy Chan},
+	year         = 1992,
+	journal      = {Preprint}
 }
 @article{cal94,
 	title        = {Improving Generalization with Active Learning},
@@ -2267,14 +1972,6 @@
 	number       = 4,
 	pages        = 17
 }
-@article{cc21,
-	title        = {Many cliques with few edges and bounded maximum degree},
-	author       = {Debsoumya Chakraborti and Da Qi Chen},
-	year         = 2021,
-	journal      = {J. Comb. Theory, Ser. {B}},
-	volume       = 151,
-	pages        = {1--20}
-}
 @article{ccj10,
 	title        = {Retrieving Top-k Prestige-Based Relevant Spatial Web Objects},
 	author       = {Xin Cao and Gao Cong and Christian S. Jensen},
@@ -2290,14 +1987,6 @@
 	year         = 2011,
 	booktitle    = sigmod,
 	pages        = {373--384}
-}
-@inproceedings{ccls20,
-	title        = {{MPC} for {MPC:} Secure Computation on a Massively Parallel Computing Architecture},
-	author       = {T.{-}H. Hubert Chan and Kai{-}Min Chung and Wei{-}Kai Lin and Elaine Shi},
-	year         = 2020,
-	booktitle    = itcs,
-	volume       = 151,
-	pages        = {75:1--75:52}
 }
 @article{ccm13,
 	title        = {Skyline queries, front and back},
@@ -2326,6 +2015,13 @@
 	number       = 1,
 	pages        = {39--46}
 }
+@inproceedings{cdh+25,
+	title        = {Relative-error monotonicity testing},
+	author       = {Xi Chen and Anindya De and Yizhi Huang and Yuhao Li and Shivam Nadimpalli and Rocco A. Servedio and Tianqi Yang},
+	year         = 2025,
+	booktitle    = soda,
+	pages        = {373--402}
+}
 @inproceedings{cdim02,
 	title        = {Comparing Data Streams Using Hamming Norms (How to Zero In)},
 	author       = {Graham Cormode and Mayur Datar and Piotr Indyk and S. Muthukrishnan},
@@ -2342,13 +2038,6 @@
 	number       = 1,
 	pages        = {41--57}
 }
-@inproceedings{cdm17,
-	title        = {Homomorphisms are a good basis for counting small subgraphs},
-	author       = {Radu Curticapean and Holger Dell and D{\'{a}}niel Marx},
-	year         = 2017,
-	booktitle    = stoc,
-	pages        = {210--223}
-}
 @inproceedings{cdtw00,
 	title        = {NiagaraCQ: {A} Scalable Continuous Query System for Internet Databases},
 	author       = {Jianjun Chen and David J. DeWitt and Feng Tian and Yuan Wang},
@@ -2362,15 +2051,6 @@
 	year         = 2004,
 	booktitle    = sigmod,
 	pages        = {47--58}
-}
-@article{cf14,
-	title        = {A unifying framework for {\(\mathscr{l}\)} 0-sampling algorithms},
-	author       = {Graham Cormode and Donatella Firmani},
-	year         = 2014,
-	journal      = {Distributed Parallel Databases},
-	volume       = 32,
-	number       = 3,
-	pages        = {315--335}
 }
 @inproceedings{cg07,
 	title        = {Sketching probabilistic data streams},
@@ -2452,13 +2132,6 @@
 	year         = 2014,
 	booktitle    = edbt,
 	pages        = {463--474}
-}
-@inproceedings{cgr95,
-	title        = {Topology {B}-Trees and Their Applications},
-	author       = {Paul B. Callahan and Michael T. Goodrich and Kumar Ramaiyer},
-	year         = 1995,
-	booktitle    = wads,
-	pages        = {381--392}
 }
 @article{cik16,
 	title        = {Distributed Data Deduplication},
@@ -2566,15 +2239,6 @@
 	year         = 2009,
 	booktitle    = sigmod,
 	pages        = {707--718}
-}
-@article{ck21,
-	title        = {On the Enumeration Complexity of Unions of Conjunctive Queries},
-	author       = {Nofar Carmeli and Markus Kroll},
-	year         = 2021,
-	journal      = tods,
-	volume       = 46,
-	number       = 2,
-	pages        = {5:1--5:41}
 }
 @inproceedings{ck97,
 	title        = {On Saying ``Enough Already!" in {SQL}},
@@ -2757,29 +2421,6 @@
 	number       = 3,
 	pages        = 15
 }
-@inproceedings{cm14,
-	title        = {Complexity of Counting Subgraphs: Only the Boundedness of the Vertex-Cover Number Counts},
-	author       = {Radu Curticapean and D{\'{a}}niel Marx},
-	year         = 2014,
-	booktitle    = focs,
-	pages        = {130--139}
-}
-@inproceedings{cm16,
-	title        = {Counting subgraphs in relational event graphs},
-	author       = {Chanchary, Farah and Maheshwari, Anil},
-	year         = 2016,
-	booktitle    = {International Workshop on Algorithms and Computation},
-	pages        = {194--206}
-}
-@article{cm19,
-	title        = {Time Windowed Data Structures for Graphs.},
-	author       = {Chanchary, Farah and Maheshwari, Anil},
-	year         = 2019,
-	journal      = {J. Graph Algorithms Appl.},
-	volume       = 23,
-	number       = 2,
-	pages        = {191--226}
-}
 @inproceedings{cmks03,
 	title        = {XSEarch: A Semantic Search Engine for {XML}},
 	author       = {Sara Cohen and Jonathan Mamou and Yaron Kanza and Yehoshua Sagiv},
@@ -2794,23 +2435,6 @@
 	booktitle    = sigmod,
 	pages        = {263--274}
 }
-@article{cms20,
-	title        = {Querying relational event graphs using colored range searching data structures},
-	author       = {Chanchary, Farah and Maheshwari, Anil and Smid, Michiel},
-	year         = 2020,
-	journal      = {Discrete Applied Mathematics},
-	volume       = 286,
-	pages        = {51--61}
-}
-@article{cms90,
-	title        = {Dynamic Deferred Data Structuring},
-	author       = {Yu{-}Tai Ching and Kurt Mehlhorn and Michiel H. M. Smid},
-	year         = 1990,
-	journal      = ipl,
-	volume       = 35,
-	number       = 1,
-	pages        = {37--40}
-}
 @article{cmy11,
 	title        = {Algorithms for distributed functional monitoring},
 	author       = {Graham Cormode and S. Muthukrishnan and Ke Yi},
@@ -2824,7 +2448,7 @@
 	title        = {Arboricity and Subgraph Listing Algorithms},
 	author       = {Chiba, N. and Nishizeki, T.},
 	year         = 1985,
-	journal      = siamj,
+	journal      = sicomp,
 	volume       = 14,
 	number       = 1,
 	pages        = {210--223}
@@ -2849,10 +2473,7 @@
 	title        = {Fast Set Intersection and Two-Patterns Matching},
 	author       = {Hagai Cohen and Ely Porat},
 	year         = 2010,
-	journal      = {Theor. Comput. Sci.},
 	booktitle    = latin,
-	volume       = 411,
-	number       = {40-42},
 	pages        = {234--242}
 }
 @article{cpr+11,
@@ -2880,21 +2501,27 @@
 	number       = 5,
 	pages        = {389--400}
 }
-@article{cr00,
-	title        = {Conjunctive query containment revisited},
-	author       = {Chandra Chekuri and Anand Rajaraman},
-	year         = 2000,
-	journal      = tcs,
-	volume       = 239,
-	number       = 2,
-	pages        = {211--229}
-}
 @inproceedings{crl07,
 	title        = {Privacy Skyline: Privacy with Multidimensional Adversarial Knowledge},
 	author       = {Bee-Chung Chen and Raghu Ramakrishnan and Kristen LeFevre},
 	year         = 2007,
 	booktitle    = vldb,
 	pages        = {770--781}
+}
+@inproceedings{cs13,
+	title        = {Optimal bounds for monotonicity and lipschitz testing over hypercubes and hypergrids},
+	author       = {Deeparnab Chakrabarty and C. Seshadhri},
+	year         = 2013,
+	booktitle    = stoc,
+	pages        = {419--428}
+}
+@article{cs14,
+	title        = {An Optimal Lower Bound for Monotonicity Testing over Hypergrids},
+	author       = {Deeparnab Chakrabarty and C. Seshadhri},
+	year         = 2014,
+	journal      = {Theory of Computing},
+	volume       = 10,
+	pages        = {453--464}
 }
 @article{cs89,
 	title        = {Application of Random Sampling in Computational Geometry, II},
@@ -2911,31 +2538,12 @@
 	booktitle    = sigmod,
 	pages        = {277--288}
 }
-@article{csw92,
-	title        = {Quasi-Optimal Upper Bounds for Simplex Range Searching and New Zone Theorems},
-	author       = {Bernard Chazelle and Micha Sharir and Emo Welzl},
-	year         = 1992,
-	journal      = {Algorithmica},
-	volume       = 8,
-	number       = {5{\&}6},
-	pages        = {407--429}
-}
 @inproceedings{cszy09,
 	title        = {Monitoring path nearest neighbor in road networks},
 	author       = {Zaiben Chen and Heng Tao Shen and Xiaofang Zhou and Jeffrey Xu Yu},
 	year         = 2009,
 	booktitle    = sigmod,
 	pages        = {591--602}
-}
-@inproceedings{ct15,
-	title        = {Optimal Deterministic Algorithms for 2-d and 3-d Shallow Cuttings},
-	author       = {Timothy M. Chan and Konstantinos Tsakalidis},
-	year         = 2015,
-	journal      = {Algorithmica},
-	booktitle    = socg,
-	volume       = 34,
-	number       = 4,
-	pages        = {719--732}
 }
 @article{ct16,
 	title        = {Optimal Deterministic Algorithms for 2-d and 3-d Shallow Cuttings},
@@ -2945,13 +2553,6 @@
 	volume       = 56,
 	number       = 4,
 	pages        = {866--881}
-}
-@inproceedings{ctg+21,
-	title        = {Tractable Orders for Direct Access to Ranked Answers of Conjunctive Queries},
-	author       = {Nofar Carmeli and Nikolaos Tziavelis and Wolfgang Gatterbauer and Benny Kimelfeld and Mirek Riedewald},
-	year         = 2021,
-	booktitle    = pods,
-	pages        = {325--341}
 }
 @inproceedings{ctt+11,
 	title        = {Clustering very large multi-dimensional datasets with MapReduce},
@@ -2973,14 +2574,6 @@
 	year         = 2002,
 	booktitle    = vldb,
 	pages        = {263--274}
-}
-@article{cw89,
-	title        = {Quasi-Optimal Range Searching in Space of Finite {VC}-Dimension},
-	author       = {Bernard Chazelle and Emo Welzl},
-	year         = 1989,
-	journal      = dcg,
-	volume       = 4,
-	pages        = {467--489}
 }
 @inproceedings{cww10,
 	title        = {Scalable influence maximization for prevalent viral marketing in large-scale social networks},
@@ -3005,26 +2598,12 @@
 	booktitle    = vldb,
 	pages        = {876--887}
 }
-@inproceedings{cy17,
-	title        = {Two-Level Sampling for Join Size Estimation},
-	author       = {Yu Chen and Ke Yi},
-	year         = 2017,
-	booktitle    = sigmod,
-	pages        = {759--774}
-}
 @inproceedings{cy20,
 	title        = {Random Sampling and Size Estimation Over Cyclic Joins},
 	author       = {Yu Chen and Ke Yi},
 	year         = 2020,
 	booktitle    = icdt,
 	pages        = {7:1--7:18}
-}
-@inproceedings{czb+20,
-	title        = {Answering (Unions of) Conjunctive Queries using Random Access and Random-Order Enumeration},
-	author       = {Nofar Carmeli and Shai Zeevi and Christoph Berkholz and Benny Kimelfeld and Nicole Schweikardt},
-	year         = 2020,
-	booktitle    = pods,
-	pages        = {393--409}
 }
 @inproceedings{czf04,
 	title        = {{R-MAT}: A Recursive Model for Graph Mining},
@@ -3070,13 +2649,6 @@
 	volume       = 156,
 	number       = 13,
 	pages        = {2493--2500}
-}
-@inproceedings{d20,
-	title        = {Fine-Grained Complexity Analysis of Queries: From Decision to Counting and Enumeration},
-	author       = {Arnaud Durand},
-	year         = 2020,
-	booktitle    = pods,
-	pages        = {331--346}
 }
 @article{d50,
 	title        = {A Decomposition Theorem for Partially Ordered Sets},
@@ -3136,6 +2708,15 @@
 	booktitle    = www,
 	pages        = {271--280}
 }
+@article{ddh+09,
+	title        = {Sampling Algorithms and Coresets for $\ell_p$ Regression},
+	author       = {Anirban Dasgupta and Petros Drineas and Boulos Harb and Ravi Kumar and Michael W. Mahoney},
+	year         = 2009,
+	journal      = sicomp,
+	volume       = 38,
+	number       = 5,
+	pages        = {2060--2078}
+}
 @article{des+12,
 	title        = {Fast Computation and Applications of Genome Mappability},
 	author       = {Thomas Derrien and Jordi Estelle and Santiago Marco Sola and David G. Knowles and Emanuele Raineri and Roderic Guigo and Paolo Ribeca},
@@ -3165,20 +2746,11 @@
 	booktitle    = osdi,
 	pages        = {137--150}
 }
-@article{dg07,
-	title        = {First-order queries on structures of bounded degree are computable with constant delay},
-	author       = {Arnaud Durand and Etienne Grandjean},
-	year         = 2007,
-	journal      = {{ACM} Trans. Comput. Log.},
-	volume       = 8,
-	number       = 4,
-	pages        = 21
-}
 @article{dgim02,
 	title        = {Maintaining Stream Statistics over Sliding Windows},
 	author       = {Mayur Datar and Aristides Gionis and Piotr Indyk and Rajeev Motwani},
 	year         = 2002,
-	journal      = siamj,
+	journal      = sicomp,
 	volume       = 31,
 	number       = 6,
 	pages        = {1794--1813}
@@ -3243,26 +2815,11 @@
 	number       = 4,
 	pages        = {255--266}
 }
-@inproceedings{dk18,
-	title        = {Compressed Representations of Conjunctive Query Results},
-	author       = {Shaleen Deep and Paraschos Koutris},
-	year         = 2018,
-	booktitle    = pods,
-	pages        = {307--322}
-}
-@inproceedings{dk21,
-	title        = {Ranked Enumeration of Conjunctive Query Results},
-	author       = {Shaleen Deep and Paraschos Koutris},
-	year         = 2021,
-	booktitle    = icdt,
-	volume       = 186,
-	pages        = {5:1--5:19}
-}
 @article{dkm+94,
 	title        = {Dynamic Perfect Hashing: Upper and Lower Bounds},
 	author       = {Martin Dietzfelbinger and Anna R. Karlin and Kurt Mehlhorn and Friedhelm Meyer auf der Heide and Hans Rohnert and Robert Endre Tarjan},
 	year         = 1994,
-	journal      = siamj,
+	journal      = sicomp,
 	volume       = 23,
 	number       = 4,
 	pages        = {738--761}
@@ -3303,40 +2860,12 @@
 	booktitle    = {APPROX-RANDOM},
 	pages        = {517--528}
 }
-@inproceedings{dks17,
-	title        = {Finding even cycles faster via capped k-walks},
-	author       = {Soren Dahlgaard and Mathias Bak Tejs Knudsen and Morten Stockel},
-	year         = 2017,
-	booktitle    = stoc,
-	pages        = {112--120},
-	editor       = {Hamed Hatami and Pierre McKenzie and Valerie King}
-}
-@inproceedings{dks18,
-	title        = {Lower Bounds for Combinatorial Algorithms for Boolean Matrix Multiplication},
-	author       = {
-		Debarati Das and
-
-		Michal Koucky and
-
-		Michael E. Saks
-	},
-	year         = 2018,
-	booktitle    = stacs,
-	pages        = {23:1--23:14}
-}
 @inproceedings{dlm00,
 	title        = {Adaptive set intersections, unions, and differences},
 	author       = {Erik D. Demaine and Alejandro L{\'o}pez-Ortiz and J. Ian Munro},
 	year         = 2000,
 	booktitle    = soda,
 	pages        = {743--752}
-}
-@inproceedings{dlt23,
-	title        = {On Join Sampling and the Hardness of Combinatorial Output-Sensitive Join Algorithms},
-	author       = {Shiyuan Deng and Shangqi Lu and Yufei Tao},
-	year         = 2023,
-	booktitle    = pods,
-	pages        = {99--111}
 }
 @inproceedings{dlw09,
 	title        = {On Cartesian Trees and Range Minimum Queries},
@@ -3408,13 +2937,6 @@
 	number       = 5,
 	pages        = {1102--1116}
 }
-@inproceedings{dp88,
-	title        = {Tree-Clustering Schemes for Constraint-Processing},
-	author       = {Rina Dechter and Judea Pearl},
-	year         = 1988,
-	booktitle    = aaai,
-	pages        = {150--154}
-}
 @article{dqj+10,
 	title        = {Hadoop++: Making a Yellow Elephant Run Like a Cheetah (Without It Even Noticing)},
 	author       = {Jens Dittrich and Jorge-Arnulfo Quiane-Ruiz and Alekh Jindal and Yagiz Kargin and Vinay Setty and Jorg Schad},
@@ -3442,7 +2964,7 @@
 	title        = {Fast and Optimal Parallel Multidimensional Search in {PRAM}s with Applications to Linear Programming and Related Problems},
 	author       = {Martin E. Dyer and Sandeep Sen},
 	year         = 2000,
-	journal      = siamj,
+	journal      = sicomp,
 	volume       = 30,
 	number       = 5,
 	pages        = {1443--1461}
@@ -3486,21 +3008,6 @@
 	number       = 3,
 	pages        = {289--308}
 }
-@inproceedings{dsbc23,
-	title        = {Degree Sequence Bound for Join Cardinality Estimation},
-	author       = {Kyle Deeds and Dan Suciu and Magda Balazinska and Walter Cai},
-	year         = 2023,
-	booktitle    = icdt,
-	volume       = 255,
-	pages        = {8:1--8:18}
-}
-@inproceedings{dss14,
-	title        = {Enumerating answers to first-order queries over databases of low degree},
-	author       = {Arnaud Durand and Nicole Schweikardt and Luc Segoufin},
-	year         = 2014,
-	booktitle    = pods,
-	pages        = {121--131}
-}
 @article{dsst89,
 	title        = {Making Data Structures Persistent},
 	author       = {James R. Driscoll and Neil Sarnak and Daniel Dominic Sleator and Robert Endre Tarjan},
@@ -3522,22 +3029,6 @@
 	author       = {Dariusz Dereniowski and Stefan Tiegel and Przemyslaw Uznanski and Daniel Wolleb{-}Graf},
 	booktitle    = {Proceedings of Symposium on Simplicity in Algorithms ({SOSA})},
 	pages        = {4:1--4:17}
-}
-@inproceedings{dvw19,
-	title        = {Graph pattern detection: hardness for all induced patterns and faster non-induced cycles},
-	author       = {Mina Dalirrooyfard and Thuy Duong Vuong and Virginia Vassilevska Williams},
-	year         = 2019,
-	booktitle    = stoc,
-	pages        = {1167--1178}
-}
-@article{dvw21,
-	title        = {Graph Pattern Detection: Hardness for all Induced Patterns and Faster Noninduced Cycles},
-	author       = {Mina Dalirrooyfard and Thuy Duong Vuong and Virginia Vassilevska Williams},
-	year         = 2021,
-	journal      = siamj,
-	volume       = 50,
-	number       = 5,
-	pages        = {1627--1662}
 }
 @inproceedings{dyw+07,
 	title        = {Finding Top-k Min-Cost Connected Trees in Databases},
@@ -3578,15 +3069,6 @@
 	number       = 3,
 	pages        = {675--693}
 }
-@article{e00,
-	title        = {Space-Time Tradeoffs for Emptiness Queries},
-	author       = {Jeff Erickson},
-	year         = 2000,
-	journal      = siamj,
-	volume       = 29,
-	number       = 6,
-	pages        = {1968--1996}
-}
 @inproceedings{e05,
 	title        = {Lower bounds for external algebraic decision trees},
 	author       = {Jeff Erickson},
@@ -3619,15 +3101,6 @@
 	volume       = 13,
 	pages        = {209--219}
 }
-@article{e94,
-	title        = {Arboricity and Bipartite Subgraph Listing Algorithms},
-	author       = {David Eppstein},
-	year         = 1994,
-	journal      = ipl,
-	volume       = 51,
-	number       = 4,
-	pages        = {207--211}
-}
 @inproceedings{e95,
 	title        = {On the relative complexities of some geometric problems},
 	author       = {Jeff Erickson},
@@ -3651,15 +3124,6 @@
 	booktitle    = pods,
 	pages        = {235--243}
 }
-@article{e99,
-	title        = {Subgraph Isomorphism in Planar Graphs and Related Problems},
-	author       = {David Eppstein},
-	year         = 1999,
-	journal      = {J. Graph Algorithms Appl.},
-	volume       = 3,
-	number       = 3,
-	pages        = {1--27}
-}
 @article{ea12,
 	title        = {ReStore: Reusing Results of MapReduce Jobs},
 	author       = {Iman Elghandour and Ashraf Aboulnaga},
@@ -3675,14 +3139,6 @@
 	year         = 2003,
 	booktitle    = pods,
 	pages        = {211--222}
-}
-@article{egst12,
-	title        = {Extended dynamic subgraph statistics using h-index parameterized data structures},
-	author       = {David Eppstein and Michael T. Goodrich and Darren Strash and Lowell Trott},
-	year         = 2012,
-	journal      = tcs,
-	volume       = 447,
-	pages        = {44--52}
 }
 @inproceedings{ehmn11,
 	title        = {Dynamic Range Majority Data Structures},
@@ -3713,11 +3169,7 @@
 	pages        = {519--532}
 }
 @inproceedings{eksx96,
-	title        = {
-		A Density-Based Algorithm for Discovering Clusters in Large Spatial
-
-		Databases with Noise
-	},
+	title        = {A Density-Based Algorithm for Discovering Clusters in Large Spatial Databases with Noise},
 	author       = {Martin Ester and Hans{-}Peter Kriegel and Jorg Sander and Xiaowei Xu},
 	year         = 1996,
 	booktitle    = kdd,
@@ -3732,38 +3184,12 @@
 	number       = 5,
 	pages        = {1603--1646}
 }
-@inproceedings{els10,
-	title        = {Listing All Maximal Cliques in Sparse Graphs in Near-Optimal Time},
-	author       = {David Eppstein and Maarten Loffler and Darren Strash},
-	year         = 2010,
-	booktitle    = isaac,
-	volume       = 6506,
-	pages        = {403--414}
-}
-@article{em02,
-	title        = {Curvature of co-links uncovers hidden thematic layers in the world wide web},
-	author       = {J.-P. Eckmann and E. Moses},
-	year         = 2002,
-	journal      = {Proceedings of the National Academy of Sciences of the United States of America},
-	volume       = 99,
-	number       = 9,
-	pages        = {5825--5829}
-}
 @inproceedings{em15,
 	title        = {Spatial{H}adoop: {A} MapReduce framework for spatial data},
 	author       = {Ahmed Eldawy and Mohamed F. Mokbel},
 	year         = 2015,
 	booktitle    = icde,
 	pages        = {1352--1363}
-}
-@article{em90,
-	title        = {Simulation of simplicity: a technique to cope with degenerate cases in geometric algorithms},
-	author       = {Herbert Edelsbrunner and Ernst P. Mucke},
-	year         = 1990,
-	journal      = {{ACM} Trans. Graph.},
-	volume       = 9,
-	number       = 1,
-	pages        = {66--104}
 }
 @article{eo82,
 	title        = {On the Equivalence of Some Rectangle Problems},
@@ -3783,7 +3209,7 @@
 	pages        = {137--157}
 }
 @inproceedings{erk93,
-	title        = {An Optimal Algorithm for the k-Levels, with Applications to Separation and Transversal Problems},
+	title        = {An Optimal Algorithm for the ({\textless}= k)-Levels, with Applications to Separation and Transversal Problems},
 	author       = {Hazel Everett and Jean{-}Marc Robert and Marc J. van Kreveld},
 	year         = 1993,
 	booktitle    = socg,
@@ -3837,15 +3263,6 @@
 	number       = 5,
 	pages        = {375--385}
 }
-@article{f04,
-	title        = {Hypergraphs, Entropy, and Inequalities},
-	author       = {Ehud Friedgut},
-	year         = 2004,
-	journal      = {Am. Math. Mon.},
-	volume       = 111,
-	number       = 9,
-	pages        = {749--760}
-}
 @book{f09,
 	title        = {Sampling Statistics},
 	author       = {Wayne A. Fuller},
@@ -3863,7 +3280,7 @@
 	title        = {Fast Algorithms for Shortest Paths in Planar Graphs, with Applications},
 	author       = {Greg N. Frederickson},
 	year         = 1987,
-	journal      = siamj,
+	journal      = sicomp,
 	volume       = 16,
 	number       = 6,
 	pages        = {1004--1022}
@@ -3876,15 +3293,6 @@
 	volume       = 104,
 	number       = 2,
 	pages        = {197--214}
-}
-@article{f97,
-	title        = {Ambivalent Data Structures for Dynamic 2-Edge-Connectivity and k Smallest Spanning Trees},
-	author       = {Greg N. Frederickson},
-	year         = 1997,
-	journal      = siamj,
-	volume       = 26,
-	number       = 2,
-	pages        = {484--538}
 }
 @article{f98,
 	title        = {A threshold of ln n for approximating set cover},
@@ -3968,15 +3376,6 @@
 	booktitle    = sigmod,
 	pages        = {115--126}
 }
-@article{fkll15,
-	title        = {Detecting and Counting Small Pattern Graphs},
-	author       = {Peter Floderus and Miroslaw Kowaluk and Andrzej Lingas and Eva{-}Marta Lundell},
-	year         = 2015,
-	journal      = {{SIAM} J. Discret. Math.},
-	volume       = 29,
-	number       = 3,
-	pages        = {1322--1339}
-}
 @article{fkms03,
 	title        = {Two-dimensional substring indexing},
 	author       = {Paolo Ferragina and Nick Koudas and S. Muthukrishnan and Divesh Srivastava},
@@ -3995,20 +3394,25 @@
 	number       = 3,
 	pages        = {538--544}
 }
+@inproceedings{fl11,
+	title        = {A unified framework for approximating and clustering data},
+	author       = {Dan Feldman and Michael Langberg},
+	year         = 2011,
+	booktitle    = stoc,
+	pages        = {569--578}
+}
+@inproceedings{fln+02,
+	title        = {Monotonicity testing over general poset domains},
+	author       = {Eldar Fischer and Eric Lehman and Ilan Newman and Sofya Raskhodnikova and Ronitt Rubinfeld and Alex Samorodnitsky},
+	year         = 2002,
+	booktitle    = stoc,
+	pages        = {474--483}
+}
 @inproceedings{fln01,
 	title        = {Optimal Aggregation Algorithms for Middleware},
 	author       = {Ronald Fagin and Amnon Lotem and Moni Naor},
 	year         = 2001,
 	booktitle    = pods
-}
-@article{flr+12,
-	title        = {Faster algorithms for finding and counting subgraphs},
-	author       = {Fedor V. Fomin and Daniel Lokshtanov and Venkatesh Raman and Saket Saurabh and B. V. Raghavendra Rao},
-	year         = 2012,
-	journal      = jcss,
-	volume       = 78,
-	number       = 3,
-	pages        = {698--706}
 }
 @inproceedings{fm83,
 	title        = {Probabilistic Counting},
@@ -4061,6 +3465,15 @@
 	year         = 2001,
 	booktitle    = sstd,
 	pages        = {257--278}
+}
+@article{fss20,
+	title        = {Turning Big Data Into Tiny Data: Constant-Size Coresets for k-Means, PCA, and Projective Clustering},
+	author       = {Dan Feldman and Melanie Schmidt and Christian Sohler},
+	year         = 2020,
+	journal      = sicomp,
+	volume       = 49,
+	number       = 3,
+	pages        = {601--657}
 }
 @article{fsst97,
 	title        = {Selective Sampling Using the Query by Committee Algorithm},
@@ -4160,7 +3573,7 @@
 	title        = {Communication-Efficient Parallel Sorting},
 	author       = {Michael T. Goodrich},
 	year         = 1999,
-	journal      = siamj,
+	journal      = sicomp,
 	volume       = 29,
 	number       = 2,
 	pages        = {416--432}
@@ -4271,6 +3684,22 @@
 	booktitle    = sigmetric,
 	pages        = {143--154}
 }
+@article{ggl+00,
+	title        = {Testing Monotonicity},
+	author       = {Oded Goldreich and Shafi Goldwasser and Eric Lehman and Dana Ron and Alex Samorodnitsky},
+	year         = 2000,
+	journal      = {Combinatorica},
+	volume       = 20,
+	number       = 3,
+	pages        = {301--337}
+}
+@inproceedings{gglr98,
+	title        = {Testing Monotonicity},
+	author       = {Oded Goldreich and Shafi Goldwasser and Eric Lehman and Dana Ron},
+	year         = 1998,
+	booktitle    = focs,
+	pages        = {426--435}
+}
 @article{ggr98,
 	title        = {Property Testing and its Connection to Learning and Approximation},
 	author       = {Oded Goldreich and Shafi Goldwasser and Dana Ron},
@@ -4286,15 +3715,6 @@
 	year         = 2005,
 	booktitle    = soda,
 	pages        = {156--165}
-}
-@article{ghi12,
-	title        = {Concurrency Control for Adaptive Indexing},
-	author       = {Goetz Graefe and Felix Halim and Stratos Idreos and Harumi A. Kuno and Stefan Manegold},
-	year         = 2012,
-	journal      = pvldb,
-	volume       = 5,
-	number       = 7,
-	pages        = {656--667}
 }
 @article{gi99,
 	title        = {Efficient Splitting and Merging Algorithms for Order Decomposable Problems},
@@ -4357,14 +3777,6 @@
 	booktitle    = vldb,
 	pages        = {758--769}
 }
-@inproceedings{gklp17,
-	title        = {Conditional Lower Bounds for Space/Time Tradeoffs},
-	author       = {Isaac Goldstein and Tsvi Kopelowitz and Moshe Lewenstein and Ely Porat},
-	year         = 2017,
-	booktitle    = wads,
-	publisher    = {Springer},
-	pages        = {421--436}
-}
 @inproceedings{gkms02,
 	title        = {How to Summarize the Universe: Dynamic Maintenance of Quantiles},
 	author       = {Anna C. Gilbert and Yannis Kotidis and S. Muthukrishnan and Martin Strauss},
@@ -4418,15 +3830,6 @@
 	booktitle    = alenex,
 	pages        = {38--51}
 }
-@article{gkw19,
-	title        = {A General Purpose Algorithm for Counting Simple Cycles and Simple Paths of Any Length},
-	author       = {Pierre{-}Louis Giscard and Nils M. Kriege and Richard C. Wilson},
-	year         = 2019,
-	journal      = {Algorithmica},
-	volume       = 81,
-	number       = 7,
-	pages        = {2716--2737}
-}
 @inproceedings{gl06,
 	title        = {Deferred Maintenance of Disk-Based Random Samples},
 	author       = {Rainer Gemulla and Wolfgang Lehner},
@@ -4469,23 +3872,6 @@
 	booktitle    = icde,
 	pages        = {304--310}
 }
-@article{gls03,
-	title        = {Robbers, marshals, and guards: game theoretic and logical characterizations of hypertree width},
-	author       = {Georg Gottlob and Nicola Leone and Francesco Scarcello},
-	year         = 2003,
-	journal      = jcss,
-	volume       = 66,
-	number       = 4,
-	pages        = {775--808}
-}
-@article{gls20,
-	title        = {Counting Subgraphs in Degenerate Graphs},
-	author       = {Lior Gishboliner and Yevgeny Levanzov and Asaf Shapira},
-	year         = 2020,
-	journal      = {Electron. Colloquium Comput. Complex.},
-	volume       = 27,
-	pages        = 177
-}
 @article{gms12,
 	title        = {The dynamic complexity of formal languages},
 	author       = {Wouter Gelade and Marcel Marquardt and Thomas Schwentick},
@@ -4517,15 +3903,6 @@
 	year         = 2007,
 	booktitle    = {ISMB/ECCB (Supplement of Bioinformatics)},
 	pages        = {195--204}
-}
-@article{go96,
-	title        = {Software Protection and Simulation on Oblivious RAMs},
-	author       = {Oded Goldreich and Rafail Ostrovsky},
-	year         = 1996,
-	journal      = jacm,
-	volume       = 43,
-	number       = 3,
-	pages        = {431--473}
 }
 @inproceedings{gp11,
 	title        = {External-Memory Network Analysis Algorithms for Naturally Sparse Graphs},
@@ -4621,14 +3998,6 @@
 	number       = 3,
 	pages        = {14:1--14:45}
 }
-@inproceedings{gt17c,
-	title        = {Entropy Bounds for Conjunctive Queries with Functional Dependencies},
-	author       = {Tomasz Gogacz and Szymon Torunczyk},
-	year         = 2017,
-	booktitle    = icdt,
-	volume       = 68,
-	pages        = {15:1--15:17}
-}
 @inproceedings{gt86,
 	title        = {A New Approach to the Maximum Flow Problem},
 	author       = {Andrew V. Goldberg and Robert Endre Tarjan},
@@ -4664,7 +4033,7 @@
 	title        = {Compressed Suffix Arrays and Suffix Trees with Applications to Text Indexing and String Matching},
 	author       = {Roberto Grossi and Jeffrey Scott Vitter},
 	year         = 2005,
-	journal      = siamj,
+	journal      = sicomp,
 	volume       = 35,
 	number       = 2,
 	pages        = {378--407}
@@ -4723,13 +4092,6 @@
 	number       = {2-3},
 	pages        = {131--309}
 }
-@inproceedings{h21,
-	title        = {Cover or Pack: New Upper and Lower Bounds for Massively Parallel Joins},
-	author       = {Xiao Hu},
-	year         = 2021,
-	booktitle    = pods,
-	pages        = {181--198}
-}
 @article{h96,
 	title        = {Recognizing\emph{P}\({}_{\mbox{3}}\)-Structure: {A} Switching Approach},
 	author       = {Ryan B. Hayward},
@@ -4771,15 +4133,6 @@
 	booktitle    = icde,
 	pages        = {266--275}
 }
-@article{hcww21,
-	title        = {Massively parallel algorithms for personalized pagerank},
-	author       = {Guanhao Hou and Xingguang Chen and Sibo Wang and Zhewei Wei},
-	year         = 2021,
-	journal      = pvldb,
-	volume       = 14,
-	number       = 9,
-	pages        = {1668--1680}
-}
 @inproceedings{hd08,
 	title        = {{OptRR}: Optimizing Randomized Response Schemes for Privacy-Preserving Data Mining},
 	author       = {Zhengli Huang and Wenliang Du},
@@ -4809,13 +4162,6 @@
 	volume       = 6,
 	number       = 3,
 	pages        = {211--219}
-}
-@inproceedings{hh99,
-	title        = {Ripple Joins for Online Aggregation},
-	author       = {Peter J. Haas and Joseph M. Hellerstein},
-	year         = 1999,
-	booktitle    = sigmod,
-	pages        = {287--298}
 }
 @inproceedings{hhlm07,
 	title        = {Processing Spatial-Keyword ({SK}) Queries in Geographic Information Retrieval ({GIR}) Systems},
@@ -4848,15 +4194,6 @@
 	booktitle    = sigmod,
 	pages        = {171--182}
 }
-@article{hiky12,
-	title        = {Stochastic Database Cracking: Towards Robust Adaptive Indexing in Main-Memory Column-Stores},
-	author       = {Felix Halim and Stratos Idreos and Panagiotis Karras and Roland H. C. Yap},
-	year         = 2012,
-	journal      = pvldb,
-	volume       = 5,
-	number       = 6,
-	pages        = {502--513}
-}
 @inproceedings{hjs05,
 	title        = {The Islands Approach to Nearest Neighbor Querying in Spatial Networks},
 	author       = {Xuegang Huang and Christian S. Jensen and Simonas Saltenis},
@@ -4871,21 +4208,15 @@
 	booktitle    = stoc,
 	pages        = {585--594}
 }
-@article{hk13,
-	title        = {Approximate Nearest Neighbor Search for Low-Dimensional Queries},
-	author       = {Sariel Har{-}Peled and Nirman Kumar},
-	year         = 2013,
-	journal      = sicomp,
-	volume       = 42,
-	number       = 1,
-	pages        = {138--159}
-}
-@inproceedings{hk20,
-	title        = {Parallel Algorithms for Sparse Matrix Multiplication and Join-Aggregate Queries},
-	author       = {Hu, Xiao and Yi, Ke},
-	year         = 2020,
-	booktitle    = pods,
-	pages        = {411–425}
+@article{hk07,
+  author       = {Sariel Har{-}Peled and
+                  Akash Kushal},
+  title        = {Smaller Coresets for k-Median and k-Means Clustering},
+  journal      = dcg,
+  volume       = {37},
+  number       = {1},
+  pages        = {3--19},
+  year         = {2007}
 }
 @article{hk73,
 	title        = {An n\({}^{\mbox{5/2}}\) Algorithm for Maximum Matchings in Bipartite Graphs},
@@ -4956,15 +4287,6 @@
 	number       = 4,
 	pages        = {525--539}
 }
-@article{hkss13,
-	title        = {Finding and listing induced paths and cycles},
-	author       = {Chinh T. Hoang and Marcin Kaminski and Joe Sawada and R. Sritharan},
-	year         = 2013,
-	journal      = {Discrete Applied Mathematics},
-	volume       = 161,
-	number       = {4-5},
-	pages        = {633--641}
-}
 @article{hky16,
 	title        = {The relationships among coarse-grained parallel models},
 	author       = {Xiao Hu and Paraschos Koutris and Ke Yi},
@@ -5006,13 +4328,6 @@
 	year         = 2006,
 	booktitle    = edbt,
 	pages        = {186--203}
-}
-@inproceedings{hm08,
-	title        = {Range Medians},
-	author       = {Sariel Har{-}Peled and S. Muthukrishnan},
-	year         = 2008,
-	booktitle    = esa,
-	pages        = {503--514}
 }
 @article{hmz03,
 	title        = {An external memory data structure for shortest path queries},
@@ -5119,13 +4434,13 @@
 	pages        = {619--630}
 }
 @article{hs11,
-	title        = {Approximate String Processing},
-	author       = {Marios Hadjieleftheriou and Divesh Srivastava},
+	title        = {Relative (\emph{p}, \emph{{\(\epsilon\)}})-Approximations in Geometry},
+	author       = {Sariel Har{-}Peled and Micha Sharir},
 	year         = 2011,
-	journal      = {Foundations and Trends in Databases},
-	volume       = 2,
-	number       = 4,
-	pages        = {267--402}
+	journal      = dcg,
+	volume       = 45,
+	number       = 3,
+	pages        = {462--496}
 }
 @article{hs99,
 	title        = {Distance Browsing in Spatial Databases},
@@ -5156,7 +4471,7 @@
 	title        = {Duality Between Prefetching and Queued Writing with Parallel Disks},
 	author       = {David A. Hutchinson and Peter Sanders and Jeffrey Scott Vitter},
 	year         = 2005,
-	journal      = siamj,
+	journal      = sicomp,
 	volume       = 34,
 	number       = 6,
 	pages        = {1443--1463}
@@ -5174,7 +4489,7 @@
 	title        = {Fast Algorithms for Finding Nearest Common Ancestors},
 	author       = {Dov Harel and Robert Endre Tarjan},
 	year         = 1984,
-	journal      = siamj,
+	journal      = sicomp,
 	volume       = 13,
 	number       = 2,
 	pages        = {338--355}
@@ -5283,20 +4598,6 @@
 	author       = {S. Ikiz and K. Vijay Garg},
 	journal      = {Tech. Rep., Department of Electrical and Computer Engineering, University of Texas at Austin.}
 }
-@inproceedings{ikm07,
-	title        = {Database Cracking},
-	author       = {Stratos Idreos and Martin L. Kersten and Stefan Manegold},
-	year         = 2007,
-	booktitle    = icdr,
-	pages        = {68--78}
-}
-@inproceedings{ikm09,
-	title        = {Self-organizing tuple reconstruction in column-stores},
-	author       = {Stratos Idreos and Martin L. Kersten and Stefan Manegold},
-	year         = 2009,
-	booktitle    = sigmod,
-	pages        = {297--308}
-}
 @article{il16,
 	title        = {Know your customer: computing k-most promising products for targeted marketing},
 	author       = {Md. Saiful Islam and Chengfei Liu},
@@ -5318,22 +4619,6 @@
 	booktitle    = stoc,
 	pages        = {604--613}
 }
-@article{imkg11,
-	title        = {Merging What's Cracked, Cracking What's Merged: Adaptive Indexing in Main-Memory Column-Stores},
-	author       = {Stratos Idreos and Stefan Manegold and Harumi A. Kuno and Goetz Graefe},
-	year         = 2011,
-	journal      = pvldb,
-	volume       = 4,
-	number       = 9,
-	pages        = {585--597}
-}
-@article{imn+22,
-	title        = {Optimizing Polymatroid Functions},
-	author       = {Sungjin Im and Benjamin Moseley and Hung Q. Ngo and Kirk Pruhs and Alireza Samadian},
-	year         = 2022,
-	journal      = {CoRR},
-	volume       = {abs/2211.08381}
-}
 @inproceedings{in07,
 	title        = {$k$-Anonymization as Spatial Indexing: Toward Scalable and Incremental Anonymization},
 	author       = {Tochukwu Iwuchukwu and Jeffrey F. Naughton},
@@ -5352,7 +4637,7 @@
 	title        = {Finding a Minimum Circuit in a Graph},
 	author       = {Alon Itai and Michael Rodeh},
 	year         = 1978,
-	journal      = siamj,
+	journal      = sicomp,
 	volume       = 7,
 	number       = 4,
 	pages        = {413--423}
@@ -5450,13 +4735,6 @@
 	number       = 4,
 	pages        = {387--405}
 }
-@article{jk21,
-	title        = {An Optimal Algorithm for Triangle Counting},
-	author       = {Rajesh Jayaram and John Kallaugher},
-	year         = 2021,
-	journal      = {CoRR},
-	volume       = {abs/2105.01785}
-}
 @inproceedings{jkpt03,
 	title        = {Nearest neighbor queries in road networks},
 	author       = {Christian S. Jensen and Jan Kol{\'a}rvr and Torben Bach Pedersen and Igor Timko},
@@ -5494,22 +4772,6 @@
 	booktitle    = sigmod,
 	pages        = {299--310}
 }
-@article{jr18,
-	title        = {It's All a Matter of Degree - Using Degree Information to Optimize Multiway Joins},
-	author       = {Manas Joglekar and Christopher Re},
-	year         = 2018,
-	journal      = {Theory Comput. Syst.},
-	volume       = 62,
-	number       = 4,
-	pages        = {810--853}
-}
-@article{jrr21,
-	title        = {Worst-case Optimal Binary Join Algorithms under General {$\ell_p$} Constraints},
-	author       = {Sai Vikneshwar Mani Jayaraman and Corey Ropell and Atri Rudra},
-	year         = 2021,
-	journal      = {CoRR},
-	volume       = {abs/2112.01003}
-}
 @inproceedings{jsp13,
 	title        = {A space efficient streaming algorithm for triangle counting using the birthday paradox},
 	author       = {Madhav Jha and C. Seshadhri and Ali Pinar},
@@ -5537,19 +4799,6 @@
 	booktitle    = icde,
 	pages        = {566--575}
 }
-@inproceedings{jx22,
-	title        = {Tight Dynamic Problem Lower Bounds from Generalized {BMM} and OMv},
-	author       = {Ce Jin and Yinzhan Xu},
-	year         = 2022,
-	booktitle    = stoc
-}
-@inproceedings{jx23,
-	title        = {Removing Additive Structure in 3SUM-Based Reductions},
-	author       = {Ce Jin and Yinzhan Xu},
-	year         = 2023,
-	booktitle    = stoc,
-	pages        = {405--418}
-}
 @article{jxw+11,
 	title        = {The monte carlo database system: Stochastic analysis close to the data},
 	author       = {Ravi Jampani and Fei Xu and Mingxi Wu and Luis Leopoldo Perez and Chris Jermaine and Peter J. Haas},
@@ -5570,7 +4819,7 @@
 	title        = {Dynamic Maintenance of Maxima of 2-d Point Sets},
 	author       = {Sanjiv Kapoor},
 	year         = 2000,
-	journal      = siamj,
+	journal      = sicomp,
 	volume       = 29,
 	number       = 6,
 	pages        = {1858--1877}
@@ -5608,7 +4857,7 @@
 	title        = {Optimal Search in Planar Subdivisions},
 	author       = {David G. Kirkpatrick},
 	year         = 1983,
-	journal      = siamj,
+	journal      = sicomp,
 	volume       = 12,
 	number       = 1,
 	pages        = {28--35}
@@ -5734,13 +4983,6 @@
 	booktitle    = edbt,
 	pages        = {815--826}
 }
-@inproceedings{khfh23,
-	title        = {Guaranteeing the $\tilde{O}$({AGM}/{OUT}) Runtime for Uniform Sampling and Size Estimation over Joins},
-	author       = {Kyoungmin Kim and Jaehyun Ha and George Fletcher and Wook{-}Shin Han},
-	year         = 2023,
-	booktitle    = pods,
-	pages        = {113--125}
-}
 @inproceedings{khl+14,
 	title        = {{OPT}: a new framework for overlapped and parallel triangulation in large-scale graphs},
 	author       = {Jinha Kim and Wook-Shin Han and Sangyeon Lee and Kyungyeol Park and Hwanjo Yu},
@@ -5758,34 +5000,12 @@
 	booktitle    = icdm,
 	pages        = {313--320}
 }
-@inproceedings{kkfh21,
-	title        = {Combining Sampling and Synopses with Worst-Case Optimal Runtime and Quality Guarantees for Graph Pattern Cardinality Estimation},
-	author       = {Kyoungmin Kim and Hyeonji Kim and George Fletcher and Wook{-}Shin Han},
-	year         = 2021,
-	booktitle    = sigmod,
-	pages        = {964--976}
-}
-@article{kkm00,
-	title        = {Finding and counting small induced subgraphs efficiently},
-	author       = {Ton Kloks and Dieter Kratsch and Haiko M{\"{u}}ller},
-	year         = 2000,
-	journal      = ipl,
-	volume       = 74,
-	number       = {3-4},
-	pages        = {115--121}
-}
 @inproceedings{kknr04,
 	title        = {On the Integration of Structure Indexes and Inverted Lists},
 	author       = {Raghav Kaushik and Rajasekar Krishnamurthy and Jeffrey F. Naughton and Raghu Ramakrishnan},
 	year         = 2004,
 	booktitle    = sigmod,
 	pages        = {779--790}
-}
-@inproceedings{kkns20,
-	title        = {Bag Query Containment and Information Theory},
-	author       = {Mahmoud Abo Khamis and Phokion G. Kolaitis and Hung Q. Ngo and Dan Suciu},
-	year         = 2020,
-	pages        = {95--112}
 }
 @inproceedings{kkr90,
 	title        = {Constraint Query Languages},
@@ -5801,28 +5021,12 @@
 	booktitle    = kdd,
 	pages        = {137--146}
 }
-@inproceedings{kl04,
-	title        = {Navigating nets: simple algorithms for proximity search},
-	author       = {Robert Krauthgamer and James R. Lee},
-	year         = 2004,
-	booktitle    = soda,
-	pages        = {798--807}
-}
 @inproceedings{kla+01,
 	title        = {Linear-Time Longest-Common-Prefix Computation in Suffix Arrays and Its Applications},
 	author       = {Toru Kasai and Gunho Lee and Hiroki Arimura and Setsuo Arikawa and Kunsoo Park},
 	year         = 2001,
 	booktitle    = cpm,
 	pages        = {181--192}
-}
-@article{kll13,
-	title        = {Counting and Detecting Small Subgraphs via Equations},
-	author       = {Miroslaw Kowaluk and Andrzej Lingas and Eva{-}Marta Lundell},
-	year         = 2013,
-	journal      = {{SIAM} J. Discret. Math.},
-	volume       = 27,
-	number       = 2,
-	pages        = {892--909}
 }
 @article{klp75,
 	title        = {On Finding the Maxima of a Set of Vectors},
@@ -5870,22 +5074,6 @@
 	booktitle    = socg,
 	pages        = {54:1--54:16}
 }
-@inproceedings{kmpv19,
-	title        = {The Complexity of Counting Cycles in the Adjacency List Streaming Model},
-	author       = {John Kallaugher and Andrew McGregor and Eric Price and Sofya Vorotnikova},
-	year         = 2019,
-	booktitle    = pods,
-	pages        = {119--133}
-}
-@article{kmr88,
-	title        = {Deferred Data Structuring},
-	author       = {Richard M. Karp and Rajeev Motwani and Prabhakar Raghavan},
-	year         = 1988,
-	journal      = sicomp,
-	volume       = 17,
-	number       = 5,
-	pages        = {883--902}
-}
 @inproceedings{kmss12,
 	title        = {Counting Arbitrary Subgraphs in Data Streams},
 	author       = {Daniel M. Kane and Kurt Mehlhorn and Thomas Sauerwald and He Sun},
@@ -5916,58 +5104,12 @@
 	booktitle    = icdt,
 	pages        = {4:1--4:18}
 }
-@article{knn+20,
-	title        = {Maintaining Triangle Queries under Updates},
-	author       = {Ahmet Kara and Hung Q. Ngo and Milos Nikolic and Dan Olteanu and Haozhe Zhang},
-	year         = 2020,
-	journal      = tods,
-	volume       = 45,
-	number       = 3,
-	pages        = {11:1--11:46}
-}
-@inproceedings{kno+20,
-	title        = {Trade-offs in Static and Dynamic Evaluation of Hierarchical Queries},
-	author       = {Ahmet Kara and Milos Nikolic and Dan Olteanu and Haozhe Zhang},
-	year         = 2020,
-	booktitle    = pods,
-	pages        = {375--392}
-}
-@article{knos23,
-	title        = {Join Size Bounds using Lp-Norms on Degree Sequences},
-	author       = {Mahmoud Abo Khamis and Vasileios Nakos and Dan Olteanu and Dan Suciu},
-	year         = 2023,
-	journal      = {CoRR},
-	volume       = {abs/2306.14075}
-}
 @inproceedings{knrr15,
 	title        = {Joins via Geometric Resolutions: Worst-case and Beyond},
 	author       = {Mahmoud Abo Khamis and Hung Q. Ngo and Christopher R{\'{e}} and Atri Rudra},
 	year         = 2015,
 	booktitle    = pods,
 	pages        = {213--228}
-}
-@article{knrr16,
-	title        = {Joins via Geometric Resolutions: Worst Case and Beyond},
-	author       = {Mahmoud Abo Khamis and Hung Q. Ngo and Christopher Re and Atri Rudra},
-	year         = 2016,
-	journal      = tods,
-	volume       = 41,
-	number       = 4,
-	pages        = {22:1--22:45}
-}
-@inproceedings{kns16,
-	title        = {Computing Join Queries with Functional Dependencies},
-	author       = {Mahmoud Abo Khamis and Hung Q. Ngo and Dan Suciu},
-	year         = 2016,
-	booktitle    = pods,
-	pages        = {327--342}
-}
-@inproceedings{kns17,
-	title        = {What Do Shannon-type Inequalities, Submodular Width, and Disjunctive Datalog Have to Do with One Another?},
-	author       = {Mahmoud Abo Khamis and Hung Q. Ngo and Dan Suciu},
-	year         = 2017,
-	booktitle    = pods,
-	pages        = {429--444}
 }
 @inproceedings{kp17,
 	title        = {A Hybrid Sampling Scheme for Triangle Counting},
@@ -6108,13 +5250,6 @@
 	booktitle    = pods,
 	pages        = {223--234}
 }
-@inproceedings{ks13,
-	title        = {Enumeration of first-order queries on classes of structures with bounded expansion},
-	author       = {Wojciech Kazana and Luc Segoufin},
-	year         = 2013,
-	booktitle    = pods,
-	pages        = {297--308}
-}
 @inproceedings{ks17,
 	title        = {A Worst-Case Optimal Multi-Round Algorithm for Parallel Computation of Conjunctive Queries},
 	author       = {Bas Ketsman and Dan Suciu},
@@ -6128,15 +5263,6 @@
 	year         = 1985,
 	booktitle    = socg,
 	pages        = {89--96}
-}
-@article{ks86,
-	title        = {The Ultimate Planar Convex Hull Algorithm?},
-	author       = {David G. Kirkpatrick and Raimund Seidel},
-	year         = 1986,
-	journal      = sicomp,
-	volume       = 15,
-	number       = 1,
-	pages        = {287--299}
 }
 @article{ks88,
 	title        = {Binomial Random Variate Generation},
@@ -6176,14 +5302,6 @@
 	year         = 2003,
 	booktitle    = cpm,
 	pages        = {186--199}
-}
-@article{kst22,
-	title        = {A Near-Optimal Parallel Algorithm for Joining Binary Relations},
-	author       = {Bas Ketsman and Dan Suciu and Yufei Tao},
-	year         = 2022,
-	journal      = {Log. Methods Comput. Sci.},
-	volume       = 18,
-	number       = 2
 }
 @inproceedings{ksti11,
 	title        = {Schedule optimization for data processing flows on the cloud},
@@ -6226,7 +5344,7 @@
 	title        = {Data Structures for Retrieval on Square Grids},
 	author       = {Martin David Katz and Dennis J. Volper},
 	year         = 1986,
-	journal      = siamj,
+	journal      = sicomp,
 	volume       = 15,
 	number       = 4,
 	pages        = {919--931}
@@ -6273,7 +5391,7 @@
 	title        = {On Range Searching in the Group Model and Combinatorial Discrepancy},
 	author       = {Kasper Green Larsen},
 	year         = 2014,
-	journal      = siamj,
+	journal      = sicomp,
 	volume       = 43,
 	number       = 2,
 	pages        = {673--686}
@@ -6283,13 +5401,6 @@
 	author       = {R.M. R. Lewis},
 	year         = 2015,
 	publisher    = {Springer}
-}
-@inproceedings{l19,
-	title        = {Faster Minimum k-cut of a Simple Graph},
-	author       = {Jason Li},
-	year         = 2019,
-	booktitle    = focs,
-	pages        = {1056--1077}
 }
 @article{la95,
 	title        = {Minimum average cost testing for partially ordered components},
@@ -6443,14 +5554,6 @@
 	volume       = 7,
 	pages        = {90--93}
 }
-@inproceedings{ln18,
-	title        = {Yes, There is an Oblivious {RAM} Lower Bound!},
-	author       = {Kasper Green Larsen and Jesper Buus Nielsen},
-	year         = 2018,
-	booktitle    = crypto,
-	volume       = 10992,
-	pages        = {523--542}
-}
 @inproceedings{lof+08,
 	title        = {{EASE}: an effective 3-in-1 keyword search method for unstructured, semi-structured and structured data},
 	author       = {Guoliang Li and Beng Chin Ooi and Jianhua Feng and Jianyong Wang and Lizhu Zhou},
@@ -6497,6 +5600,13 @@
 	number       = 1,
 	pages        = {1--24}
 }
+@inproceedings{lrv22,
+	title        = {Properly learning monotone functions via local correction},
+	author       = {Jane Lange and Ronitt Rubinfeld and Arsen Vasilyan},
+	year         = 2022,
+	booktitle    = focs,
+	pages        = {75--86}
+}
 @inproceedings{ls07,
 	title        = {{APLA}: Indexing Arbitrary Probability Distributions},
 	author       = {Vebjorn Ljosa and Ambuj K. Singh},
@@ -6510,13 +5620,6 @@
 	year         = 1989,
 	booktitle    = sigmod,
 	pages        = {315--324}
-}
-@inproceedings{ls92,
-	title        = {Enumerating the k Closest Pairs Optimally},
-	author       = {Hans{-}Peter Lenhof and Michiel H. M. Smid},
-	year         = 1992,
-	booktitle    = focs,
-	pages        = {380--386}
 }
 @article{lsco12,
 	title        = {Efficient Processing of k Nearest Neighbor Joins using {M}ap{R}educe},
@@ -6551,13 +5654,6 @@
 	number       = 3,
 	pages        = {298--314}
 }
-@inproceedings{lt21,
-	title        = {Towards Optimal Dynamic Indexes for Approximate (and Exact) Triangle Counting},
-	author       = {Shangqi Lu and Yufei Tao},
-	year         = 2021,
-	booktitle    = icdt,
-	pages        = {6:1--6:23}
-}
 @article{lt79,
 	title        = {A Separator Theorem for Planar Graphs},
 	author       = {Richard J. Lipton and Robert Endre Tarjan},
@@ -6575,6 +5671,13 @@
 	number       = 3,
 	pages        = {508--510}
 }
+@inproceedings{lv23,
+	title        = {Agnostic proper learning of monotone functions: beyond the black-box correction barrier},
+	author       = {Jane Lange and Arsen Vasilyan},
+	year         = 2023,
+	booktitle    = focs,
+	pages        = {1149--1170}
+}
 @inproceedings{lw11,
 	title        = {Finding shortest path on land surface},
 	author       = {Lian Liu and Raymond Chi{-}Wing Wong},
@@ -6582,26 +5685,12 @@
 	booktitle    = sigmod,
 	pages        = {433--444}
 }
-@inproceedings{lww18,
-	title        = {Tight Hardness for Shortest Cycles and Paths in Sparse Graphs},
-	author       = {Andrea Lincoln and Virginia Vassilevska Williams and R. Ryan Williams},
-	year         = 2018,
-	booktitle    = soda,
-	pages        = {1236--1252}
-}
 @inproceedings{lwy07,
 	title        = {{VGRAM}: Improving Performance of Approximate Queries on String Collections Using Variable-Length Grams},
 	author       = {Chen Li and Bin Wang and Xiaochun Yang},
 	year         = 2007,
 	booktitle    = vldb,
 	pages        = {303--314}
-}
-@inproceedings{lwyz16,
-	title        = {Wander Join: Online Aggregation via Random Walks},
-	author       = {Feifei Li and Bin Wu and Ke Yi and Zhuoyue Zhao},
-	year         = 2016,
-	booktitle    = sigmod,
-	pages        = {615--629}
 }
 @article{lwzf16,
 	title        = {Crowdsourced Data Management: {A} Survey},
@@ -6651,15 +5740,6 @@
 	booktitle    = icde,
 	pages        = {86--95}
 }
-@article{lzmk23,
-	title        = {Adaptive Indexing in High-Dimensional Metric Spaces},
-	author       = {Konstantinos Lampropoulos and Fatemeh Zardbani and Nikos Mamoulis and Panagiotis Karras},
-	year         = 2023,
-	journal      = pvldb,
-	volume       = 16,
-	number       = 10,
-	pages        = {2525--2537}
-}
 @article{lzz12,
 	title        = {Early Accurate Results for Advanced Analytics on MapReduce},
 	author       = {Nikolay Laptev and Kai Zeng and Carlo Zaniolo},
@@ -6689,13 +5769,6 @@
 	year         = 2010,
 	institution  = {Universidade Federal do Rio Grande do Sul}
 }
-@inproceedings{m17,
-	title        = {Listing All Fixed-Length Simple Cycles in Sparse Graphs in Optimal Time},
-	author       = {George Manoussakis},
-	year         = 2017,
-	booktitle    = {Fundamentals of Computation Theory},
-	pages        = {355--366}
-}
 @article{m68,
 	title        = {PATRICIA - Practical Algorithm To Retrieve Information Coded in Alphanumeric},
 	author       = {Donald R. Morrison},
@@ -6723,7 +5796,7 @@
 	title        = {Priority Search Trees},
 	author       = {Edward M. McCreight},
 	year         = 1985,
-	journal      = siamj,
+	journal      = sicomp,
 	volume       = 14,
 	number       = 2,
 	pages        = {257--276}
@@ -6736,15 +5809,6 @@
 	volume       = 27,
 	number       = 3,
 	pages        = {125--128}
-}
-@article{m90,
-	title        = {A Fast Planar Partition Algorithm, {I}},
-	author       = {Ketan Mulmuley},
-	year         = 1990,
-	journal      = {J. Symb. Comput.},
-	volume       = 10,
-	number       = {3/4},
-	pages        = {253--280}
 }
 @article{m91,
 	title        = {Computing Dominances in ${E}^n$},
@@ -6762,29 +5826,6 @@
 	journal      = dcg,
 	volume       = 6,
 	pages        = {307--338}
-}
-@article{m92,
-	title        = {Efficient Partition Trees},
-	author       = {Jiri Matousek},
-	year         = 1992,
-	journal      = dcg,
-	volume       = 8,
-	pages        = {315--334}
-}
-@inproceedings{m92b,
-	title        = {Range Searching with Efficient Hierarchical Cuttings},
-	author       = {Jiri Matousek},
-	year         = 1992,
-	booktitle    = socg,
-	pages        = {276--285}
-}
-@article{m92c,
-	title        = {Reporting Points in Halfspaces},
-	author       = {Jiri Matousek},
-	year         = 1992,
-	journal      = cg,
-	volume       = 2,
-	pages        = {169--186}
 }
 @article{m93,
 	title        = {Linear Optimization Queries},
@@ -6904,7 +5945,7 @@
 	title        = {Suffix Arrays: A New Method for On-Line String Searches},
 	author       = {Udi Manber and Eugene W. Myers},
 	year         = 1993,
-	journal      = siamj,
+	journal      = sicomp,
 	volume       = 22,
 	number       = 5,
 	pages        = {935--948}
@@ -6917,13 +5958,6 @@
 	volume       = 5,
 	number       = 4,
 	pages        = {662--681}
-}
-@inproceedings{mn19,
-	title        = {Dynamic Planar Point Location in External Memory},
-	author       = {J. Ian Munro and Yakov Nekrich},
-	booktitle    = socg,
-	volume       = 129,
-	pages        = {52:1--52:15}
 }
 @article{mn90,
 	title        = {Dynamic Fractional Cascading},
@@ -7020,13 +6054,6 @@
 	number       = 7,
 	pages        = {1389--1409}
 }
-@inproceedings{mr86,
-	title        = {Deferred Data Structuring: Query-Driven Preprocessing for Geometric Search Problems},
-	author       = {Rajeev Motwani and Prabhakar Raghavan},
-	year         = 1986,
-	booktitle    = socg,
-	pages        = {303--312}
-}
 @inproceedings{mr99,
 	title        = {{I/O}-Complexity of Graph Algorithms},
 	author       = {Kamesh Munagala and Abhiram G. Ranade},
@@ -7104,17 +6131,10 @@
 	title        = {Efficient Bundle Sorting},
 	author       = {Yossi Matias and Eran Segal and Jeffrey Scott Vitter},
 	year         = 2006,
-	journal      = siamj,
+	journal      = sicomp,
 	volume       = 36,
 	number       = 2,
 	pages        = {394--410}
-}
-@inproceedings{mv20,
-	title        = {Triangle and Four Cycle Counting in the Data Stream Model},
-	author       = {Andrew McGregor and Sofya Vorotnikova},
-	year         = 2020,
-	booktitle    = pods,
-	pages        = {445--456}
 }
 @inproceedings{mvv16,
 	title        = {Better Algorithms for Counting Triangles in Data Streams},
@@ -7156,7 +6176,7 @@
 	title        = {{I/O}-Efficient Planar Separators},
 	author       = {Anil Maheshwari and Norbert Zeh},
 	year         = 2008,
-	journal      = siamj,
+	journal      = sicomp,
 	volume       = 38,
 	number       = 3,
 	pages        = {767--801}
@@ -7178,27 +6198,6 @@
 	volume       = 42,
 	number       = 4,
 	pages        = {342--351}
-}
-@inproceedings{n18,
-	title        = {Worst-Case Optimal Join Algorithms: Techniques, Results, and Open Problems},
-	author       = {Hung Q. Ngo},
-	year         = 2018,
-	booktitle    = pods,
-	pages        = {111--124}
-}
-@inproceedings{n20,
-	title        = {Detecting and counting small patterns in planar graphs in subexponential parameterized time},
-	author       = {Jesper Nederlof},
-	year         = 2020,
-	booktitle    = {Proccedings of the 52nd Annual {ACM} {SIGACT} Symposium on Theory of Computing, {STOC} 2020, Chicago, IL, USA, June 22-26, 2020},
-	pages        = {1293--1306}
-}
-@inproceedings{n21,
-	title        = {New Data Structures for Orthogonal Range Reporting and Range Minima Queries},
-	author       = {Yakov Nekrich},
-	year         = 2021,
-	booktitle    = soda,
-	pages        = {1191--1205}
 }
 @article{n64,
 	title        = {Decomposition of finite graphs into forests},
@@ -7238,15 +6237,6 @@
 	booktitle    = vldb,
 	pages        = {281--290}
 }
-@article{ndj13,
-	title        = {A Sampling Algebra for Aggregate Estimation},
-	author       = {Supriya Nirkhiwale and Alin Dobra and Christopher M. Jermaine},
-	year         = 2013,
-	journal      = pvldb,
-	volume       = 6,
-	number       = 14,
-	pages        = {1798--1809}
-}
 @article{ng10,
 	title        = {Online maintenance of very large random samples on flash storage},
 	author       = {Suman Nath and Phillip B. Gibbons},
@@ -7270,22 +6260,6 @@
 	booktitle    = pods,
 	pages        = {234--245}
 }
-@inproceedings{no18,
-	title        = {Incremental View Maintenance with Triple Lock Factorization Benefits},
-	author       = {Milos Nikolic and Dan Olteanu},
-	year         = 2018,
-	booktitle    = sigmod,
-	pages        = {365--380}
-}
-@article{np85,
-	title        = {On the complexity of the subgraph problem},
-	author       = {Nesetril, Jaroslav and Poljak, Svatopluk},
-	year         = 1985,
-	journal      = {Commentationes Mathematicae Universitatis Carolinae},
-	volume       = 26,
-	number       = 2,
-	pages        = {415--419}
-}
 @article{npm+10,
 	title        = {MRShare: Sharing Across Multiple Queries in MapReduce},
 	author       = {Tomasz Nykiel and Michalis Potamias and Chaitanya Mishra and George Kollios and Nick Koudas},
@@ -7296,8 +6270,8 @@
 	pages        = {494--505}
 }
 @inproceedings{nprr12,
-	title        = {Worst-{C}ase {O}ptimal {J}oin {A}lgorithms: [{E}xtended {A}bstract]},
-	author       = {Hung Q. Ngo and Ely Porat and Christopher R{\'{e}} and Atri Rudra},
+	title        = {Worst-case Optimal Join Algorithms: [Extended Abstract]},
+	author       = {Hung Q. Ngo and Ely Porat and Christopher Re and Atri Rudra},
 	year         = 2012,
 	booktitle    = pods,
 	pages        = {37--48}
@@ -7322,7 +6296,7 @@
 	title        = {Binary Search Trees of Bounded Balance},
 	author       = {Jurg Nievergelt and Edward M. Reingold},
 	year         = 1973,
-	journal      = siamj,
+	journal      = sicomp,
 	volume       = 2,
 	number       = 1,
 	pages        = {33--43}
@@ -7335,14 +6309,6 @@
 	volume       = 42,
 	number       = 4,
 	pages        = {5--16}
-}
-@inproceedings{nrr20,
-	title        = {Optimal Joins Using Compact Data Structures},
-	author       = {Gonzalo Navarro and Juan L. Reutter and Javiel Rojas{-}Ledesma},
-	year         = 2020,
-	booktitle    = icdt,
-	volume       = 155,
-	pages        = {21:1--21:21}
 }
 @inproceedings{ns06,
 	title        = {DiST: fully decentralized indexing for querying distributed multidimensional datasets},
@@ -7453,15 +6419,6 @@
 	booktitle    = sigmod,
 	pages        = {1099--1110}
 }
-@article{oz15,
-	title        = {Size Bounds for Factorised Representations of Query Results},
-	author       = {Dan Olteanu and Jakub Zavodny},
-	year         = 2015,
-	journal      = tods,
-	volume       = 40,
-	number       = 1,
-	pages        = {2:1--2:44}
-}
 @inproceedings{p08,
 	title        = {Succincter},
 	author       = {Mihai Patrascu},
@@ -7487,10 +6444,23 @@
 	title        = {Unifying the Landscape of Cell-Probe Lower Bounds},
 	author       = {Mihai Patrascu},
 	year         = 2011,
-	journal      = siamj,
+	journal      = sicomp,
 	volume       = 40,
 	number       = 3,
 	pages        = {827--847}
+}
+@article{p16,
+	title        = {Coresets and Sketches},
+	author       = {Jeff M. Phillips},
+	year         = 2016,
+	journal      = {Handbook of Discrete and Computational Geometry}
+}
+@inbook{p16b,
+	title        = {Coresets and Sketches},
+	author       = {Jeff M. Phillips},
+	year         = 2016,
+	publisher    = {CRC Press},
+	chapter      = 49
 }
 @inproceedings{paav03,
 	title        = {Bkd-Tree: A Dynamic Scalable kd-Tree},
@@ -7644,23 +6614,6 @@
 	booktitle    = pods,
 	pages        = {44--55}
 }
-@inproceedings{ppry18,
-	title        = {PanORAMa: Oblivious {RAM} with Logarithmic Overhead},
-	author       = {Sarvar Patel and Giuseppe Persiano and Mariana Raykova and Kevin Yeo},
-	year         = 2018,
-	booktitle    = focs,
-	pages        = {871--882},
-	editor       = {Mikkel Thorup}
-}
-@article{pr19,
-	title        = {Computing the Number of Induced Copies of a Fixed Graph in a Bounded Degree Graph},
-	author       = {Viresh Patel and Guus Regts},
-	year         = 2019,
-	journal      = {Algorithmica},
-	volume       = 81,
-	number       = 5,
-	pages        = {1844--1858}
-}
 @inproceedings{ps07,
 	title        = {Approximate algorithms for $k$-anonymity},
 	author       = {Hyoungmin Park and Kyuseok Shim},
@@ -7772,22 +6725,6 @@
 	booktitle    = vldb,
 	pages        = {802--813}
 }
-@article{qcq+18,
-	title        = {Real-time Constrained Cycle Detection in Large Dynamic Graphs},
-	author       = {Xiafei Qiu and Wubin Cen and Zhengping Qian and You Peng and Ying Zhang and Xuemin Lin and Jingren Zhou},
-	year         = 2018,
-	journal      = pvldb,
-	volume       = 11,
-	number       = 12,
-	pages        = {1876--1888}
-}
-@inproceedings{qt21,
-	title        = {Two-Attribute Skew Free, Isolated {CP} Theorem, and Massively Parallel Joins},
-	author       = {Miao Qiao and Yufei Tao},
-	year         = 2021,
-	booktitle    = pods,
-	pages        = {166--180}
-}
 @inproceedings{qwl+11,
 	title        = {Efficient exact edit similarity query processing with the asymmetric signature scheme},
 	author       = {Jianbin Qin and Wei Wang and Yifei Lu and Chuan Xiao and Xuemin Lin},
@@ -7870,13 +6807,6 @@
 	volume       = 31,
 	number       = 1,
 	pages        = {299--345}
-}
-@article{rps19,
-	title        = {A Survey on Subgraph Counting: Concepts, Algorithms and Applications to Network Motifs and Graphlets},
-	author       = {Pedro Ribeiro and Pedro Paredes and Miguel E. P. Silva and David Apar{\'{\i}}cio and Fernando Silva},
-	year         = 2019,
-	journal      = {CoRR},
-	volume       = {abs/1910.13011}
 }
 @article{rrr07,
 	title        = {Succinct indexable dictionaries with applications to encoding $k$-ary trees, prefix sums and multisets},
@@ -7968,7 +6898,7 @@
 @book{s03,
 	title        = {Combinatorial Optimization: Polyhedra and Efficiency},
 	author       = {Alexander Schrijver},
-	year         = 2003,
+	year         = 2004,
 	publisher    = {Springer-Verlag}
 }
 @book{s06,
@@ -7998,15 +6928,6 @@
 	year         = 2010,
 	journal      = {Technical Report, University of Wisconsin-Madison}
 }
-@article{s10b,
-	title        = {Reprint of: {A} simple and fast incremental randomized algorithm for computing trapezoidal decompositions and for triangulating polygons},
-	author       = {Raimund Seidel},
-	year         = 2010,
-	journal      = {Comput. Geom.},
-	volume       = 43,
-	number       = {6-7},
-	pages        = {556--564}
-}
 @article{s13,
 	title        = {Counting Hypergraphs in Data Streams},
 	author       = {He Sun},
@@ -8014,37 +6935,21 @@
 	journal      = {CoRR},
 	volume       = {abs/1304.7456}
 }
+@article{s13b,
+	title        = {Isotonic Regression via Partitioning},
+	author       = {Quentin F. Stout},
+	year         = 2013,
+	journal      = {Algorithmica},
+	volume       = 66,
+	number       = 1,
+	pages        = {93--112}
+}
 @inproceedings{s15,
 	title        = {Improved Bounds for Orthogonal Point Enclosure Query and Point Location in Orthogonal Subdivisions in $\mathbb{R}^3$},
 	author       = {Saladi Rahul},
 	year         = 2015,
 	booktitle    = soda,
 	pages        = {200--211}
-}
-@article{s15b,
-	title        = {Constant Delay Enumeration for Conjunctive Queries},
-	author       = {Luc Segoufin},
-	year         = 2015,
-	journal      = {{SIGMOD} Rec.},
-	volume       = 44,
-	number       = 1,
-	pages        = {10--17}
-}
-@article{s23,
-	title        = {Applications of Information Inequalities to Database Theory Problems},
-	author       = {Dan Suciu},
-	year         = 2023,
-	journal      = {CoRR},
-	volume       = {abs/2304.11996}
-}
-@article{s81,
-	title        = {An Efficient Cycle Vector Space Algorithm for Listing all Cycles of a Planar Graph},
-	author       = {Maciej M. Syslo},
-	year         = 1981,
-	journal      = siamj,
-	volume       = 10,
-	number       = 4,
-	pages        = {797--808}
 }
 @article{s83,
 	title        = {Network structure and minimum degree},
@@ -8062,13 +6967,6 @@
 	journal      = {Social Networks},
 	volume       = 5,
 	pages        = {269--287}
-}
-@inproceedings{s86,
-	title        = {Constructing Higher-Dimensional Convex Hulls at Logarithmic Cost per Face},
-	author       = {Raimund Seidel},
-	year         = 1986,
-	booktitle    = stoc,
-	pages        = {404--413}
 }
 @article{s89,
 	title        = {Worst-Case Data Structures for the Priority Queue with Attrition},
@@ -8158,37 +7056,12 @@
 	booktitle    = {ISAAC},
 	pages        = {822--834}
 }
-@article{sjd13,
-	title        = {The Uncracked Pieces in Database Cracking},
-	author       = {Felix Martin Schuhknecht and Alekh Jindal and Jens Dittrich},
-	year         = 2013,
-	journal      = pvldb,
-	volume       = 7,
-	number       = 2,
-	pages        = {97--108}
-}
-@article{sjd16,
-	title        = {An experimental evaluation and analysis of database cracking},
-	author       = {Felix Martin Schuhknecht and Alekh Jindal and Jens Dittrich},
-	year         = 2016,
-	journal      = vldbj,
-	volume       = 25,
-	number       = 1,
-	pages        = {27--52}
-}
 @inproceedings{sjll00,
 	title        = {Indexing the Positions of Continuously Moving Objects},
 	author       = {Simonas Saltenis and Christian S. Jensen and Scott T. Leutenegger and Mario A. Lopez},
 	year         = 2000,
 	booktitle    = sigmod,
 	pages        = {331--342}
-}
-@inproceedings{skm+21,
-	title        = {PGMJoins: Random Join Sampling with Graphical Models},
-	author       = {Ali Mohammadi Shanghooshabad and Meghdad Kurmanji and Qingzhi Ma and Michael Shekelyan and Mehrdad Almasi and Peter Triantafillou},
-	year         = 2021,
-	booktitle    = sigmod,
-	pages        = {1610--1622}
 }
 @article{sks03,
 	title        = {A Road Network Embedding Technique for K-Nearest Neighbor Search in Moving Object Databases},
@@ -8242,21 +7115,6 @@
 	year         = 1998,
 	booktitle    = pods,
 	pages        = {44--51}
-}
-@article{smo15,
-	title        = {Search Result Diversification},
-	author       = {
-		Rodrygo L. T. Santos and
-
-		Craig MacDonald and
-
-		Iadh Ounis
-	},
-	year         = 2015,
-	journal      = {Found. Trends Inf. Retr.},
-	volume       = 9,
-	number       = 1,
-	pages        = {1--90}
 }
 @inproceedings{sms+08,
 	title        = {Query Selectivity Estimation for Uncertain Data},
@@ -8404,13 +7262,6 @@
 	number       = 2,
 	pages        = {195--204}
 }
-@inproceedings{ssv18,
-	title        = {Enumeration for {FO} Queries over Nowhere Dense Graphs},
-	author       = {Nicole Schweikardt and Luc Segoufin and Alexandre Vigny},
-	year         = 2018,
-	booktitle    = pods,
-	pages        = {151--163}
-}
 @inproceedings{st11a,
 	title        = {Finding Skylines in External Memory},
 	author       = {Cheng Sheng and Yufei Tao},
@@ -8509,19 +7360,11 @@
 	booktitle    = www,
 	pages        = {607--614}
 }
-@inproceedings{sv17,
-	title        = {Constant Delay Enumeration for {FO} Queries over Databases with Local Bounded Expansion},
-	author       = {Luc Segoufin and Alexandre Vigny},
-	year         = 2017,
-	booktitle    = icdt,
-	volume       = 68,
-	pages        = {20:1--20:16}
-}
 @article{sv88,
 	title        = {On Finding Lowest Common Ancestors: Simplification and Parallelization},
 	author       = {Baruch Schieber and Uzi Vishkin},
 	year         = 1988,
-	journal      = siamj,
+	journal      = sicomp,
 	volume       = 17,
 	number       = 6,
 	pages        = {1253--1262}
@@ -8530,7 +7373,7 @@
 	title        = {Recursive Star-Tree Parallel Data Structure},
 	author       = {Omer Berkman and Uzi Vishkin},
 	year         = 1993,
-	journal      = siamj,
+	journal      = sicomp,
 	volume       = 22,
 	number       = 2,
 	pages        = {221--242}
@@ -8541,13 +7384,6 @@
 	year         = 2005,
 	booktitle    = wea,
 	pages        = {606--609}
-}
-@inproceedings{sw20,
-	title        = {Lazy Search Trees},
-	author       = {Bryce Sandlund and Sebastian Wild},
-	year         = 2020,
-	booktitle    = focs,
-	pages        = {704--715}
 }
 @inproceedings{swg02,
 	title        = {Algorithmics and Applications of Tree and Graph Searching},
@@ -8564,13 +7400,6 @@
 	volume       = 59,
 	number       = 2,
 	pages        = {115--128}
-}
-@inproceedings{sz22,
-	title        = {Selectable Heaps and Optimal Lazy Search Trees},
-	author       = {Bryce Sandlund and Lingyi Zhang},
-	year         = 2022,
-	booktitle    = soda,
-	pages        = {1962--1975}
 }
 @article{szh+15,
 	title        = {Calibrating trajectory data for spatio-temporal similarity analysis},
@@ -8629,11 +7458,7 @@
 	pages        = {11:1--11:19}
 }
 @inproceedings{t14b,
-	title        = {
-		A dynamic {I/O}-efficient structure for one-dimensional top-k range
-
-		reporting
-	},
+	title        = {A dynamic {I/O}-efficient structure for one-dimensional top-k range reporting},
 	author       = {Yufei Tao},
 	year         = 2014,
 	booktitle    = pods,
@@ -8646,27 +7471,12 @@
 	booktitle    = pods,
 	pages        = {49--62}
 }
-@inproceedings{t18b,
-	title        = {Massively Parallel Entity Matching with Linear Classification in Low Dimensional Space},
-	author       = {Yufei Tao},
-	year         = 2018,
-	booktitle    = icdt,
-	volume       = 98,
-	pages        = {20:1--20:19}
-}
 @inproceedings{t20,
 	title        = {A Simple Parallel Algorithm for Natural Joins on Binary Relations},
 	author       = {Yufei Tao},
 	year         = 2020,
 	booktitle    = icdt,
 	pages        = {25:1--25:18}
-}
-@article{t21,
-	title        = {Approximate Triangle Counting via Sampling and Fast Matrix Multiplication},
-	author       = {Jakub Tetek},
-	year         = 2021,
-	journal      = {CoRR},
-	volume       = {abs/2104.08501}
 }
 @article{t79,
 	title        = {A Class of Algorithms which Require Nonlinear Time to Maintain Disjoint Sets},
@@ -8683,15 +7493,6 @@
 	year         = 2005,
 	booktitle    = sstd,
 	pages        = {181--199}
-}
-@article{tdm+11,
-	title        = {Spectral counting of triangles via element-wise sparsification and triangle-based link recommendation},
-	author       = {Charalampos E. Tsourakakis and Petros Drineas and Eirinaios Michelakis and Ioannis Koutis and Christos Faloutsos},
-	year         = 2011,
-	journal      = {Soc. Netw. Anal. Min.},
-	volume       = 1,
-	number       = 2,
-	pages        = {75--81}
 }
 @inproceedings{tgno92,
 	title        = {Continuous Queries over Append-Only Databases},
@@ -8852,6 +7653,13 @@
 	booktitle    = disc,
 	pages        = {283--297}
 }
+@inproceedings{tw21,
+	title        = {New Algorithms for Monotone Classification},
+	author       = {Yufei Tao and Yu Wang},
+	year         = 2021,
+	booktitle    = pods,
+	pages        = {260--272}
+}
 @article{tx08,
 	title        = {Efficient temporal counting with bounded error},
 	author       = {Yufei Tao and Xiaokui Xiao},
@@ -8867,7 +7675,8 @@
 	year         = 2007,
 	journal      = tods,
 	volume       = 32,
-	number       = 3
+	number       = 3,
+	pages        = 15
 }
 @inproceedings{txlz08,
 	title        = {On Anti-Corruption Privacy Preserving Publication},
@@ -8882,14 +7691,6 @@
 	year         = 2014,
 	booktitle    = sigmod,
 	pages        = {75--86}
-}
-@article{ty22,
-	title        = {Intersection Joins under Updates},
-	author       = {Yufei Tao and Ke Yi},
-	year         = 2022,
-	journal      = jcss,
-	volume       = 124,
-	pages        = {41--64}
 }
 @inproceedings{ty95,
 	title        = {A Performance Study of Declustering Strategies for Parallel Spatial Databases},
@@ -9012,15 +7813,6 @@
 	number       = 4,
 	pages        = {434--447}
 }
-@article{vmzc15,
-	title        = {Join Size Estimation Subject to Filter Conditions},
-	author       = {David Vengerov and Andre Cavalheiro Menck and Mohamed Za{\"{\i}}t and Sunil Chakkappen},
-	year         = 2015,
-	journal      = pvldb,
-	volume       = 8,
-	number       = 12,
-	pages        = {1530--1541}
-}
 @article{vp04,
 	title        = {Algorithms and applications for answering ranked queries using ranked views},
 	author       = {Vagelis Hristidis and Yannis Papakonstantinou},
@@ -9036,13 +7828,6 @@
 	year         = 2020,
 	booktitle    = sigmod,
 	pages        = {1133--1147}
-}
-@inproceedings{vv06,
-	title        = {Finding a maximum weight triangle in n3-$\delta$ time, with applications},
-	author       = {Vassilevska, Virginia and Williams, Ryan},
-	year         = 2006,
-	booktitle    = {Proceedings of the thirty-eighth annual ACM symposium on Theory of computing},
-	pages        = {225--231}
 }
 @article{vv97,
 	title        = {An Efficient Multiversion Access STructure},
@@ -9076,6 +7861,14 @@
 	booktitle    = sigmod,
 	pages        = {99--110}
 }
+@article{w11,
+	title        = {Smoothness, Disagreement Coefficient, and the Label Complexity of Agnostic Active Learning},
+	author       = {Liwei Wang},
+	year         = 2011,
+	journal      = jmlr,
+	volume       = 12,
+	pages        = {2269--2292}
+}
 @inproceedings{w73,
 	title        = {Linear Pattern Matching Algorithms},
 	author       = {Peter Weiner},
@@ -9091,14 +7884,6 @@
 	volume       = 17,
 	number       = 2,
 	pages        = {81--84}
-}
-@inproceedings{w92,
-	title        = {On Spanning Trees with Low Crossing Numbers},
-	author       = {Emo Welzl},
-	year         = 1992,
-	booktitle    = {Data Structures and Efficient Algorithms},
-	series       = {Lecture Notes in Computer Science},
-	pages        = {233--249}
 }
 @article{wc12,
 	title        = {Truss Decomposition in Massive Networks},
@@ -9184,15 +7969,6 @@
 	volume       = 3,
 	number       = 1,
 	pages        = {952--963}
-}
-@article{ww13,
-	title        = {Finding, Minimizing, and Counting Weighted Subgraphs},
-	author       = {Virginia Vassilevska Williams and Ryan Williams},
-	year         = 2013,
-	journal      = siamj,
-	volume       = 42,
-	number       = 3,
-	pages        = {831--854}
 }
 @article{wwz05,
 	title        = {Geometric containers for efficient shortest-path computation},
@@ -9371,13 +8147,6 @@
 	booktitle    = sigmod,
 	pages        = {1029--1040}
 }
-@inproceedings{yhl+13,
-	title        = {{CS2:} a new database synopsis for query estimation},
-	author       = {Feng Yu and Wen{-}Chi Hou and Cheng Luo and Dunren Che and Mengxia Zhu},
-	year         = 2013,
-	booktitle    = sigmod,
-	pages        = {469--480}
-}
 @article{yjw+10,
 	title        = {Mining unique-m substrings from genomes},
 	author       = {Ye, Kai and Jia, Zhenyu and Wang, Yipeng and Flicek, Paul and Apweiler, Rolf},
@@ -9410,15 +8179,6 @@
 	volume       = 17,
 	number       = 6,
 	pages        = {820--833}
-}
-@article{yob04,
-	title        = {Functional and topological characterization of protein interaction networks},
-	author       = {Yook, Soon-Hyung and Oltvai, Zoltan N. and Barabasi, Albert-Laszlo},
-	year         = 2004,
-	journal      = {PROTEOMICS},
-	volume       = 4,
-	number       = 4,
-	pages        = {928--942}
 }
 @inproceedings{ypk05,
 	title        = {Monitoring K-Nearest Neighbor Queries Over Moving Objects},
@@ -9461,28 +8221,12 @@
 	number       = 1,
 	pages        = {194--202}
 }
-@inproceedings{yz04,
-	title        = {Detecting short directed cycles using rectangular matrix multiplication and dynamic programming},
-	author       = {Raphael Yuster and Uri Zwick},
-	year         = 2004,
-	booktitle    = soda,
-	pages        = {254--260}
-}
 @inproceedings{yz10,
 	title        = {On the Cell Probe Complexity of Dynamic Membership},
 	author       = {Ke Yi and Qin Zhang},
 	year         = 2010,
 	booktitle    = soda,
 	pages        = {123--133}
-}
-@article{yz97,
-	title        = {Finding Even Cycles Even Faster},
-	author       = {Raphael Yuster and Uri Zwick},
-	year         = 1997,
-	journal      = {{SIAM} J. Discret. Math.},
-	volume       = 10,
-	number       = 2,
-	pages        = {209--222}
 }
 @inproceedings{z02,
 	title        = {Efficiently mining frequent trees in a forest},
@@ -9515,13 +8259,6 @@
 	number       = 5,
 	pages        = {463--470}
 }
-@inproceedings{zak20,
-	title        = {Revisiting the Theory and Practice of Database Cracking},
-	author       = {Fatemeh Zardbani and Peyman Afshani and Panagiotis Karras},
-	year         = 2020,
-	booktitle    = edbt,
-	pages        = {415--418}
-}
 @article{zaw11,
 	title        = {gSketch: On Query Estimation in Graph Streams},
 	author       = {Peixiang Zhao and Charu C. Aggarwal and Min Wang},
@@ -9546,13 +8283,6 @@
 	volume       = 20,
 	number       = 13,
 	pages        = {2101--2112}
-}
-@inproceedings{zcl+18,
-	title        = {Random Sampling over Joins Revisited},
-	author       = {Zhuoyue Zhao and Robert Christensen and Feifei Li and Xiao Hu and Ke Yi},
-	year         = 2018,
-	booktitle    = sigmod,
-	pages        = {1525--1539}
 }
 @inproceedings{zcm+09,
 	title        = {Keyword Search in Spatial Databases: Towards Searching by Document},
@@ -9605,13 +8335,6 @@
 	booktitle    = edbt,
 	pages        = {549--560}
 }
-@inproceedings{zll20,
-	title        = {Efficient Join Synopsis Maintenance for Data Warehouse},
-	author       = {Zhuoyue Zhao and Feifei Li and Yuxi Liu},
-	year         = 2020,
-	booktitle    = sigmod,
-	pages        = {2027--2042}
-}
 @article{zlz+10,
 	title        = {Effectively Indexing the Uncertain Space},
 	author       = {Ying Zhang and Xuemin Lin and Wenjie Zhang and Jianmin Wang and Qianlu Lin},
@@ -9628,15 +8351,6 @@
 	journal      = acmcs,
 	volume       = 38,
 	number       = 2
-}
-@article{zmik23,
-	title        = {Adaptive Indexing of Objects with Spatial Extent},
-	author       = {Fatemeh Zardbani and Nikos Mamoulis and Stratos Idreos and Panagiotis Karras},
-	year         = 2023,
-	journal      = pvldb,
-	volume       = 16,
-	number       = 9,
-	pages        = {2248--2260}
 }
 @article{zmt+08,
 	title        = {On computing temporal aggregates with range predicates},
@@ -9738,45 +8452,46 @@
 	booktitle    = {DASFAA Workshops},
 	pages        = {403--414}
 }
-@inproceedings{t25,
-  author       = {Yufei Tao},
-  title        = {Maximizing the Optimality Streak of Deferred Data Structuring (a.k.a.
-                  Database Cracking)},
-  booktitle    = icdt,
-  pages        = {10:1--10:18},
-  year         = {2025}
+@inproceedings{h25,
+	title        = {Agnostic Active Learning Is Always Better Than Passive Learning},
+	author       = {Steve Hanneke},
+	year         = 2025,
+	booktitle    = nips
 }
-@inproceedings{cyl+25,
-  author       = {Luis Alberto Croquevielle and
-                  Guang Yang and
-                  Liang Liang and
-                  Ali Hadian and
-                  Thomas Heinis},
-  title        = {Beyond Logarithmic Bounds: Querying in Constant Expected Time with
-                  Learned Indexes},
-  booktitle    = icdt,
-  pages        = {19:1--19:21},
-  year         = {2025}
+@article{hy15,
+  author       = {Steve Hanneke and
+                  Liu Yang},
+  title        = {Minimax analysis of active learning},
+  journal      = jmlr,
+  volume       = {16},
+  pages        = {3487--3602},
+  year         = {2015}
 }
-@article{tw25,
-  author       = {Yufei Tao and
-                  Ru Wang},
-  title        = {Split Theorems for Join Reporting and Sampling},
-  journal      = {{SIGMOD} Rec.},
-  volume       = {54},
-  number       = {4},
-  pages        = {7--18},
-  year         = {2025}
+@inproceedings{h07b,
+  author       = {Steve Hanneke},
+  title        = {Teaching Dimension and the Complexity of Active Learning},
+  booktitle    = colt,
+  pages        = {66--81},
+  year         = {2007}
 }
-@article{ocgo96,
-  author       = {Patrick E. O'Neil and
-                  Edward Cheng and
-                  Dieter Gawlick and
-                  Elizabeth J. O'Neil},
-  title        = {The Log-Structured Merge-Tree ({LSM}-Tree)},
-  journal      = {Acta Informatica},
-  volume       = {33},
-  number       = {4},
-  pages        = {351--385},
-  year         = {1996}
+@inproceedings{klmz17,
+  author       = {Daniel M. Kane and
+                  Shachar Lovett and
+                  Shay Moran and
+                  Jiapeng Zhang},
+  title        = {Active Classification with Comparison Queries},
+  booktitle    = focs,
+  pages        = {355--366},
+  year         = {2017}
+}
+@article{abe14,
+  author       = {Nir Ailon and
+                  Ron Begleiter and
+                  Esther Ezra},
+  title        = {Active learning using smooth relative regret approximations with applications},
+  journal      = jmlr,
+  volume       = {15},
+  number       = {1},
+  pages        = {885--920},
+  year         = {2014}
 }
