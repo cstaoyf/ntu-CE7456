@@ -32,6 +32,8 @@
 \def\Y{\mathcal{Y}}
 \def\Z{\mathcal{Z}}
 
+\DeclareMathOperator*{\Log}{Log}
+\def\setm{\setminus}
 
 \def\bad{\mit{bad}}
 \def\bigmid {\, \Big\lvert \,}
@@ -87,7 +89,7 @@
 This lecture discusses a problem from active learning named {\em monotone classification}.
 
 
-\extraspacing {\bf Math Conventions.} For an integer $x \ge 1$, the notation $[x]$ represents the set $\set{1, 2, ..., x}$. Given a predicate $Q$, the notation $\mathbbm{1}_Q$ equals 1 if $Q$ holds or 0 otherwise.
+\extraspacing {\bf Math Conventions.} For an integer $x \ge 1$, the notation $[x]$ represents the set $\set{1, 2, ..., x}$. Given a real value $x \ge 1$, we use $\Log x$ as a short form for $\log_2 (1 + x)$. Given a predicate $Q$, the notation $\mathbbm{1}_Q$ equals 1 if $Q$ holds or 0 otherwise.
 
 \section{Problem Definition} \label{sec:prob}
 
@@ -127,14 +129,25 @@ The goal of an algorithm $\A$ is to find a classifier from $\mono$ whose error o
 
 In one extreme, by probing the whole $P$, {$\A$ pays a cost of $n$}, after which it can find an optimal monotone classifier on $P$ with {polynomial-time} computation. In the other extreme, by probing nothing, {$\A$ pays a cost of 0} but has to return a classifier based purely on the point coordinates; such a classifier could be very erroneous on $P$. The intellectual challenge is to find a monotone classifier whose error is close to $k^*$ by probing as few points as possible.
 
-\section{An Application: Explainable Entity Matching} \label{sec:em}
-
-Given two sets of entities $E_1$ and $E_2$, the goal of entity matching is to decide, for each pair $(e_1, e_2) \in E_1 \times E_2$, whether $e_1$ and $e_2$ represent the same entity; if so, they are said to form a ``match''. For example, $E_1$ (resp., $E_2$) may be a set of advertisements placed on Amazon (resp., eBay). Each advertisement includes attributes like \ttt{prod-name}, \ttt{prod-description}, \ttt{year}, \ttt{price}, and so on. The goal is to identify the pairs $(e_1, e_2) \in E_1 \times E_2$ where the advertisements $e_1$ and $e_2$ describe the same product.
-
 \vgap
 
-What makes the problem challenging is that decisions cannot rely on comparing attribute values, because even a pair of matching $e_1$ and $e_2$ may differ in attributes. This is evident with attributes like \ttt{prod-description} and \ttt{price} since $e_1$ and $e_2$ might describe or price the same product differently. In fact, $e_1$ and $e_2$ may not even agree on ``presumably standard'' attributes like \ttt{prod-name} (e.g., $e_1.\ttt{prod-name}$ = ``MS Word'' vs.\ $e_2.\ttt{prod-name}$ = ``Microsoft Word Processor''). Nevertheless, it would be reasonable to expect $e_1.\ttt{year} = e_2.\ttt{year}$ because advertisements are required to be accurate in this respect. To attain full precision in entity matching, human experts must manually inspect each pair $(e_1, e_2) \in E_1 \times E_2$, which is expensive due to the intensive labor involved. Therefore, it is crucial to develop an algorithm that can minimize human effort by automatically rendering verdicts on most pairs, even if it involves a small margin of error.
+See the appendix for an important application of monotone classification: explainable entity matching.
 
+\section{A Randomized Algorithm} \label{sec:alg}
+
+Consider the algorithm, named \ttt{RPE} (random probes with elimination), below:
+
+\mytab{
+        \> {\bf algorithm \ttt{RPE}} $(P)$ \\
+        \> 1. \> $Z = \emptyset$ \\
+        \> 2. \> {\bf while} $P \neq \emptyset$ \\
+        \> 3. \>\> probe an element $z \in P$ chosen uniformly at random and add $z$ to $Z$ \\
+        %\> 4. \>\> add $p$ to $Z$ \\
+        \> 4. \>\> {\bf if} $\lab(z) = 1$ {\bf then} remove from $P$ every $p \in P$ satisfying $p \domeq z$ \\
+        \> 5. \>\> {\bf else} remove from $P$ every $p \in P$ satisfying $z \domeq p$ \\
+        \> \>\> /* note: $z$ is removed by Line 4 or 5 */ \\
+        \> 6. \> {\bf return} $Z$
+}
 
 \begin{figure}
     \centering
@@ -143,6 +156,294 @@ What makes the problem challenging is that decisions cannot rely on comparing at
     \caption{An input set $P$ for Problem 1} \label{fig:intro-ds}
     \figcapdown
 \end{figure}
+
+
+\noindent The algorithm outputs the set $Z$ of points probed. Given $Z$, we define the following classifier:
+\myeqn{
+    h_\rpe(p) &=& \left\{
+    \begin{tabular}{ll}
+        %$\lab(p)$ & if $p \in Z$ \\
+        1 & if $\exists z \in Z$ such that $\lab(z) = 1$ and $p \domeq z$ \\
+        $-1$ & otherwise
+    \end{tabular}
+    \right. \label{eqn:rpe-classifier}
+}
+The classifier must be monotone (think: why?).
+The following proposition states a useful property of the classifier $h_\rpe$, establishing symmetry between labels $-1$ and $1$. The proof is elementary and omitted.
+
+\begin{proposition} \label{prop:rpe:basic}
+    For any $p \in P$, $h_\rpe(p)$ $=$ $-1$ if and only if $\exists z \in Z$ satisfying $\lab(z) = -1$ and $z \domeq p$, where $Z$ is the set of elements probed by \ttt{RPE}.
+\end{proposition}
+
+%\vgap
+
+\ttt{RPE} can also be understood as the following labeling process. After learning the label of a random element $z \in P$, we decide to map $z$ to $\lab(z)$. If $\lab(z) = 1$, by monotonicity, we are obliged to map all elements $p \in P$ satisfying $p \domeq z$ to $1$; conversely, if $\lab(z) = -1$, we must map all elements $p \in P$ satisfying $z \domeq p$ to $-1$. The elements that have their labels thus mapped are removed from $P$. The process is then repeated on the remaining elements.
+
+\vgap
+
+    Let us illustrate \ttt{RPE} on the input $P$ in Figure~\ref{fig:intro-ds}. Assume that the algorithm randomly probes $p_1$ first. Acquiring $\lab(p_1) = 1$, it eliminates the entire $P$ except $p_6, p_7$, and $p_8$. Suppose that \ttt{RPE} then randomly probes $p_8$. Acquiring $\lab(p_8) = -1$, it removes all the remaining points in $P$. With $Z = \{p_1, p_8\}$, the classifier $h_\rpe$ in \eqref{eqn:rpe-classifier} maps all the points to label 1 except $p_6, p_7$, and $p_8$. Its error on $P$ is $\err_P(h_\rpe) = 5$.
+
+\vgap
+
+To characterize the efficiency of \ttt{RPE}, let us define the {\em width} $w$ of the input $P$ as:
+\myeqn{
+    w &=& \text{the size of the largest $S \subseteq P$ such that $\nexists$ distinct $p, q \in S$ satisfying $p \domeq q$}. \label{eqn:intro:w}
+}
+Any one-dimensional $P$ has $w = 1$. Once the dimensionality $d$ reaches 2, $w$ can be anywhere between $1$ and $n$ (think: why?). Regarding the input $P$ in Figure~\ref{fig:intro-ds}, the set $S = \{p_{10}, p_{11}, p_{12}, p_{16}, p_{13},$ $p_{14}\}$ satisfies the condition on the right hand side of \eqref{eqn:intro:w}. On the other hand, given any 7 points of $P$, we can always find two points where one point dominates the other. The width $w$ of $P$ is 6.
+
+\vgap
+
+We will prove in the next section.
+
+\begin{theorem} \label{thm:rpe}
+    For Problem 1, \ttt{RPE} probes $O(w \Log \fr{n}{w})$ elements in expectation, and the classifier $h_\rpe$ in \eqref{eqn:rpe-classifier} has an expected error at most $2 k^*$, where $n$ is the size of the input $P$, $w$ is its width, and $k^*$ is its optimal monotone error.
+\end{theorem}
+
+\ttt{RPE} is asymptotically optimal: any algorithm ensuring $O(k^*)$ expected error must problem $\Omega(w \Log \fr{n}{w})$ points \cite{t18}.
+
+\section{Proof of Theorem~\ref{thm:rpe}} \label{sec:rpe}
+
+
+We divide our proof of Theorem~\ref{thm:rpe} into two parts: Section~\ref{sec:rpe:error} analyzes the expected error, and Section~\ref{sec:rpe:cost} examines the expected cost.
+
+\subsection{The Expected Error of \ttt{RPE}} \label{sec:rpe:error}
+
+Fix an arbitrary classifier $h \in \mono$. An element $p \in P$ is said to be {\em $h$-good} if $h(p) = \lab(p)$ or {\em $h$-bad} otherwise. We  prove in this subsection:
+
+\begin{lemma} \label{lmm:rpe:h-good}
+    The number of $h$-good elements misclassified by the classifier $h_\rpe$ in \eqref{eqn:rpe-classifier} is at most $\err_P(h)$ in expectation.
+\end{lemma}
+
+The lemma implies $\expt[\err_P(h_\rpe)] \le 2k^*$. To understand why, set $h$ to an optimal monotone classifier $h^*$ on $P$. By Lemma~\ref{lmm:rpe:h-good}, the number of $h^*$-good elements misclassified by $h_\rpe$ is at most $\err_P(h^*) = k^*$ in expectation. Because exactly $k^*$ elements of $P$ are $h^*$-bad, the total number of elements misclassified by $h_\rpe$ is at most $2k^*$ in expectation.
+
+\vgap
+
+Our proof of Lemma~\ref{lmm:rpe:h-good} works by induction on the size $n$ of $P$. When $n = 1$, the classifier $h_\rpe$ has error 0 on $P$, and the claim holds. Next, assuming that the claim holds for $n \le m - 1$ (where $m \ge 2$), we establish its correctness for $n = m$. Define
+    \myeqn{
+        X &=& \text{the number of $h$-good elements in $P$ misclassified by $h_\rpe$}, \label{eqn:rpe:X}
+    }
+    Our goal is to show that $\expt[X] \le \err_P(h)$.
+
+    \vgap
+
+    For each $h$-bad element $p$, we define its {\em influence set} $I_\bad(p)$ as follows:
+    \myitems{
+        \item If $\lab(p) = -1$, then $I_\bad(p)$ consists of all the $h$-good elements $q \in P$ satisfying $p \domeq q$ and $\lab(q) = 1$;
+        \item If $\lab(p) = 1$, then $I_\bad(p)$ consists of all the $h$-good elements $q \in P$ satisfying $q \domeq p$ and $\lab(q) = -1$.
+    }
+    {Intuitively, $I_\bad(p)$ includes all the $h$-good elements $q$ of $P$ such that once \ttt{RPE} probes $p$, it will mis-classify $q$.} For each $h$-good element $q \in P$, define its {\em influence set} $I_\good(q)$ as follows:
+    \myitems{
+        \item If $\lab(q) = -1$, then $I_\good(q)$ consists of all the $h$-bad elements $p \in P$ satisfying $q \domeq p$.
+
+        \item If $\lab(q) = 1$, then $I_\good(q)$ consists of all the $h$-bad elements $p \in P$ satisfying $p \domeq q$.
+    }
+    {Intuitively, $I_\good(q)$ includes all the $h$-bad elements $p$ of $P$ such that once \ttt{RPE} probes $q$, it will mis-classify $p$.}
+
+\begin{lemma} \label{lmm:rpe:inf-set}
+    {For any $h$-bad $p \in P$ and any $h$-good $q \in P$, we have $ q \in I_\bad(p) \Leftrightarrow p \in I_\good(q)$.}
+\end{lemma}
+
+\begin{proof}
+    {First, we prove $q \in I_\bad(p) \Rightarrow p \in I_\good(q)$. By symmetry, we discuss only the case $\lab(p) = -1$. Because $q \in I_\bad(p)$, the definition of $I_\bad(p)$ tells us $p \domeq q$ and $\lab(q) = 1$. It thus follows that $p \in I_\good(q)$.}
+
+    \vgap
+
+    {Next, we prove $p \in I_\good(q) \Rightarrow q \in I_\bad(p)$. By symmetry, we discuss only the case $\lab(q) = -1$. Because $p \in I_\good(q)$, the definition of $I_\good(q)$ tells us $q \domeq p$. Because $q$ is $h$-good, we know $h(q) = \lab(q) = -1$, which by monotonicity implies $h(p) = -1$. As $p$ is $h$-bad, we have $\lab(p) = 1$. It thus follows that $q \in I_\bad(p)$.}
+\end{proof}
+
+Lemma~\ref{lmm:rpe:inf-set} indicates
+    \myeqn{
+        \sum_{\text{$h$-good $q \in P$}} |I_\good(q)| &=& \sum_{\text{$h$-bad $p \in P$}} |I_\bad(p)|.
+        \label{eqn:rpe:good-bad-equal}
+    }
+
+%    \begin{example}
+        Let $P$ be the set of points in Figure~\ref{fig:intro-ds}, and $h$ be the classifier that maps all the black points to 1 except $p_1$ and all the white points to $-1$ except $p_{11}$ and $p_{15}$. Thus, $p_1$, $p_{11}$, and $p_{15}$ are $h$-bad, while the other points of $P$ are $h$-good. The following are some representative influence sets.
+        \myeqn{
+            I_\bad(p_{15}) &=& \set{p_4, p_9, p_{10}, p_{12}, p_{13}, p_{14}, p_{16}} \nn \\
+            I_\bad(p_1) &=& \set{p_2, p_3, p_5} \nn \\
+            I_\good(p_3) &=& \set{p_1} \nn \\
+            I_\good(p_9) &=& \set{p_{11}, p_{15}}. \nn
+        }
+ %   \end{example}
+
+    \vgap
+
+    \ttt{RPE} is an iterative algorithm. We refer to Lines 3-5 {of its pseudocode} as an {\em iteration}. Let $z$ be the point probed in the first iteration (at Line 3). The revelation of $\lab(z)$ instructs the algorithm to remove $z$ and possibly some other elements from $P$ (at Line 4 or 5). Define
+    \myeqn{
+        P_z &=& \text{the set of remaining elements at the end of the first iteration.} \label{eqn:rpe:P_z}
+    }
+    The next proposition relates the error of $h$ on $P_z$ to the error of $h$ on $P$.
+    \begin{proposition} \label{prop:rpe:err-Pz}
+        \myeqn{
+        \err_{P_z}(h) &\le& \left\{
+        \begin{tabular}{ll}
+            $\err_P(h) - 1$ & if $z$ is $h$-bad \\
+            $\err_P(h) - |I_\good(z)|$ & if $z$ is $h$-good
+        \end{tabular}
+        \right. \nn
+    }
+    \end{proposition}
+
+    \begin{proof}
+        If $z$ is $h$-bad, the inequality $\err_{P_z}(h) \le \err_P(h) - 1$ follows immediately from the fact that $P_z$ has lost at least one $h$-bad element (i.e., $z$).
+
+        \vgap
+
+        Consider that $z$ is $h$-good. Assume $\lab(z) = 1$. In the first iteration, an element $p \in P$ is removed by Line 4 if and only if $p \domeq z$. By definition of $I_\good(z)$, an element $p$ removed by Line 4 is $h$-bad if and only if $p \in I_\good(z)$. Hence, $P_z$ loses exactly $|I_\good(z)|$ $h$-bad elements compared to $P$, giving $\err_{P_z}(h) = \err_P(h) - |I_\good(z)|$. A symmetric argument applies to the case where $\lab(z) = -1$.
+    \end{proof}
+
+    Define
+    \myeqn{
+        Y_z &=& \text{the number of $h$-good elements in $P_z$ misclassified by $h_\rpe$} \nn
+    }
+    Under the event that the first element probed is $z$, we have
+    \myeqn{
+        X &=& Y_z \, + \, \text{the number of $h$-good elements in $P \setminus P_z$ misclassified by $h_\rpe$} \label{eqn:rpe:X-Y}
+    }
+    where $X$ is defined in \eqref{eqn:rpe:X}.
+
+    \begin{proposition} \label{prop:rpe:err-P-Pz}
+        The number of $h$-good elements in $P \setm P_z$ misclassified by $h_\rpe$ is
+        \myitems{
+            \item $|I_\bad(z)|$ if $z$ is $h$-bad;
+            \item 0 if $z$ is $h$-good.
+        }
+    \end{proposition}
+
+    \begin{proof}
+        Consider the case $\lab(z) = -1$. The set $P \setm P_z$ consists of every element $p \in P$ satisfying $z \domeq p$. By Proposition~\ref{prop:rpe:basic}, the classifier $h_\rpe$ maps every such an element to $-1$. Hence, the number of $h$-good points in $P \setm P_z$ misclassified by $h_\rpe$ equals the number --- let it be $x$ --- of $h$-good points in $P \setm P_z$ whose labels are $1$. If $z$ is $h$-bad, then $x$ is exactly $|I_\bad(z)|$ by definition of $I_\bad(z)$. Suppose that $z$ is $h$-good. By monotonicity of $h$, we have $h(p) = -1$ for all $p \domeq z$ (recall that $\lab(z) = -1$). If $p$ is $h$-good, then $\lab(p) = h(p) = -1$. {The number $x$} is thus 0 if $z$ is $h$-good.
+
+        \vgap
+
+        A symmetric argument applies to the case $\lab(z) = 1$.
+    \end{proof}
+
+    Combining \eqref{eqn:rpe:X-Y} and Proposition~\ref{prop:rpe:err-P-Pz} yields
+    \myeqn{
+        X &=& \left\{
+        \begin{tabular}{ll}
+            $Y_z + |I_\bad(z)|$ & if $z$ is $h$-bad \\
+            $Y_z$ & if $z$ is $h$-good
+        \end{tabular}
+        \right. \label{eqn:rpe:X-Y-2}
+    }
+
+    The subsequent execution of \ttt{RPE} on $P_z$ can be regarded as invoking \ttt{RPE} directly on $P_z$. As $P_z$ has at least one less element than $P$ (because $z$ is removed), the inductive assumption tells us:
+    \myeqn{
+        \expt[Y_z] &\le& \err_{P_z}(h). \label{eqn:rpe:expt-Yz}
+    }
+    We can now derive
+    \myeqn{
+        \expt[X] &=& \sum_{z \in P} \expt[X \mid \text{$z$ is probed first}] \cdot \Pr[\text{$z$ is probed first}] \nn \\
+        &=& \fr{1}{m} \sum_{z \in P} \expt[X \mid \text{$z$ is probed first}] \nn \\
+        &=& \fr{1}{m} \Big( \sum_{\text{$h$-good $z \in P$}} \expt[X \mid \text{$z$ is probed first}] + \sum_{\text{$h$-bad $z \in P$}} \expt[X \mid \text{$z$ is probed first}]
+        \Big) \nn \\
+        \explain{by \eqref{eqn:rpe:X-Y-2}}
+        &=& \Big(\fr{1}{m} \sum_{\text{$h$-good $z \in P$}} \expt[Y_z] \Big) + \Big( \fr{1}{m} \sum_{\text{$h$-bad $z \in P$}} \expt[Y_z] + |I_\bad(z)|
+        \Big) \nn \\
+        \explain{by \eqref{eqn:rpe:expt-Yz}}
+        &\le&
+        \Big(\fr{1}{m} \sum_{\text{$h$-good $z \in P$}} err_{P_z}(h) \Big) + \Big(\fr{1}{m} \sum_{\text{$h$-bad $z \in P$}} \err_{P_z}(h) + |I_\bad(z)|
+        \Big) \nn \\
+        \explain{Proposition~\ref{prop:rpe:err-Pz}}
+        &\le&
+        \Big(\fr{1}{m} \sum_{\text{$h$-good $z \in P$}} err_P(h) - |I_\good(z)| \Big) + \Big(\fr{1}{m} \sum_{\text{$h$-bad $z \in P$}} \err_P(h) - 1 + |I_\bad(z)|
+        \Big) \nn \\
+        &\le&
+        \Big(\fr{1}{m} \sum_{\text{$h$-good $z \in P$}} err_P(h) - |I_\good(z)| \Big) + \Big(\fr{1}{m} \sum_{\text{$h$-bad $z \in P$}} \err_P(h) + |I_\bad(z)|
+        \Big) \nn \\
+        &=&
+        \err_P(h) + \fr{1}{m} \Big(\sum_{\text{$h$-bad $z \in P$}} |I_\bad(z)| -  \sum_{\text{$h$-good $z \in P$}} |I_\good(z)|\Big)
+        \nn \\
+        \explain{by \eqref{eqn:rpe:good-bad-equal}}
+        &=&
+        \err_P(h). \nn
+    }
+    This completes the inductive step of the proof of Lemma~\ref{lmm:rpe:h-good}.
+%\end{proof}
+
+\subsection{The Expected Cost of \ttt{RPE}} \label{sec:rpe:cost}
+
+\noindent {\bf Chains.} Let us first review a property of the width $w$ defined in \eqref{eqn:intro:w}. Call a subset $S \subseteq P$ a {{\em chain}} if we can arrange the elements of $S$ into a sequence $p_1 \dombyeq p_2 \dombyeq  ... \dombyeq p_{|S|}$. A {{\em chain}} {{\em decomposition}} of $P$ is a collection of disjoint chains $C_1$, $C_2$, ..., $C_t$ ($t \ge 1$) whose union is $P$. Dilworth's Theorem \cite{d50} states that there must exist a chain decomposition of $P$ containing $w$ chains.
+
+\vgap
+
+%\begin{example}
+    The input $P$ in Figure~\ref{fig:intro-ds} can be decomposed into 6 chains: $C_1 = \{p_1, p_2, p_3, p_4, p_{10}\}$, $C_2$ $=$ $\{p_{11}\}$, $C_3 = \{p_5, p_9, p_{12}\}$, $C_4 = \{p_{16}\}$, $C_5 = \{p_{13}\}$, and $C_6 = \{p_6,$ $p_7,$ $p_8, p_{14}, p_{15}\}$. The points $p_{10},$ $p_{11},$ $p_{12},$ $p_{16},$ $p_{13}$, and $p_{14}$ indicate the absence of any chain decomposition of $P$ having less than 6 chains.
+%\end{example}
+
+
+\extraspacing {\bf Attrition and Elimination.} Before discussing the cost of \ttt{RPE}, let us take a detour to discuss an {{\em attrition-and-elimination (A\&E) game}} between Alice and Bob. The input is a chain $C$ of $m \ge 1$ points in $\real^d$. In each round:
+\begin{itemize}
+    \item Bob performs ``attrition'' by either doing nothing or arbitrarily deleting some points from $C$;
+
+    \item Alice then carries out ``elimination'' by picking a point $p \in C$ uniformly at random, and deleting from $C$ all the points $q \domeq p$.
+\end{itemize}
+The game ends when $C$ becomes empty. The number of rounds is a random variable depending on Bob's strategy. The question is how Bob should play to maximize the expectation of this variable. {The game is a generalization of ``random binary search'', in which Bob always chooses to do nothing in each round.}
+
+\begin{lemma} \label{lmm:rpe:a-and-e}
+    Regardless of Bob's strategy, the game has $O(\Log m)$ rounds in expectation.
+\end{lemma}
+
+\begin{proof}
+    Let $X$ be the number of elements left in $C$ after the first round. We show $\Pr[X \le m/2] > 1/2$. Let $C'$ be the content of $C$ after Bob's attrition in the first round. Set $m' = |C'|$. Let us arrange the points of $C'$ such that $p_1 \dombyeq p_2 \dombyeq  ... \dombyeq p_{m'}$. If Alice picks $p = p_i$ ($i \in [m']$), then at most $i - 1$ points are left after her elimination. Hence, $X \le m'/2$ as long as $i \le 1 + m'/2$, which occurs with probability greater than $1/2$. The fact $\Pr[X \le m/2] > 1/2$ now follows from $m' \le m$.
+
+    \vgap
+
+    We call a round {\em successful} if it reduces the number of elements in $C$ by at least a factor of 2. The total number of successful rounds cannot be more than $\log_2 (1+m)$. Let $Y$ be the total number of rounds. If $Y \ge 2 \log_2 (1+m)$, there must be at least $\log_2 (1+m)$ unsuccessful rounds; as all the rounds are independent, this can happen with probability less than $(1/2)^{\log_2 (1+m)} < 1/m$. Because $Y$ is trivially bounded by $m$, we have $\expt[Y] \le 2 \log_2 (1+m) + m \cdot \Pr[\text{at least $2 \log_2 (1+m)$ rounds}] = O(\Log m)$.
+\end{proof}
+
+\noindent {\bf Cost Analysis of RPE.} Returning to \ttt{RPE}, let $\{C_1, C_2, ..., C_w\}$ be an arbitrary chain decomposition of $P$ with $w$ chains. Note that \ttt{RPE} is unaware of these chains. For each $i \in [w]$, break the chain $C_i$ into two disjoint subsets:
+\myitems{
+    \item $C^\pos_i = \set{p \in C_i \mid \lab(p) = 1}$, and
+    \item $C^\neg_i = \set{p \in C_i \mid \lab(p) = -1}$.
+}
+%The next lemma gives a crucial fact.
+
+\begin{lemma} \label{lmm:rpe:cost-one-chain}
+    \ttt{RPE} probes $O(\Log |C^\pos_i|)$ points from $C^\pos_i$ in expectation.
+\end{lemma}
+
+\begin{proof}
+    The operations that \ttt{RPE} performs on $C^\pos_i$ can be modeled as an A\&E game on an initial input $C = C^\pos_i$, as explained next.
+
+    \vgap
+
+    In each round (of the A\&E game), Bob formulates his strategy according to the execution of \ttt{RPE}. Suppose that \ttt{RPE} probes an element outside $C^\pos_i$ at Line 3 (of the pseudocode in Section~\ref{sec:intro:techniques}). Recall that the algorithm removes some elements from $P$ at Line 4 or 5. Accordingly, Bob carries out attrition by deleting from $C$ all the elements of $C^\pos_i$ removed by \ttt{RPE}. After that, Bob observes the next probe of \ttt{RPE} and performs attrition in the same way as long as the element probed is outside $C_i$. If, on the other hand, \ttt{RPE} probes an element $z \in C^\pos_i$, he passes the turn to Alice.
+
+    \vgap
+
+    From Alice's perspective, conditioned on $z \in C^\pos_i$, \ttt{RPE} must have chosen $z$ uniformly at random from the current $C$, namely, the set of elements from $C^\pos_i$ still in $P$. Hence, Alice can take $z$ as her choice in the A\&E game to perform elimination. Because $z$ has label 1, after probing $z$ at Line 3, \ttt{RPE} shrinks $P$ by removing at Line 4 every element $p \domeq z$. As far as $C$ is concerned, the shrinking deletes elements from $C$ in exactly the way Alice should do in her elimination. This completes a round of the A\&E game. The next round starts and proceeds in the same fashion.
+
+    \vgap
+
+    By Lemma~\ref{lmm:rpe:a-and-e}, the A\&E game lasts for $O(\Log |C^\pos_i|)$ rounds in expectation regardless of Bob's strategy. Hence, \ttt{RPE} probes $O(\Log |C^\pos_i|)$ elements from $C^\pos_i$ in expectation.
+\end{proof}
+
+By a symmetric argument, \ttt{RPE} probes $O(\Log |C^\neg_i|)$ elements from $C^\neg_i$ in expectation. Therefore, the expected number of elements probed by \ttt{RPE} in total is given by
+\myeqn{
+    O\left(\sum_{i=1}^w \Log|C^\pos_i| + \Log |C^\neg_i| \right)  =
+    O\left(\sum_{i=1}^w \Log|C_i| \right)
+    =
+    O\left(w  \Log \fr{n}{w} \right)
+    \nn
+}
+where the last step used $\sum_{i=1}^w |C_i| = {n}$ {and the fact that $\sum_{i=1}^w \Log|C_i|$ is minimized when all chains have the same size}.
+This completes the proof of Theorem~\ref{thm:rpe}.
+
+\bibliographystyle{plainurl}% the mandatory bibstyle
+\bibliography{ref}
+
+\appendix
+
+\section*{Appendix: Explainable Entity Matching} \label{sec:em}
+
+Given two sets of entities $E_1$ and $E_2$, the goal of entity matching is to decide, for each pair $(e_1, e_2) \in E_1 \times E_2$, whether $e_1$ and $e_2$ represent the same entity; if so, they are said to form a ``match''. For example, $E_1$ (resp., $E_2$) may be a set of advertisements placed on Amazon (resp., eBay). Each advertisement includes attributes like \ttt{prod-name}, \ttt{prod-description}, \ttt{year}, \ttt{price}, and so on. The goal is to identify the pairs $(e_1, e_2) \in E_1 \times E_2$ where the advertisements $e_1$ and $e_2$ describe the same product.
+
+\vgap
+
+What makes the problem challenging is that decisions cannot rely on comparing attribute values, because even a pair of matching $e_1$ and $e_2$ may differ in attributes. This is evident with attributes like \ttt{prod-description} and \ttt{price} since $e_1$ and $e_2$ might describe or price the same product differently. In fact, $e_1$ and $e_2$ may not even agree on ``presumably standard'' attributes like \ttt{prod-name} (e.g., $e_1.\ttt{prod-name}$ = ``MS Word'' vs.\ $e_2.\ttt{prod-name}$ = ``Microsoft Word Processor''). Nevertheless, it would be reasonable to expect $e_1.\ttt{year} = e_2.\ttt{year}$ because advertisements are required to be accurate in this respect. To attain full precision in entity matching, human experts must manually inspect each pair $(e_1, e_2) \in E_1 \times E_2$, which is expensive due to the intensive labor involved. Therefore, it is crucial to develop an algorithm that can minimize human effort by automatically rendering verdicts on most pairs, even if it involves a small margin of error.
 
 \vgap
 
@@ -159,13 +460,5 @@ Toward the above purpose, a dominant methodology behind the existing approaches 
 %\vgap
 
 Treating $P$ as the input for monotone classification, we can employ an algorithm $\A$ of monotone classification to significantly reduce human labor. Specifically, the human plays the role of oracle: when given a point $p_{e_1,e_2}$, the human ``reveals'' the label of $p_{e_1,e_2}$ by manually checking whether $e_1$ and $e_2$ are about the same entity. After a  number of probes (to the human oracle), the algorithm $\A$ outputs a monotone classifier $h \in \mono$, which is then used to infer the labels of the un-probed points in $P$. Demanding monotonicity is important for {\em explainable learning} because it avoids the odd situation of classifying $(e_1,e_2)$ as a non-match but $(e_1',e_2')$ as a match when $p_{e_1,e_2} \dom p_{e_1',e_2'}$. Indeed, this oddity is difficult to explain because the former pair is at least as similar as the latter on every feature.
-
-\section{Remarks}
-
-%\section{Remark} ksv10
-
-\bibliographystyle{plainurl}% the mandatory bibstyle
-\bibliography{ref}
-
 
 \end{document}
