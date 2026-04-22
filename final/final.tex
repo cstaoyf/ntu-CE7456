@@ -52,8 +52,8 @@ Student ID:
 \boxminipg{0.9\linewidth}{
     {\bf Acronyms:}
     \myitems{
-        \item DDS = Deferred data structuring
         \item IQS = Independent query sampling
+        \item DDS = Deferred data structuring
         \item EM = External memory
         \item MPC = Massively parallel computation
     }
@@ -61,24 +61,24 @@ Student ID:
 
 \pagebreak
 
-\extraspacing {\bf Problem 1 (10 marks).} Set $S = \set{e_1, e_2, ..., e_5}$ where each element carries a positive integer weight. The following describes an alias structure on $S$:
+\extraspacing {\bf Problem 1 (10 marks).} Let $S$ be the set $\set{e_1, e_2, ..., e_5}$ where each element carries a positive integer weight. The following describes an alias structure on $S$:
 \myitems{
-    \item Urn 1: elements $e_1$ and $e_2$, associated with values $10/5$ and $2/5$, respectively;
-    \item Urn 2: elements $e_2$ and $e_4$, associated with values $8/5$ and $4/5$, respectively;
-    \item Urn 3: element $e_3$, associated with value $12/5$;
-    \item Urn 4: elements $e_1$ and $e_5$, associated with values $1/5$ and $11/5$, respectively;
-    \item Urn 5: elements $e_2$ and $e_5$, associated with values $9/5$ and $x/5$, respectively.
+    \item urn 1 has elements $e_1$ and $e_2$, associated with values $10/5$ and $2/5$, respectively;
+    \item urn 2 has elements $e_2$ and $e_4$, associated with values $8/5$ and $4/5$, respectively;
+    \item urn 3 has only element $e_3$, associated with value $12/5$;
+    \item urn 4 has elements $e_1$ and $e_5$, associated with values $1/5$ and $11/5$, respectively;
+    \item urn 5 has elements $e_2$ and $e_5$, associated with values $9/5$ and $x/5$, respectively.
 }
 Answer the following questions:
 \myenums{
-    \item What is the value of $x$ (note: $x/5$ is the value of $e_5$ in Urn 5)?
+    \item What is the value of $x$ (note: $x/5$ is the value of $e_5$ in urn 5)?
     \item If we perform weighted sampling on $S$, what is the probability that $e_2$ is sampled?
-    \item To draw a weighted sample from $S$, the algorithm of the alias structure first chooses an urn uniformly at random. Suppose that Urn 4 has been chosen. Conditioned on this fact, what is the probability for $e_5$ to be returned?
+    \item To draw a weighted sample from $S$, the algorithm of the alias structure first chooses an urn uniformly at random. Suppose that urn 4 has been chosen. Conditioned on this fact, what is the probability for $e_5$ to be returned?
 }
 
 \pagebreak
 
-\extraspacing {\bf Problem 2 (10 marks).} Consider the IQS version of the 1D range reporting problem discussed in our lecture notes. Recall that, given an interval $q = [x, y]$, an IQS operation on a set $S$ of $n$ integers --- where each integer carries a positive weight --- performs weighted sampling on $q \cap S$. Decide whether each of the following statements is true; if you believe a statement is false, you need to provide a justification.
+\extraspacing {\bf Problem 2 (10 marks).} Consider the IQS version of the 1D range reporting problem discussed in our lecture notes. Recall that, given an interval $q = [x, y]$, an IQS operation on a set $S$ of $n$ integers --- where each integer carries a positive weight --- performs weighted sampling on the set $q \cap S$. Decide whether the following statements are true; if you believe a statement is false, you need to provide a justification.
 \myenums{
     \item If we issue two IQS operations using the same interval $q$, their outputs must be independent from each other.
     \item If we issue an infinite number of IQS operations with the interval $q = (-\infty, \infty)$, we can definitely find all the elements of $q \cap S$.
@@ -101,7 +101,7 @@ Answer the following questions:
 
 \pagebreak
 
-\extraspacing {\bf Problem 4 (10 marks).} Let $\D$ be the uniform distribution over the set of integers from 1 to $U$. Denote by $P$ a set of $n$ values, each independently drawn from $\D$. Let $q$ an integer drawn from $\D$ independently from $P$. Consider the following statements about the learned index for predecessor search discussed in our lecture notes. Decide which statements are true; if you believe a statement is false, you need to provide a justification.
+\extraspacing {\bf Problem 4 (10 marks).} Let $\D$ be the uniform distribution over $[U]$, where $U \ge 1$ is an integer. Denote by $P$ a set of $n$ values, each independently drawn from $\D$. Let $q$ another integer independently drawn from $\D$. Consider the following statements about the learned index for predecessor search discussed in our lecture notes. Decide which statements are true; if you believe a statement is false, you need to provide a justification.
 \myenums{
     \item The index uses $O(n)$ space.
     \item The index includes an array where the elements of $P$ are sorted.
