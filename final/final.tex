@@ -1,0 +1,74 @@
+%\documentclass{...}
+
+\input{./def/yf-formatting}
+
+\usepackage{amsfonts, amsmath, amssymb, amsthm}
+\usepackage{comment}
+\usepackage{graphicx}
+\usepackage{ifthen}
+\usepackage{latexsym}
+%\usepackage{times}
+\usepackage[normalem]{ulem}
+
+\input{./def/yf-def}
+
+\def\agm{\text{AGM}}
+\def\B{\mathcal{B}}
+\def\E{\mathcal{E}}
+\def\H{\mathcal{H}}
+\def\Q{\mathcal{Q}}
+\def\V{\mathcal{V}}
+\def\W{\mathscr{W}}
+
+\newboolean{solver}\setboolean{solver}{true}
+%\newboolean{solver}\setboolean{solver}{false}
+\ifthenelse{\boolean{solver}}{\includecomment{sol}}{\excludecomment{sol}}
+
+\begin{document}
+
+\section*{CE7456: Quiz 3}
+
+\noindent Name:  \hspace{50mm}
+Student ID:
+
+% \begin{center}
+%     \uline{Classroom Discussion}
+% \end{center}
+
+\extraspacing
+
+
+%\extraspacing {\bf Problem 1 (25 marks).} A {\em 3-star} is the graph $P = (V_P, E_P)$ where $V_P = \set{u, v_1, v_2, v_3}$ and $E_P = \set{(u, v_1), (u, v_2), (u, v_3)}$. From the AGM bound, an undirected graph of $m$ edges can have at most $O(m^3)$ occurrences of $P$. Describe how to construct such a graph $G = (V, E)$ of $m$ edges that have $\Omega(m^3)$ occurrences of $P$.
+
+\extraspacing {\bf Problem 1 (25 marks).} By the AGM bound, an undirected graph of $m$ edges has at most $O(m^{1.5})$ triangles (i.e., 3-cliques). Describe how to construct an undirected graph to match this bound; namely, design an undirected graph $G = (V, E)$ of $m$ edges such that $G$ has $\Omega(m^{1.5})$ triangles.
+
+\pagebreak
+
+\extraspacing {\bf Problem 2 (25 marks).} Let $\Q$ be a join whose schema graph is $\H = (\V, \E)$. Suppose that $\V = \set{A_1, A_2, ..., A_d}$. Let $B$ be a box $[x_1, y_1] \times [x_2, y_2] \times ... \times [x_d, y_d]$, where $[x_i, y_i]$ is an interval on attribute $A_i$ for each $i \in [1, d]$. Fix an arbitrary fractional edge cover $\W$ of $\H$. Recall from our lecture notes that $\Q$ and $B$ define a join $\Q(B)$, and $\agm_\W(B)$ denotes the AGM value of $\Q(B)$ under $\W$.
+
+\vgap
+
+Suppose that we split $B$ along $A_1$ into 3 boxes $B_1, B_2, B_3$, namely:
+\myitems{
+    \item For each $i \in [2, d]$, the projections of $B_1, B_2$, and $B_3$ on attribute $A_i$ are all $[x_i, y_i]$, i.e., same as that of $B$.
+    \item The projections of $B_1, B_2$, and $B_3$ on attribute $A_1$ are disjoint, and their union is the projection of $B$ on $A_1$.
+}
+
+\noindent Prove: $\agm_\W(B_1) + \agm_\W(B_2) + \agm_\W(B_3) \le \agm_\W(B)$.
+
+\pagebreak
+
+\extraspacing {\bf Problem 3 (25 marks).} Let $S$ and $T$ be two sets of integers. Define $n = |S| + |T|$. In the beginning, each set is stored in a disk array. Describe an algorithm in the external memory model to detect whether $S \cap T$ is empty in $O(\fr{n}{B} \log_{M/B} \fr{n}{B})$ I/Os, where $M$ is the memory size, and $B$ is the block size. The values of $M$ and $B$ satisfy $M \ge 3B$.
+
+\pagebreak
+
+\extraspacing {\bf Problem 4 (25 marks).} Consider the sorting algorithm under the MPC model discussed in our lecture notes. There are $p = 3$ three machines, where initially the first machine stores $\set{10, 33, 57, 60, 80}$, the second stores $\set{5, 22, 48, 56, 90}$, and the third stores $\set{15, 35, 38, 88, 96}$. Recall that, in the first phase of Round 1, each machine samples some elements from its local storage. Suppose that the first machine samples 33 and 80, the second machine samples 5 and 48, and the third machine samples 38 and 88. Answer the following questions:
+
+\vgap
+
+\myenums{
+    \item What is the set $S_{sam}$ collected by each machine in the first phase of Round 2?
+    \item For each pair of distinct $i, j \in \set{1, 2, 3}$, list of the elements sent from machine $i$ to machine $j$ in the second phase of Round 2.
+}
+
+\end{document}
