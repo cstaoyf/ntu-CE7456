@@ -26,7 +26,7 @@
 
 \begin{document}
 
-\section*{CE7456: Quiz 3}
+\section*{CE7456: Final Exam}
 
 \noindent Name:  \hspace{50mm}
 Student ID:
@@ -37,38 +37,43 @@ Student ID:
 
 \extraspacing
 
+\fbox{
+    You do not need to describe any algorithm in our lecture notes.
+}
 
-%\extraspacing {\bf Problem 1 (25 marks).} A {\em 3-star} is the graph $P = (V_P, E_P)$ where $V_P = \set{u, v_1, v_2, v_3}$ and $E_P = \set{(u, v_1), (u, v_2), (u, v_3)}$. From the AGM bound, an undirected graph of $m$ edges can have at most $O(m^3)$ occurrences of $P$. Describe how to construct such a graph $G = (V, E)$ of $m$ edges that have $\Omega(m^3)$ occurrences of $P$.
-
-\extraspacing {\bf Problem 1 (25 marks).} By the AGM bound, an undirected graph of $m$ edges has at most $O(m^{1.5})$ triangles (i.e., 3-cliques). Describe how to construct an undirected graph to match this bound; namely, design an undirected graph $G = (V, E)$ of $m$ edges such that $G$ has $\Omega(m^{1.5})$ triangles.
-
-\pagebreak
-
-\extraspacing {\bf Problem 2 (25 marks).} Let $\Q$ be a join whose schema graph is $\H = (\V, \E)$. Suppose that $\V = \set{A_1, A_2, ..., A_d}$. Let $B$ be a box $[x_1, y_1] \times [x_2, y_2] \times ... \times [x_d, y_d]$, where $[x_i, y_i]$ is an interval on attribute $A_i$ for each $i \in [1, d]$. Fix an arbitrary fractional edge cover $\W$ of $\H$. Recall from our lecture notes that $\Q$ and $B$ define a join $\Q(B)$, and $\agm_\W(B)$ denotes the AGM value of $\Q(B)$ under $\W$.
-
-\vgap
-
-Suppose that we split $B$ along $A_1$ into 3 boxes $B_1, B_2, B_3$, namely:
+\extraspacing {\bf Problem XX (YY marks).} Set $S = \set{e_1, e_2, ..., e_5}$ where each element carries a positive integer weight. The following describes an alias structure on $S$:
 \myitems{
-    \item For each $i \in [2, d]$, the projections of $B_1, B_2$, and $B_3$ on attribute $A_i$ are all $[x_i, y_i]$, i.e., same as that of $B$.
-    \item The projections of $B_1, B_2$, and $B_3$ on attribute $A_1$ are disjoint, and their union is the projection of $B$ on $A_1$.
+    \item Urn 1: elements $e_1$ and $e_2$, associated with values $10/5$ and $2/5$, respectively;
+    \item Urn 2: elements $e_2$ and $e_4$, associated with values $8/5$ and $4/5$, respectively;
+    \item Urn 3: element $e_3$, associated with value $12/5$;
+    \item Urn 4: elements $e_1$ and $e_5$, associated with values $1/5$ and $11/5$, respectively;
+    \item Urn 2: elements $e_2$ and $e_4$, associated with values $8/5$ and $4/5$, respectively.
 }
 
-\noindent Prove: $\agm_\W(B_1) + \agm_\W(B_2) + \agm_\W(B_3) \le \agm_\W(B)$.
+\extraspacing {\bf Problem XX (YY marks).} A {\em 3-star} is the graph $P = (V_P, E_P)$ where $V_P = \set{u, v_1, v_2, v_3}$ and $E_P = \set{(u, v_1), (u, v_2), (u, v_3)}$. From the AGM bound, an undirected graph of $m$ edges can have at most $O(m^3)$ occurrences of $P$. Construct such a graph $G = (V, E)$ of $m$ edges that have $\Omega(m^3)$ occurrences of $P$.
 
-\pagebreak
+\extraspacing {\bf Problem XX (YY marks).} Given a set $S$ of $n$ integers, the goal of the {\em 3-sum problem} is to decide whether there are three distinct elements $x, y, z \in S$ such that $x + y + z = 0$. Answer the following questions:
+\myitems{
+    \item Design an MPC algorithm that solves the problem in constant rounds with load $O(n / \sqrt{p})$, where $p$ is the number of machines. You may assume that each machine stores $n / p$ elements in the beginning except possibly the last machine.
 
-\extraspacing {\bf Problem 3 (25 marks).} Let $S$ and $T$ be two sets of integers. Define $n = |S| + |T|$. In the beginning, each set is stored in a disk array. Describe an algorithm in the external memory model to detect whether $S \cap T$ is empty in $O(\fr{n}{B} \log_{M/B} \fr{n}{B})$ I/Os, where $M$ is the memory size, and $B$ is the block size. The values of $M$ and $B$ satisfy $M \ge 3B$.
+    \item Design an EM algorithm that solves the problem in $O(n^2 / (MB))$ I/Os, where $M$ is the number of words in memory, and $B$ is the number of words in a disk block. You may assume that the set $S$ is given in a disk array of $n$ words.
 
-\pagebreak
+    \vgap
 
-\extraspacing {\bf Problem 4 (25 marks).} Consider the sorting algorithm under the MPC model discussed in our lecture notes. There are $p = 3$ three machines, where initially the first machine stores $\set{10, 33, 57, 60, 80}$, the second stores $\set{5, 22, 48, 56, 90}$, and the third stores $\set{15, 35, 38, 88, 96}$. Recall that, in the first phase of Round 1, each machine samples some elements from its local storage. Suppose that the first machine samples 33 and 80, the second machine samples 5 and 48, and the third machine samples 38 and 88. Answer the following questions:
+    Note: You get 70\% of the marks if your algorithm performs $\Theta(\fr{n^2}{MB} \polylog n)$ I/Os.
+}
+
+\extraspacing {\bf Problem XX (YY marks).} Let $\Q$ be a join whose schema graph $\H = (\V, \E)$ has a constant size. Take any fractional edge cover $\W$ of $\H$. Prove: if the AGM value of $\Q$ under $\W$ is 1, then for every attribute $A \in \V$, there is a relation $R \in \Q$ satisfying
+\myitems{
+    \item $A$ belongs to the schema of $R$;
+    \item $|R| = 1$.
+}
+
+\extraspacing {\bf Problem XX (YY marks).} Let $R_1, R_2$, $R_3$, and $R_4$ be relations whose schemas are $\set{A, B, C}$, $\set{A, C, D}$, $\set{B, D}$, and $\set{B, C, E}$, respectively. Consider the natural join $\Q = \set{R_1, R_2, R_3, R_4}$. Suppose that we insert a tuple $\bm{u}$ in $R_4$ --- let us denote the new relation as $R_4'$, namely, $R_4' = R_4 \cup \set{\bm{u}}$. Consider the natural join $\Q' = \set{R_1, R_2, R_3, R_4'}$.
 
 \vgap
 
-\myenums{
-    \item What is the set $S_{sam}$ collected by each machine in the first phase of Round 2?
-    \item For each pair of distinct $i, j \in \set{1, 2, 3}$, list of the elements sent from machine $i$ to machine $j$ in the second phase of Round 2.
-}
+Prove: the result of $\Q'$ can have at most $\sqrt{|R_1| \cdot |R_2| \cdot |R_3|}$ tuples that are not in the result of $\Q$.
+
 
 \end{document}

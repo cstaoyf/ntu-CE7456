@@ -77,9 +77,9 @@ Next, we will discuss the {\em alias method} \cite{w74}, which improves the abov
 
     \item For every element $e \in S$, it holds that
     \myeqn{
-        w(e) &=& \sum_{\Lambda \in U: e \in \Lambda} v(\Lambda, e) \label{eqn:alias}
+        w(e) &=& n \cdot \sum_{\Lambda \in U: e \in \Lambda} v(\Lambda, e) \label{eqn:alias}
     }
-    namely, its weight equals the sum of its values in all the urns where it appears.
+    namely, its weight equals $n$ times the sum of its values in all the urns where it appears.
 }
 As each urn requires only constant space, the total space consumption is $O(n)$.
 
