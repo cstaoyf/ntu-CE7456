@@ -84,8 +84,16 @@ Answer the following questions:
 
 \myitems{
     \item The index uses $O(n)$ space.
-    \item For every value of $q$, the index is able to find the predecessor of $q$ in $O(1)$ expected time, where the expectation is over all the possible $P$.
+    \item The index includes an array where the elements of $P$ are sorted.
+    \item The index is able to find the predecessor of $q$ in $O(1)$ expected time, where the expectation is over all the possible $P$ and $q$.
+    \item The index admits an implementation external memory that finds the predecessor of $q$ in $O(1)$ expected I/Os, where the expectation is over all the possible $P$ and $q$.
 }
+
+\extraspacing {\bf Problem XX (YY marks).} Consider the pattern graph $P$ shown below:
+\begin{center}
+    \includegraphics[height=30mm]{./artwork/g.pdf}
+\end{center}
+
 
 
 \extraspacing {\bf Problem XX (YY marks).} A {\em 3-star} is the graph $P = (V_P, E_P)$ where $V_P = \set{u, v_1, v_2, v_3}$ and $E_P = \set{(u, v_1), (u, v_2), (u, v_3)}$. From the AGM bound, an undirected graph of $m$ edges can have at most $O(m^3)$ occurrences of $P$. Construct such a graph $G = (V, E)$ of $m$ edges that have $\Omega(m^3)$ occurrences of $P$.
