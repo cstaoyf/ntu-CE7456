@@ -13,7 +13,7 @@
 \input{./def/yf-def}
 
 \def\agm{\text{AGM}}
-\def\B{\mathcal{B}}
+\def\D{\mathcal{D}}
 \def\E{\mathcal{E}}
 \def\H{\mathcal{H}}
 \def\Q{\mathcal{Q}}
@@ -37,9 +37,14 @@ Student ID:
 
 \extraspacing
 
-\fbox{
-    You do not need to describe any algorithm in our lecture notes.
+\boxminipg{\linewidth}{
+    {\bf Notes:}
+    \myitems{
+        \item You do not need to describe any algorithm in our lecture notes.
+        \item You do not need to prove any theorem established in our lecture notes.
+    }
 }
+
 
 \extraspacing {\bf Problem XX (YY marks).} Set $S = \set{e_1, e_2, ..., e_5}$ where each element carries a positive integer weight. The following describes an alias structure on $S$:
 \myitems{
@@ -47,8 +52,41 @@ Student ID:
     \item Urn 2: elements $e_2$ and $e_4$, associated with values $8/5$ and $4/5$, respectively;
     \item Urn 3: element $e_3$, associated with value $12/5$;
     \item Urn 4: elements $e_1$ and $e_5$, associated with values $1/5$ and $11/5$, respectively;
-    \item Urn 2: elements $e_2$ and $e_4$, associated with values $8/5$ and $4/5$, respectively.
+    \item Urn 5: elements $e_2$ and $e_5$, associated with values $9/5$ and $x/5$, respectively.
 }
+Answer the following questions:
+\myenums{
+    \item What is the value of $x$ (note: $x/5$ is the value of $e_5$ in Urn 5)?
+    \item If we perform weighted sampling on $S$, what is the probability that $e_2$ is sampled?
+    \item To draw a weighted sample from $S$, the algorithm of the alias structure first chooses an urn uniformly at random. Suppose that Urn 4 has been chosen. Conditioned on this fact, what is the probability for $e_5$ to be returned?
+}
+
+\extraspacing {\bf Problem XX (YY marks).} Consider the independent query sampling (IQS) version of the 1D range reporting problem discussed in our lecture notes. Recall that, given an interval $q = [x, y]$, an IQS operation on a set $S$ of $n$ integers --- where each integer carries a positive weight --- performs weighted sampling on $q \cap S$. Decide whether each of the following statements is true; if you believe a statement is false, you need to provide a justification.
+\myenums{
+    \item If we issue two IQS operations using the same interval $q$, their outputs must be independent from each other.
+    \item If we issue an infinite number of IQS operations with the interval $q = (-\infty, \infty)$, we can definitely find all the elements of $q \cap S$.
+    \item Suppose that all the integers in $S$ carry the same weight. Given any interval $q$, we can perform an IQS operation in $O(\log n)$ time using only an array where the elements of $S$ are stored in ascending order.
+}
+
+\extraspacing {\bf Problem XX (YY marks).} Let $P$ be a set of $n$ points in $\real^2$. Given an axis-parallel rectangle $q$, a {\em counting} query returns $|P \cap q|$, i.e., how many points of $P$ are covered by $q$. It is known that, in $O(n \log n)$ time, we can construct a {\em counting tree} that uses $O(n \log n)$ space and answers a counting query in $O(\log n)$ time. Answer the following questions.
+
+\myenums{
+    \item Prove: There is a semi-dynamic structure of $O(n \log n)$ space that can answer a counting query on $P$ in $O(\log^2 n)$ time and can support insertions into $P$ in $O(\log^2 n)$ amortized time.
+
+    \item Consider the {\em batched counting problem} defined as follows. The input includes a set $P$ of $n$ points in $\real^2$ and a set $Q$ of $m$ axis-parallel rectangles where $m \le n$. Suppose that both $P$ and $Q$ are given as arrays, with elements stored in arbitrary order. The goal is to output the size $|P \cap q|$ for each $q \in Q$. Explain how to solve the problem in $O(n \log m)$ time.
+
+    \vgap
+
+    Hint: deferred data structuring.
+}
+
+\extraspacing {\bf Problem XX (YY marks).} Let $\D$ be the uniform distribution over the set of integers from 1 to $U$. Denote by $P$ a set of $n$ values, each independently drawn from $\D$. Let $q$ an integer drawn from $\D$ independently from $P$. Consider the following statements about the learned index for predecessor search discussed in our lecture notes. Decide which statements are true; if you believe a statement is false, you need to provide a justification.
+
+\myitems{
+    \item The index uses $O(n)$ space.
+    \item For every value of $q$, the index is able to find the predecessor of $q$ in $O(1)$ expected time, where the expectation is over all the possible $P$.
+}
+
 
 \extraspacing {\bf Problem XX (YY marks).} A {\em 3-star} is the graph $P = (V_P, E_P)$ where $V_P = \set{u, v_1, v_2, v_3}$ and $E_P = \set{(u, v_1), (u, v_2), (u, v_3)}$. From the AGM bound, an undirected graph of $m$ edges can have at most $O(m^3)$ occurrences of $P$. Construct such a graph $G = (V, E)$ of $m$ edges that have $\Omega(m^3)$ occurrences of $P$.
 
